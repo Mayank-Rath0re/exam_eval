@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: postgres:16.3
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: exam_eval
+      POSTGRES_PASSWORD: "w0-sLaUeMqGbrjuvCHulQUiYJdq71182"
+    volumes:
+      - exam_eval_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "Z2Z5K0KinaD9Swz-_bFBsuBw0rdJ-vc4"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: postgres:16.3
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: exam_eval_test
+      POSTGRES_PASSWORD: "IHaPjeTBGIVm8IFODoudA26Px7NyDbnb"
+    volumes:
+      - exam_eval_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "A3dkRY9_8Cqk8pIRm-V_IDdJMsKS5rMH"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  exam_eval_data:
+  exam_eval_test_data:
