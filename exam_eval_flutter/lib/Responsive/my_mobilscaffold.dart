@@ -1,10 +1,9 @@
 
 import 'package:exam_eval_flutter/Constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MobileScaffold extends StatefulWidget{
-  const MobileScaffold({Key? key}): super(key: key);
+  const MobileScaffold({super.key});
 
   @override
   State<MobileScaffold> createState() => _MobileScaffoldState();
@@ -222,7 +221,6 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                     ),
                   ),
                 );
-                ;
               }),
             ),
           ),
