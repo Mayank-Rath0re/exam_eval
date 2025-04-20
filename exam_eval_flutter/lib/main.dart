@@ -1,4 +1,5 @@
 import 'package:exam_eval_client/exam_eval_client.dart';
+import 'package:exam_eval_flutter/Pages/registerpage.dart';
 import 'package:exam_eval_flutter/Responsive/my_desktopscaffold.dart';
 import 'package:exam_eval_flutter/Responsive/my_mobilscaffold.dart';
 import 'package:exam_eval_flutter/Responsive/my_responsive_layout.dart';
@@ -24,37 +25,47 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Serverpod Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Serverpod Example'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  MyHomePageState createState() => MyHomePageState();
-}
-
-class MyHomePageState extends State<MyHomePage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+      title: 'Exam Evaluation',
       debugShowCheckedModeBanner: false,
-      home: ResponsiveLayout(
+      theme: ThemeData(
+        primaryColor: const Color(0xFF2D5A27),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2D5A27),
+          primary: const Color(0xFF2D5A27),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF2D5A27)),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: const Color(0xFF2D5A27),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2D5A27),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+        ),
+      ),
+      routes: {
+        '/': (context) => const RegisterPage(),
+        '/dashboard': (context) => ResponsiveLayout(
           mobileScaffold: const MobileScaffold(),
           tabletScffold: const TabletScaffold(),
-          desktopScaffold: const DesktopScaffold()
-      ),
+          desktopScaffold: const DesktopScaffold(),
+        ),
+      },
+      initialRoute: '/',
     );
-
   }
 }
 
