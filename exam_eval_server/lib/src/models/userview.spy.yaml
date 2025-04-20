@@ -1,0 +1,6 @@
+class: UserView
+table: userview
+fields:
+    accountId: int, relation(parent=user)
+    name: String
+    avatar: String

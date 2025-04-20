@@ -1,0 +1,7 @@
+class: Registrations
+table: registrations
+fields:
+    examId: int, relation(parent=exam)
+    studentName: String
+    rollNo: int
+    schedule: DateTime

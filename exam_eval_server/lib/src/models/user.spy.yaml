@@ -1,0 +1,10 @@
+class: User
+table: user
+fields:
+    name: String
+    email: String
+    password: String
+    dob: DateTime
+    gender: String
+    education: List<String>
+    work: List<String>

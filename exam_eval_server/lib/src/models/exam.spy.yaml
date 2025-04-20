@@ -1,0 +1,8 @@
+class: Exam
+table: exam
+fields:
+    creatorId: int, relation(parent=user)
+    title: String
+    duration: double
+    totalMarks: int
+    questions: List<Question>

@@ -1,0 +1,7 @@
+class: Question
+table: question
+fields:
+    query: String
+    idealAnswer: String?
+    images: List<String?>
+    weightage: double

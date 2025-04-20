@@ -1,0 +1,7 @@
+class: Result
+table: result
+fields:
+    examId: int, relation(parent=exam)
+    rollNo: int
+    finalScore: double
+    answers: List<Answer>
