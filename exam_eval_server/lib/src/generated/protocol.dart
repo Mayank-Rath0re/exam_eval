@@ -11,8 +11,23 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'example.dart' as _i3;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
+import 'answer.dart' as _i4;
+import 'exam.dart' as _i5;
+import 'example.dart' as _i6;
+import 'question.dart' as _i7;
+import 'registrations.dart' as _i8;
+import 'result.dart' as _i9;
+import 'user.dart' as _i10;
+import 'userview.dart' as _i11;
+export 'answer.dart';
+export 'exam.dart';
 export 'example.dart';
+export 'question.dart';
+export 'registrations.dart';
+export 'result.dart';
+export 'user.dart';
+export 'userview.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -22,7 +37,456 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
-    ..._i2.Protocol.targetTableDefinitions
+    _i2.TableDefinition(
+      name: 'answer',
+      dartName: 'Answer',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'answer_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'questionIndex',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'submittedAnswer',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'evaluatedScore',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'answer_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'exam',
+      dartName: 'Exam',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'exam_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'creatorId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'duration',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'totalMarks',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'questions',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<protocol:Question>',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'exam_fk_0',
+          columns: ['creatorId'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'exam_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'question',
+      dartName: 'Question',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'question_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'query',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'idealAnswer',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'images',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String?>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'weightage',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'question_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'registrations',
+      dartName: 'Registrations',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'registrations_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'examId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'studentName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'rollNo',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'schedule',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'registrations_fk_0',
+          columns: ['examId'],
+          referenceTable: 'exam',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'registrations_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'result',
+      dartName: 'Result',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'result_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'examId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'rollNo',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'finalScore',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'answers',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<protocol:Answer>',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'result_fk_0',
+          columns: ['examId'],
+          referenceTable: 'exam',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'result_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'user',
+      dartName: 'User',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'user_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'password',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'dob',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'gender',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'education',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'work',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'user_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'userview',
+      dartName: 'UserView',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'userview_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'accountId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'avatar',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'userview_fk_0',
+          columns: ['accountId'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'userview_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    ..._i3.Protocol.targetTableDefinitions,
+    ..._i2.Protocol.targetTableDefinitions,
   ];
 
   @override
@@ -31,12 +495,74 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
-    if (t == _i3.Example) {
-      return _i3.Example.fromJson(data) as T;
+    if (t == _i4.Answer) {
+      return _i4.Answer.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.Example?>()) {
-      return (data != null ? _i3.Example.fromJson(data) : null) as T;
+    if (t == _i5.Exam) {
+      return _i5.Exam.fromJson(data) as T;
     }
+    if (t == _i6.Example) {
+      return _i6.Example.fromJson(data) as T;
+    }
+    if (t == _i7.Question) {
+      return _i7.Question.fromJson(data) as T;
+    }
+    if (t == _i8.Registrations) {
+      return _i8.Registrations.fromJson(data) as T;
+    }
+    if (t == _i9.Result) {
+      return _i9.Result.fromJson(data) as T;
+    }
+    if (t == _i10.User) {
+      return _i10.User.fromJson(data) as T;
+    }
+    if (t == _i11.UserView) {
+      return _i11.UserView.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i4.Answer?>()) {
+      return (data != null ? _i4.Answer.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.Exam?>()) {
+      return (data != null ? _i5.Exam.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.Example?>()) {
+      return (data != null ? _i6.Example.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.Question?>()) {
+      return (data != null ? _i7.Question.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.Registrations?>()) {
+      return (data != null ? _i8.Registrations.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.Result?>()) {
+      return (data != null ? _i9.Result.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.User?>()) {
+      return (data != null ? _i10.User.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.UserView?>()) {
+      return (data != null ? _i11.UserView.fromJson(data) : null) as T;
+    }
+    if (t == List<_i7.Question>) {
+      return (data as List).map((e) => deserialize<_i7.Question>(e)).toList()
+          as T;
+    }
+    if (t == List<String?>) {
+      return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
+    }
+    if (t == List<_i4.Answer>) {
+      return (data as List).map((e) => deserialize<_i4.Answer>(e)).toList()
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    try {
+      return _i3.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -47,12 +573,37 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
-    if (data is _i3.Example) {
+    if (data is _i4.Answer) {
+      return 'Answer';
+    }
+    if (data is _i5.Exam) {
+      return 'Exam';
+    }
+    if (data is _i6.Example) {
       return 'Example';
+    }
+    if (data is _i7.Question) {
+      return 'Question';
+    }
+    if (data is _i8.Registrations) {
+      return 'Registrations';
+    }
+    if (data is _i9.Result) {
+      return 'Result';
+    }
+    if (data is _i10.User) {
+      return 'User';
+    }
+    if (data is _i11.UserView) {
+      return 'UserView';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
+    }
+    className = _i3.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
     }
     return null;
   }
@@ -63,12 +614,37 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'Answer') {
+      return deserialize<_i4.Answer>(data['data']);
+    }
+    if (dataClassName == 'Exam') {
+      return deserialize<_i5.Exam>(data['data']);
+    }
     if (dataClassName == 'Example') {
-      return deserialize<_i3.Example>(data['data']);
+      return deserialize<_i6.Example>(data['data']);
+    }
+    if (dataClassName == 'Question') {
+      return deserialize<_i7.Question>(data['data']);
+    }
+    if (dataClassName == 'Registrations') {
+      return deserialize<_i8.Registrations>(data['data']);
+    }
+    if (dataClassName == 'Result') {
+      return deserialize<_i9.Result>(data['data']);
+    }
+    if (dataClassName == 'User') {
+      return deserialize<_i10.User>(data['data']);
+    }
+    if (dataClassName == 'UserView') {
+      return deserialize<_i11.UserView>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
+    }
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
+      return _i3.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -76,10 +652,32 @@ class Protocol extends _i1.SerializationManagerServer {
   @override
   _i1.Table? getTableForType(Type t) {
     {
+      var table = _i3.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
       var table = _i2.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i4.Answer:
+        return _i4.Answer.t;
+      case _i5.Exam:
+        return _i5.Exam.t;
+      case _i7.Question:
+        return _i7.Question.t;
+      case _i8.Registrations:
+        return _i8.Registrations.t;
+      case _i9.Result:
+        return _i9.Result.t;
+      case _i10.User:
+        return _i10.User.t;
+      case _i11.UserView:
+        return _i11.UserView.t;
     }
     return null;
   }

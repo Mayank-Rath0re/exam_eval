@@ -1,6 +1,8 @@
 // ignore_for_file: camel_case_types
 
+import 'package:exam_eval_flutter/main.dart';
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 
 class loginpage extends StatelessWidget {
   const loginpage({super.key});
@@ -11,6 +13,9 @@ class loginpage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    final authController = EmailAuthController(client.modules.auth);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Container(
@@ -51,18 +56,43 @@ class loginpage extends StatelessWidget {
                         ),
                         const SizedBox(height: 32),
                         _buildTextField(
-                          label: 'EMAIL',
-                          hintText: 'Enter Your Email',
-                        ),
+                            label: 'EMAIL',
+                            hintText: 'Enter Your Email',
+                            controller: emailController),
                         const SizedBox(height: 16),
                         _buildTextField(
-                          label: 'PASSWORD',
-                          hintText: '••••••••',
-                          isPassword: true,
-                        ),
+                            label: 'PASSWORD',
+                            hintText: '••••••••',
+                            isPassword: true,
+                            controller: passwordController),
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: () => _navigateToDashboard(context),
+                          onPressed: () async {
+                            if (emailController.text.isEmpty ||
+                                passwordController.text.isEmpty) {
+                              // do nothing
+                            } else {
+                              // Attempt sign in with the given credentials
+                              var logCheck = await authController.signIn(
+                                  emailController.text,
+                                  passwordController.text);
+                              // If attempts returns a value, then account exists
+                              // redirect the user to home page
+                              if (logCheck != null) {
+                                // One way route to ensure user cannot come back to login page
+                                // unless they log out
+                                _navigateToDashboard(context);
+                              } else {
+                                // Need to create a better UI for this
+                                showDialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    builder: (context) => const AlertDialog(
+                                        title: Text(
+                                            "Incorrect password or e-mail")));
+                              }
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2D5A27),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -150,6 +180,7 @@ Widget _buildLeftPanel() {
 Widget _buildTextField({
   required String label,
   required String hintText,
+  required TextEditingController controller,
   bool isPassword = false,
 }) {
   return Column(
@@ -166,6 +197,7 @@ Widget _buildTextField({
       const SizedBox(height: 8),
       TextField(
         obscureText: isPassword,
+        controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[400]),

@@ -10,19 +10,93 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/example_endpoint.dart' as _i2;
+import '../endpoints/account_endpoint.dart' as _i2;
+import '../endpoints/example_endpoint.dart' as _i3;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i4;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'example': _i2.ExampleEndpoint()
+      'account': _i2.AccountEndpoint()
+        ..initialize(
+          server,
+          'account',
+          null,
+        ),
+      'example': _i3.ExampleEndpoint()
         ..initialize(
           server,
           'example',
           null,
-        )
+        ),
     };
+    connectors['account'] = _i1.EndpointConnector(
+      name: 'account',
+      endpoint: endpoints['account']!,
+      methodConnectors: {
+        'createAccount': _i1.MethodConnector(
+          name: 'createAccount',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'password': _i1.ParameterDescription(
+              name: 'password',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'dob': _i1.ParameterDescription(
+              name: 'dob',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'gender': _i1.ParameterDescription(
+              name: 'gender',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'education': _i1.ParameterDescription(
+              name: 'education',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+            'work': _i1.ParameterDescription(
+              name: 'work',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['account'] as _i2.AccountEndpoint).createAccount(
+            session,
+            params['id'],
+            params['name'],
+            params['email'],
+            params['password'],
+            params['dob'],
+            params['gender'],
+            params['education'],
+            params['work'],
+          ),
+        )
+      },
+    );
     connectors['example'] = _i1.EndpointConnector(
       name: 'example',
       endpoint: endpoints['example']!,
@@ -40,12 +114,13 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['example'] as _i2.ExampleEndpoint).hello(
+              (endpoints['example'] as _i3.ExampleEndpoint).hello(
             session,
             params['name'],
           ),
         )
       },
     );
+    modules['serverpod_auth'] = _i4.Endpoints()..initializeEndpoints(server);
   }
 }

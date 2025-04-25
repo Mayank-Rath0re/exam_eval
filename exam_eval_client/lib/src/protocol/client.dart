@@ -11,7 +11,41 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'protocol.dart' as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
+import 'protocol.dart' as _i4;
+
+/// {@category Endpoint}
+class EndpointAccount extends _i1.EndpointRef {
+  EndpointAccount(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'account';
+
+  _i2.Future<int> createAccount(
+    int? id,
+    String name,
+    String email,
+    String password,
+    DateTime dob,
+    String gender,
+    List<String> education,
+    List<String> work,
+  ) =>
+      caller.callServerEndpoint<int>(
+        'account',
+        'createAccount',
+        {
+          'id': id,
+          'name': name,
+          'email': email,
+          'password': password,
+          'dob': dob,
+          'gender': gender,
+          'education': education,
+          'work': work,
+        },
+      );
+}
 
 /// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
@@ -25,6 +59,14 @@ class EndpointExample extends _i1.EndpointRef {
         'hello',
         {'name': name},
       );
+}
+
+class Modules {
+  Modules(Client client) {
+    auth = _i3.Caller(client);
+  }
+
+  late final _i3.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -43,7 +85,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i3.Protocol(),
+          _i4.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -53,14 +95,24 @@ class Client extends _i1.ServerpodClientShared {
           disconnectStreamsOnLostInternetConnection:
               disconnectStreamsOnLostInternetConnection,
         ) {
+    account = EndpointAccount(this);
     example = EndpointExample(this);
+    modules = Modules(this);
   }
+
+  late final EndpointAccount account;
 
   late final EndpointExample example;
 
-  @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+  late final Modules modules;
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+        'account': account,
+        'example': example,
+      };
+
+  @override
+  Map<String, _i1.ModuleEndpointCaller> get moduleLookup =>
+      {'auth': modules.auth};
 }

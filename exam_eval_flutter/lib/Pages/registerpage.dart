@@ -1,5 +1,7 @@
 import 'package:exam_eval_flutter/Pages/loginpage.dart';
+import 'package:exam_eval_flutter/main.dart';
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_email_flutter/serverpod_auth_email_flutter.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -10,6 +12,11 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController verifyController = TextEditingController();
+    final authController = EmailAuthController(client.modules.auth);
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Container(
@@ -52,21 +59,105 @@ class RegisterPage extends StatelessWidget {
                         _buildTextField(
                           label: 'FULL NAME',
                           hintText: 'Enter Your Full Name',
+                          controller: nameController,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           label: 'EMAIL',
                           hintText: 'Enter Your Email',
+                          controller: emailController,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           label: 'PASSWORD',
                           hintText: '••••••••',
+                          controller: passwordController,
                           isPassword: true,
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: () => _navigateToDashboard(context),
+                          onPressed: () async {
+                            if (nameController.text.isNotEmpty &&
+                                emailController.text.isNotEmpty &&
+                                passwordController.text.isNotEmpty) {
+                              var check =
+                                  await authController.createAccountRequest(
+                                      nameController.text,
+                                      emailController.text,
+                                      passwordController.text);
+
+                              if (check) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          content: SizedBox(
+                                            height: 150,
+                                            width: 150,
+                                            child: _buildTextField(
+                                                label: "Verification Code",
+                                                hintText: "code",
+                                                controller: verifyController)
+                                            //
+                                            ,
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  if (verifyController
+                                                      .text.isNotEmpty) {
+                                                    var check =
+                                                        await authController
+                                                            .validateAccount(
+                                                                emailController
+                                                                    .text,
+                                                                verifyController
+                                                                    .text);
+                                                    if (check != null) {
+                                                      await authController
+                                                          .signIn(
+                                                              emailController
+                                                                  .text,
+                                                              passwordController
+                                                                  .text);
+                                                      var createdAccount =
+                                                          client.account.createAccount(
+                                                              sessionManager
+                                                                  .signedInUser!
+                                                                  .id,
+                                                              nameController
+                                                                  .text,
+                                                              emailController
+                                                                  .text,
+                                                              passwordController
+                                                                  .text,
+                                                              DateTime.now(),
+                                                              "Male",
+                                                              [],
+                                                              []);
+                                                      if (createdAccount ==
+                                                          -1) {
+                                                        showDialog(
+                                                            // ignore: use_build_context_synchronously
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                const AlertDialog(
+                                                                    content: Text(
+                                                                        "Error Creating Account")));
+                                                      } else {
+                                                        _navigateToDashboard(
+                                                            context);
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                child: Text("Submit"))
+                                          ],
+                                        ));
+                              }
+                            } else {
+                              // Show dialog for empty fields
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2D5A27),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -159,6 +250,7 @@ class RegisterPage extends StatelessWidget {
   Widget _buildTextField({
     required String label,
     required String hintText,
+    required TextEditingController controller,
     bool isPassword = false,
   }) {
     return Column(
@@ -175,6 +267,7 @@ class RegisterPage extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           obscureText: isPassword,
+          controller: controller,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(color: Colors.grey[400]),
