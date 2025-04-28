@@ -24,7 +24,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DefaultDrawer,
+          buildDrawer(context),
           Expanded(
             flex: 3,
             child: SingleChildScrollView(

@@ -1,4 +1,3 @@
-
 import 'package:exam_eval_flutter/Constants.dart';
 import 'package:flutter/material.dart';
 
@@ -12,15 +11,13 @@ class TabletScaffold extends StatefulWidget {
 class _TabletScaffoldState extends State<TabletScaffold> {
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: DefaultBackground,
       appBar: DefaultAppbar,
+      drawer: buildDrawer(context),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DefaultDrawer,
           Expanded(
             flex: 3,
             child: SingleChildScrollView(
@@ -118,7 +115,6 @@ class _TabletScaffoldState extends State<TabletScaffold> {
               ),
             ),
           ),
-
         ],
       ),
     );

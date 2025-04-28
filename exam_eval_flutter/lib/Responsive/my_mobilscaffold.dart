@@ -1,4 +1,3 @@
-
 import 'package:exam_eval_flutter/Constants.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +14,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
     return Scaffold(
       backgroundColor: DefaultBackground,
       appBar: DefaultAppbar,
-      drawer: DefaultDrawer,
+      drawer: buildDrawer(context),
       body: SingleChildScrollView(
         child: Padding(padding: EdgeInsets.all(20),
       child:
