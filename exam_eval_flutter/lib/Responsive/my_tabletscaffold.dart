@@ -9,12 +9,19 @@ class TabletScaffold extends StatefulWidget {
 }
 
 class _TabletScaffoldState extends State<TabletScaffold> {
+    int selectedTabIndex = 0;
+
+  void handleTabChange(int index) {
+    setState(() {
+      selectedTabIndex = index;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DefaultBackground,
       appBar: DefaultAppbar,
-      drawer: buildDrawer(context),
+      drawer: SideBar(onTabChange: handleTabChange),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

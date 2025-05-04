@@ -9,12 +9,19 @@ class MobileScaffold extends StatefulWidget{
 }
 
 class _MobileScaffoldState extends State<MobileScaffold> {
+      int selectedTabIndex = 0;
+
+  void handleTabChange(int index) {
+    setState(() {
+      selectedTabIndex = index;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DefaultBackground,
       appBar: DefaultAppbar,
-      drawer: buildDrawer(context),
+      drawer: SideBar(onTabChange: handleTabChange),
       body: SingleChildScrollView(
         child: Padding(padding: EdgeInsets.all(20),
       child:

@@ -1,7 +1,8 @@
-// ignore_for_file: non_constant_identifier_names, avoid_types_as_parameter_names
-
-import 'package:exam_eval_flutter/Constants.dart';
 import 'package:flutter/material.dart';
+import 'package:exam_eval_flutter/Constants.dart';
+import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
+import 'package:exam_eval_flutter/Pages/results_page.dart';
+
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({Key? key}) : super(key: key);
@@ -11,186 +12,164 @@ class DesktopScaffold extends StatefulWidget {
 }
 
 class _DesktopScaffoldState extends State<DesktopScaffold> {
+  int selectedTabIndex = 0;
 
-
+  void handleTabChange(int index) {
+    setState(() {
+      selectedTabIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: DefaultBackground,
       appBar: DefaultAppbar,
+      drawer: SideBar(onTabChange: handleTabChange),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildDrawer(context),
+          // Sidebar
+          
+          // Main content area
           Expanded(
             flex: 3,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Hi, User",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              "Welcome back to your dashboard",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    // 🎯 FIXED Responsive Container
-                    Container(
-                      width: double.infinity,
-                      constraints: const BoxConstraints(maxWidth: 1000),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Header
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                "Class Performance Overview",
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "View all",
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 25),
-                          // Metrics Wrap
-                          Wrap(
-                            spacing: 20,
-                            runSpacing: 20,
-                            children: [
-                              _buildInfoCard("Average Score", "85",Colors.grey.shade200),
-                              _buildInfoCard("Class Participation", "70%", Colors.grey.shade200),
-                            ],
-                          ),
-                          const SizedBox(height: 30),
-                          const Text(
-                            "Performance Distribution",
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 25),
-                          Wrap(
-                            spacing: 20,
-                            runSpacing: 20,
-                            children: [
-                              _buildInfoCard("Excellent", "5",Colors.green.shade200),
-                              _buildInfoCard("Good", "10",Colors.blue.shade200),
-                              _buildInfoCard("Average", "6", Colors.yellow.shade200),
-                              _buildInfoCard("Needs Improvement", "7", Colors.red.shade200),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    _buildHistorySection(),
+            child: _getSelectedPage(),
+          ),
+          // Sidebar content (e.g., Timetable)
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20, right: 20),
+              child: Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 4),
                   ],
                 ),
-
+                child: const Center(
+                  child: Text(
+                    "🕒 Timetable",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                ),
               ),
             ),
           ),
-
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20, right: 20),
-                child: Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 4),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "🕒 Timetable",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoCard(String title, String value, final Color) {
+  // Return the correct page for selected tab
+  Widget _getSelectedPage() {
+    switch (selectedTabIndex) {
+      case 0:
+        return _buildDashboard(); // Your current content
+      case 1:
+        return Center(child: Text("Tasks Page")); // placeholder
+      case 2:
+        return Center(child: Text("Reports Page")); // placeholder
+      case 3:
+        return const ResponsiveEvaluateExam(); // Import this
+      case 4:
+        return const ResponsiveResultsPage(); // Import this
+      case 5:
+        return Center(child: Text("Settings Page")); // placeholder
+      case 6:
+        return Center(child: Text("Support Page")); // placeholder
+      default:
+        return _buildDashboard();
+    }
+  }
+
+  Widget _buildDashboard() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Hi, User", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text("Welcome back to your dashboard", style: TextStyle(fontSize: 12)),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Performance container
+          Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(maxWidth: 1000),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Class Performance Overview", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                    Text("View all", style: TextStyle(color: Colors.blue, fontSize: 14)),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: [
+                    _buildInfoCard("Average Score", "85", Colors.grey.shade200),
+                    _buildInfoCard("Class Participation", "70%", Colors.grey.shade200),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                const Text("Performance Distribution", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 25),
+                Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: [
+                    _buildInfoCard("Excellent", "5", Colors.green.shade200),
+                    _buildInfoCard("Good", "10", Colors.blue.shade200),
+                    _buildInfoCard("Average", "6", Colors.yellow.shade200),
+                    _buildInfoCard("Needs Improvement", "7", Colors.red.shade200),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 25),
+          _buildHistorySection(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(String title, String value, Color color) {
     return SizedBox(
       width: 200,
       child: Container(
         height: 100,
-        decoration: BoxDecoration(
-          color: Color,
-          borderRadius: BorderRadius.circular(20),
-        ),
+        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
-            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
           ],
         ),
       ),
@@ -207,10 +186,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "History",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
+          const Text("History", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
           Column(
             children: List.generate(3, (index) {
@@ -223,13 +199,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
                   ),
                   child: Row(
                     children: [
@@ -255,3 +225,5 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     );
   }
 }
+
+
