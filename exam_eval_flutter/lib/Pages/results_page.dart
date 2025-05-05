@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'student_results_page.dart';
 
 class ExamData {
   final String title;
@@ -261,10 +262,10 @@ class _ExamResultCardState extends State<ExamResultCard> with SingleTickerProvid
                   GestureDetector(
                     onTap: () {
                       if (widget.isComplete) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Viewing exam results...'),
-                            backgroundColor: Colors.blue,
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StudentResultsPage(),
                           ),
                         );
                       } else {
