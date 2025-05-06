@@ -1,6 +1,185 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+class Question {
+  String question;
+  String idealAnswer;
+  String carriedMarks;
+
+  Question({
+    this.question = '',
+    this.idealAnswer = '',
+    this.carriedMarks = '',
+  });
+}
+
+class QuestionInputPage extends StatefulWidget {
+  const QuestionInputPage({super.key});
+
+  @override
+  State<QuestionInputPage> createState() => _QuestionInputPageState();
+}
+
+class _QuestionInputPageState extends State<QuestionInputPage>
+    with SingleTickerProviderStateMixin {
+  final List<Question> questions = [Question()];
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeIn,
+      ),
+    );
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+    
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _addQuestion() {
+    setState(() {
+      questions.add(Question());
+    });
+  }
+
+  Widget _buildQuestionCard(int index) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Question Id: ${(index + 1).toString().padLeft(3, '0')}',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Question',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+              ),
+              maxLines: 3,
+              onChanged: (value) => questions[index].question = value,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Ideal Answer',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+              ),
+              maxLines: 3,
+              onChanged: (value) => questions[index].idealAnswer = value,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Carried Marks',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (value) => questions[index].carriedMarks = value,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Questions'),
+        backgroundColor: const Color(0xFF2D5A27),
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.green.shade50,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: ListView.builder(
+                    itemCount: questions.length,
+                    itemBuilder: (context, index) => _buildQuestionCard(index),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addQuestion,
+        backgroundColor: const Color(0xFF2D5A27),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+}
+
 class EvaluateExamPage extends StatefulWidget {
   const EvaluateExamPage({super.key});
 
@@ -341,30 +520,40 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade300, Colors.blue.shade500],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 30),
-                          const Text(
-                            'Enter Questions and Answers Manually',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuestionInputPage(),
                           ),
-                          const SizedBox(height: 30),
-                        ],
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.blue.shade300, Colors.blue.shade500],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 30),
+                            const Text(
+                              'Enter Questions and Answers Manually',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
                       ),
                     ),
                     const Divider(height: 60, thickness: 1),
