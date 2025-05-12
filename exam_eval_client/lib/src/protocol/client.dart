@@ -48,6 +48,42 @@ class EndpointAccount extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointApi extends _i1.EndpointRef {
+  EndpointApi(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'api';
+
+  _i2.Future<String> generateIdealAnswer(String query) =>
+      caller.callServerEndpoint<String>(
+        'api',
+        'generateIdealAnswer',
+        {'query': query},
+      );
+
+  _i2.Future<String> imageOcr(String filepath) =>
+      caller.callServerEndpoint<String>(
+        'api',
+        'imageOcr',
+        {'filepath': filepath},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointExam extends _i1.EndpointRef {
+  EndpointExam(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'exam';
+
+  _i2.Future<void> createExam() => caller.callServerEndpoint<void>(
+        'exam',
+        'createExam',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
   EndpointExample(_i1.EndpointCaller caller) : super(caller);
 
@@ -96,11 +132,17 @@ class Client extends _i1.ServerpodClientShared {
               disconnectStreamsOnLostInternetConnection,
         ) {
     account = EndpointAccount(this);
+    api = EndpointApi(this);
+    exam = EndpointExam(this);
     example = EndpointExample(this);
     modules = Modules(this);
   }
 
   late final EndpointAccount account;
+
+  late final EndpointApi api;
+
+  late final EndpointExam exam;
 
   late final EndpointExample example;
 
@@ -109,6 +151,8 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
         'account': account,
+        'api': api,
+        'exam': exam,
         'example': example,
       };
 

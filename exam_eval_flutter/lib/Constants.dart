@@ -5,9 +5,16 @@ var DefaultBackground = Colors.grey.shade300;
 var DefaultAppbar = AppBar(
   backgroundColor: Colors.teal,
   actions: [
-    Padding(padding: EdgeInsets.all(15),
-    child: GestureDetector(onTap: () {},
-    child: Icon(Icons.person,size: 25,),),)
+    Padding(
+      padding: EdgeInsets.all(15),
+      child: GestureDetector(
+        onTap: () {},
+        child: Icon(
+          Icons.person,
+          size: 25,
+        ),
+      ),
+    )
   ],
 );
 
@@ -57,21 +64,25 @@ class SideBar extends StatelessWidget {
             title: Text("S U P P O R T"),
             onTap: () => onTabChange(6),
           ),
+          ListTile(
+            leading: Icon(Icons.task),
+            title: Text("CREATE EXAM"),
+            onTap: () => onTabChange(7),
+          ),
         ],
       ),
     );
   }
 }
 
-
-
-
 // For backward compatibility
 var DefaultDrawer = Drawer(
   backgroundColor: Colors.teal,
   child: Column(
     children: [
-      const SizedBox(height: 20,),
+      const SizedBox(
+        height: 20,
+      ),
       ListTile(
         leading: Icon(Icons.dashboard_outlined),
         title: Text("D A S H B O A R D"),
@@ -95,4 +106,3 @@ var DefaultDrawer = Drawer(
     ],
   ),
 );
-

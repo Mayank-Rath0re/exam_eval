@@ -1,8 +1,8 @@
+import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Constants.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
-
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({Key? key}) : super(key: key);
@@ -30,7 +30,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar
-          
+
           // Main content area
           Expanded(
             flex: 3,
@@ -80,7 +80,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       case 5:
         return Center(child: Text("Settings Page")); // placeholder
       case 6:
-        return Center(child: Text("Support Page")); // placeholder
+        return Center(child: Text("Support Page"));
+      case 7:
+        return const ExamDefinePage(); // placeholder
       default:
         return _buildDashboard();
     }
@@ -99,8 +101,11 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Hi, User", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  Text("Welcome back to your dashboard", style: TextStyle(fontSize: 12)),
+                  Text("Hi, User",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text("Welcome back to your dashboard",
+                      style: TextStyle(fontSize: 12)),
                 ],
               ),
             ],
@@ -113,7 +118,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(30),
-              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+              ],
             ),
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -122,8 +130,11 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Class Performance Overview", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-                    Text("View all", style: TextStyle(color: Colors.blue, fontSize: 14)),
+                    Text("Class Performance Overview",
+                        style: TextStyle(
+                            fontSize: 26, fontWeight: FontWeight.bold)),
+                    Text("View all",
+                        style: TextStyle(color: Colors.blue, fontSize: 14)),
                   ],
                 ),
                 const SizedBox(height: 25),
@@ -132,11 +143,14 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                   runSpacing: 20,
                   children: [
                     _buildInfoCard("Average Score", "85", Colors.grey.shade200),
-                    _buildInfoCard("Class Participation", "70%", Colors.grey.shade200),
+                    _buildInfoCard(
+                        "Class Participation", "70%", Colors.grey.shade200),
                   ],
                 ),
                 const SizedBox(height: 30),
-                const Text("Performance Distribution", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text("Performance Distribution",
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 25),
                 Wrap(
                   spacing: 20,
@@ -145,7 +159,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                     _buildInfoCard("Excellent", "5", Colors.green.shade200),
                     _buildInfoCard("Good", "10", Colors.blue.shade200),
                     _buildInfoCard("Average", "6", Colors.yellow.shade200),
-                    _buildInfoCard("Needs Improvement", "7", Colors.red.shade200),
+                    _buildInfoCard(
+                        "Needs Improvement", "7", Colors.red.shade200),
                   ],
                 ),
               ],
@@ -163,13 +178,20 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       width: 200,
       child: Container(
         height: 100,
-        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+            Text(title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(value,
+                style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent)),
           ],
         ),
       ),
@@ -186,7 +208,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("History", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          const Text("History",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
           Column(
             children: List.generate(3, (index) {
@@ -194,12 +217,18 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                 onTap: () => print("Tapped on Unit ${index + 1}"),
                 borderRadius: BorderRadius.circular(15),
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2))
+                    ],
                   ),
                   child: Row(
                     children: [
@@ -208,12 +237,16 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Unit ${index + 1}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                          const Text("Artificial Intelligence", style: TextStyle(color: Colors.grey)),
+                          Text("Unit ${index + 1}",
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          const Text("Artificial Intelligence",
+                              style: TextStyle(color: Colors.grey)),
                         ],
                       ),
                       const Spacer(),
-                      const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                      const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: Colors.grey),
                     ],
                   ),
                 ),
@@ -225,5 +258,3 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     );
   }
 }
-
-

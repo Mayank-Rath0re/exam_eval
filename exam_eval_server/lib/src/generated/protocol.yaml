@@ -1,4 +1,9 @@
 account:
   - createAccount:
+api:
+  - generateIdealAnswer:
+  - imageOcr:
+exam:
+  - createExam:
 example:
   - hello:

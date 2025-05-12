@@ -83,8 +83,8 @@ class MyApp extends StatelessWidget {
               tabletScffold: const TabletScaffold(),
               desktopScaffold: const DesktopScaffold(),
             ),
-            '/evaluate_exam': (context) => const ResponsiveEvaluateExam(),
-            '/results': (context) => const ResponsiveResultsPage(),
+        '/evaluate_exam': (context) => const ResponsiveEvaluateExam(),
+        '/results': (context) => const ResponsiveResultsPage(),
       },
       initialRoute: '/',
     );

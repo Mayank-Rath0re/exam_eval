@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:csv/csv.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -34,14 +38,14 @@ class _QuestionInputPageState extends State<QuestionInputPage>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeIn,
       ),
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
@@ -51,7 +55,7 @@ class _QuestionInputPageState extends State<QuestionInputPage>
         curve: Curves.easeOut,
       ),
     );
-    
+
     _animationController.forward();
   }
 
@@ -193,12 +197,13 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _durationController = TextEditingController();
   final TextEditingController _marksController = TextEditingController();
-  
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   int _currentPage = 0;
   final PageController _pageController = PageController();
+  List<List<String>> evaluationDataBuild = [];
 
   @override
   void initState() {
@@ -207,14 +212,14 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeIn,
       ),
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
@@ -224,7 +229,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
         curve: Curves.easeOut,
       ),
     );
-    
+
     _animationController.forward();
   }
 
@@ -420,7 +425,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
                       ),
                       const SizedBox(height: 20),
                       const Text(
-                        'Duration',
+                        'Duration (Minutes)',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -533,7 +538,10 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.blue.shade300, Colors.blue.shade500],
+                            colors: [
+                              Colors.blue.shade300,
+                              Colors.blue.shade500
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -567,7 +575,29 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
                       child: Column(
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final result =
+                                  await FilePicker.platform.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['csv'],
+                              );
+                              if (result != null &&
+                                  result.files.single.path != null) {
+                                final file = File(result.files.single.path!);
+                                final content = await file.readAsString();
+
+                                // Parse CSV
+                                List<List<String>> rowsAsListOfValues =
+                                    const CsvToListConverter().convert(content);
+
+                                // Print rows (you can replace this with your logic)
+                                setState(() {
+                                  evaluationDataBuild = rowsAsListOfValues;
+                                });
+                              } else {
+                                print('No file selected');
+                              }
+                            },
                             icon: const Icon(Icons.upload_file),
                             label: const Text(
                               'Upload CSV',
@@ -589,6 +619,10 @@ class _EvaluateExamPageState extends State<EvaluateExamPage>
                               ),
                             ),
                           ),
+                          const SizedBox(height: 20),
+                          Center(
+                              child: Text(
+                                  "Note: CSV File should have the structure with [Exam ID, Student ID, Student Name] with no column header"))
                         ],
                       ),
                     ),
@@ -611,4 +645,4 @@ class ResponsiveEvaluateExam extends StatelessWidget {
   Widget build(BuildContext context) {
     return const EvaluateExamPage();
   }
-} 
+}
