@@ -2,6 +2,7 @@ account:
   - createAccount:
 api:
   - generateIdealAnswer:
+  - uploadImage:
   - imageOcr:
 exam:
   - createExam:

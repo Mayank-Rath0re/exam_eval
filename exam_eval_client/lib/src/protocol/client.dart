@@ -11,8 +11,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
-import 'protocol.dart' as _i4;
+import 'dart:typed_data' as _i3;
+import 'package:exam_eval_client/src/protocol/question.dart' as _i4;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
+import 'protocol.dart' as _i6;
 
 /// {@category Endpoint}
 class EndpointAccount extends _i1.EndpointRef {
@@ -61,11 +63,30 @@ class EndpointApi extends _i1.EndpointRef {
         {'query': query},
       );
 
-  _i2.Future<String> imageOcr(String filepath) =>
+  _i2.Future<String> uploadImage(
+    _i3.ByteData imageData,
+    String filename,
+  ) =>
+      caller.callServerEndpoint<String>(
+        'api',
+        'uploadImage',
+        {
+          'imageData': imageData,
+          'filename': filename,
+        },
+      );
+
+  _i2.Future<String> imageOcr(
+    _i3.ByteData imageData,
+    String filename,
+  ) =>
       caller.callServerEndpoint<String>(
         'api',
         'imageOcr',
-        {'filepath': filepath},
+        {
+          'imageData': imageData,
+          'filename': filename,
+        },
       );
 }
 
@@ -76,10 +97,23 @@ class EndpointExam extends _i1.EndpointRef {
   @override
   String get name => 'exam';
 
-  _i2.Future<void> createExam() => caller.callServerEndpoint<void>(
+  _i2.Future<void> createExam(
+    int creatorId,
+    String title,
+    double duration,
+    int totalMarks,
+    List<_i4.Question> questions,
+  ) =>
+      caller.callServerEndpoint<void>(
         'exam',
         'createExam',
-        {},
+        {
+          'creatorId': creatorId,
+          'title': title,
+          'duration': duration,
+          'totalMarks': totalMarks,
+          'questions': questions,
+        },
       );
 }
 
@@ -99,10 +133,10 @@ class EndpointExample extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    auth = _i3.Caller(client);
+    auth = _i5.Caller(client);
   }
 
-  late final _i3.Caller auth;
+  late final _i5.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -121,7 +155,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i4.Protocol(),
+          _i6.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

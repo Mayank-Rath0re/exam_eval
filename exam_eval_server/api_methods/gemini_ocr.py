@@ -4,7 +4,6 @@ client = genai.Client(api_key="AIzaSyCyc-ULVP7NPuVufL8NRkJYvrQr_X19-Cc")
 
 file = sys.argv[1]
 myfile = client.files.upload(file=file)
-print(f"{myfile=}")
 
 result = client.models.generate_content(
     model="gemini-2.0-flash",

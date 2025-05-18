@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:html' as html;
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
 import 'package:exam_eval_flutter/main.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -46,6 +50,78 @@ class _ExamDefinePageState extends State<ExamDefinePage>
       idealAnswerController.text = resultAnswer;
       isGenerating = false;
     });
+  }
+
+  Widget ocrImageButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.image,
+          withData: true, // This is important for Web to get file bytes
+        );
+
+        if (result != null && result.files.single.bytes != null) {
+          setState(() {
+            isGenerating = true;
+          });
+
+          final platformFile = result.files.single;
+          final bytes = platformFile.bytes!;
+          final byteData = ByteData.view(bytes.buffer);
+
+          print("Picked file name: ${platformFile.name}");
+
+          try {
+            String responseText =
+                await client.api.imageOcr(byteData, platformFile.name);
+            setState(() {
+              idealAnswerController.text += responseText;
+              isGenerating = false;
+            });
+          } catch (e) {
+            print("Error during OCR call: $e");
+            setState(() {
+              isGenerating = false;
+            });
+          }
+        } else {
+          print("User canceled the picker or no bytes returned");
+        }
+      },
+      child: Text(
+        "Upload from Image",
+        style: TextStyle(
+          color: Colors.white,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+    );
+  }
+
+  void ocrImage(html.File image, String filename) async {
+    try {
+      final reader = html.FileReader();
+
+      // Read the file as an ArrayBuffer (raw binary data)
+      reader.readAsArrayBuffer(image);
+      await reader.onLoad.first;
+
+      final bytes = reader.result as ByteBuffer;
+      final byteData = ByteData.view(bytes);
+
+      // Call your backend API with the binary data
+      String responseText = await client.api.imageOcr(byteData, filename);
+
+      setState(() {
+        idealAnswerController.text += responseText;
+        isGenerating = false;
+      });
+    } catch (e) {
+      print("Error during OCR call: $e");
+      setState(() {
+        isGenerating = false;
+      });
+    }
   }
 
   @override
@@ -320,14 +396,43 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
+                            ocrImageButton(),
+                            /*
                             ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  FilePickerResult? result =
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.image,
+                                    withData:
+                                        true, // This is important for Web to get file bytes
+                                  );
+
+                                  if (result != null &&
+                                      result.files.single.bytes != null) {
+                                    setState(() {
+                                      isGenerating = true;
+                                    });
+
+                                    final platformFile = result.files.single;
+                                    final bytes = platformFile.bytes!;
+                                    final byteData =
+                                        ByteData.view(bytes.buffer);
+
+                                    print(
+                                        "Picked file name: ${platformFile.name}");
+                                    // You can now use the list of image file paths
+                                    ocrImage(
+                                        byteData, result.files.single.name);
+                                  } else {
+                                    print("User canceled the picker");
+                                  }
+                                },
                                 child: Text(
                                   "Upload from Image",
                                   style: TextStyle(
                                       color: Colors.white,
                                       decoration: TextDecoration.underline),
-                                )),
+                                )),*/
                             ElevatedButton(
                                 onPressed: () {
                                   setState(() {

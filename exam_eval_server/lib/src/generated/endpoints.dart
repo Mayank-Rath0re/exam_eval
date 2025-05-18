@@ -14,7 +14,9 @@ import '../endpoints/account_endpoint.dart' as _i2;
 import '../endpoints/api_endpoint.dart' as _i3;
 import '../endpoints/exam_endpoint.dart' as _i4;
 import '../endpoints/example_endpoint.dart' as _i5;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
+import 'dart:typed_data' as _i6;
+import 'package:exam_eval_server/src/generated/question.dart' as _i7;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i8;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -133,14 +135,43 @@ class Endpoints extends _i1.EndpointDispatch {
             params['query'],
           ),
         ),
+        'uploadImage': _i1.MethodConnector(
+          name: 'uploadImage',
+          params: {
+            'imageData': _i1.ParameterDescription(
+              name: 'imageData',
+              type: _i1.getType<_i6.ByteData>(),
+              nullable: false,
+            ),
+            'filename': _i1.ParameterDescription(
+              name: 'filename',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['api'] as _i3.ApiEndpoint).uploadImage(
+            session,
+            params['imageData'],
+            params['filename'],
+          ),
+        ),
         'imageOcr': _i1.MethodConnector(
           name: 'imageOcr',
           params: {
-            'filepath': _i1.ParameterDescription(
-              name: 'filepath',
+            'imageData': _i1.ParameterDescription(
+              name: 'imageData',
+              type: _i1.getType<_i6.ByteData>(),
+              nullable: false,
+            ),
+            'filename': _i1.ParameterDescription(
+              name: 'filename',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
           },
           call: (
             _i1.Session session,
@@ -148,7 +179,8 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['api'] as _i3.ApiEndpoint).imageOcr(
             session,
-            params['filepath'],
+            params['imageData'],
+            params['filename'],
           ),
         ),
       },
@@ -159,12 +191,45 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'createExam': _i1.MethodConnector(
           name: 'createExam',
-          params: {},
+          params: {
+            'creatorId': _i1.ParameterDescription(
+              name: 'creatorId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'duration': _i1.ParameterDescription(
+              name: 'duration',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'totalMarks': _i1.ParameterDescription(
+              name: 'totalMarks',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'questions': _i1.ParameterDescription(
+              name: 'questions',
+              type: _i1.getType<List<_i7.Question>>(),
+              nullable: false,
+            ),
+          },
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exam'] as _i4.ExamEndpoint).createExam(session),
+              (endpoints['exam'] as _i4.ExamEndpoint).createExam(
+            session,
+            params['creatorId'],
+            params['title'],
+            params['duration'],
+            params['totalMarks'],
+            params['questions'],
+          ),
         )
       },
     );
@@ -192,6 +257,6 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
-    modules['serverpod_auth'] = _i6.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i8.Endpoints()..initializeEndpoints(server);
   }
 }
