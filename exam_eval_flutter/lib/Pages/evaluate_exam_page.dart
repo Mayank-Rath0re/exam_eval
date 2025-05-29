@@ -195,7 +195,8 @@ class EvaluateExamPage extends StatefulWidget {
 
 class _EvaluateExamPageState extends State<EvaluateExamPage> {
   bool csvUploaded = false;
-  List<List<dynamic>>? csvData;
+  List<List<dynamic>> csvData = [];
+  int evaluatingIndex = -1;
 
   Future<void> pickCsvFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -245,13 +246,13 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
       width: double.infinity,
       height: double.infinity,
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
           children: [
             if (currentStep == 0) ...[
               Container(
                 width: 450,
-                padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
                   gradient: const LinearGradient(
@@ -272,7 +273,8 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                           width: 6,
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 24),
                       child: const Text(
                         'Choose an Exam',
                         style: TextStyle(
@@ -290,7 +292,8 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
                       onPressed: pickCsvFile,
-                      icon: const Icon(Icons.upload_file, color: Color(0xFF624B8A)),
+                      icon: const Icon(Icons.upload_file,
+                          color: Color(0xFF624B8A)),
                       label: const Text(
                         'Upload CSV',
                         style: TextStyle(
@@ -349,57 +352,140 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
               ),
             ] else if (currentStep == 1) ...[
               // Display CSV as a table
-              if (csvData != null && csvData!.isNotEmpty && csvData!.any((row) => row.any((cell) => cell.toString().trim().isNotEmpty))) ...[
-                Container(
-                  width: 700,
-                  constraints: const BoxConstraints(maxHeight: 500),
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SingleChildScrollView(
-                      child: Table(
-                        border: TableBorder.all(color: Colors.black),
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              if (csvData.isNotEmpty &&
+                  csvData.any((row) => row
+                      .any((cell) => cell.toString().trim().isNotEmpty))) ...[
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Table(
+                    border: TableBorder
+                        .all(), // Optional: adds borders around cells
+                    columnWidths: const {
+                      0: FlexColumnWidth(2),
+                      1: FlexColumnWidth(3),
+                    },
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      TableRow(
+                        decoration: BoxDecoration(color: Colors.grey[300]),
                         children: [
-                          for (int i = 0; i < csvData!.length; i++)
-                            TableRow(
-                              decoration: i == 0
-                                  ? const BoxDecoration(color: Color(0xFFE3E3F3))
-                                  : null,
-                              children: [
-                                for (final cell in csvData![i])
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                    child: Text(
-                                      cell.toString(),
-                                      style: TextStyle(
-                                        fontWeight: i == 0 ? FontWeight.bold : FontWeight.normal,
-                                        fontSize: 15,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Student ID',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Student Name'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Exam ID'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Required Action'),
+                          ),
                         ],
                       ),
-                    ),
+                      for (int i = 0; i < csvData.length; i++) ...[
+                        TableRow(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("${csvData[i][0]}"),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("${csvData[i][1]}"),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text("${csvData[i][2]}"),
+                            ),
+                            Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      // Route to evaluate scaffold
+                                      setState(() {
+                                        evaluatingIndex = i;
+                                        currentStep++;
+                                      });
+                                    },
+                                    child: Text("Evaluate"))),
+                          ],
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ] else ...[
                 const Text('No CSV data to display or all cells are empty.'),
               ],
+            ] else if (currentStep == 2) ...[
+              Text(csvData[evaluatingIndex][1]),
+              Text("Exam ID: ${csvData[evaluatingIndex][2]}"),
+              Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Table(
+                    border: TableBorder
+                        .all(), // Optional: adds borders around cells
+                    columnWidths: const {
+                      0: FlexColumnWidth(2),
+                      1: FlexColumnWidth(3),
+                    },
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      TableRow(
+                        decoration: BoxDecoration(color: Colors.grey[300]),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Question ID',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Question'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Ideal Answer'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Upload Answer'),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        decoration: BoxDecoration(color: Colors.grey[300]),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('123',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('What is mitochondria?'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                'Mitochondria is the powerhouse of the cell.'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: () {}, child: Text("Upload")),
+                          ),
+                        ],
+                      ),
+                      // This data will be built after building backend
+                    ],
+                  )),
             ],
             const SizedBox(height: 32),
             // Progress indicator
@@ -420,7 +506,9 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                         height: 12,
                         margin: const EdgeInsets.symmetric(horizontal: 2),
                         decoration: BoxDecoration(
-                          color: currentStep == 0 ? Colors.black54 : Colors.grey[300],
+                          color: currentStep == 0
+                              ? Colors.black54
+                              : Colors.grey[300],
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -429,7 +517,9 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                         height: 12,
                         margin: const EdgeInsets.symmetric(horizontal: 2),
                         decoration: BoxDecoration(
-                          color: currentStep == 1 ? Colors.black54 : Colors.grey[300],
+                          color: currentStep == 1
+                              ? Colors.black54
+                              : Colors.grey[300],
                           shape: BoxShape.circle,
                         ),
                       ),

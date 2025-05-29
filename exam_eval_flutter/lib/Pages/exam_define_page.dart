@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
