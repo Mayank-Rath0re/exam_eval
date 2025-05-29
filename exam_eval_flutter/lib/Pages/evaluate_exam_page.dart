@@ -1,9 +1,11 @@
-import 'dart:io';
-
+import 'dart:io' if (dart.library.html) 'dart:html' as html;
+import 'dart:convert';
 import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:math' as math;
+import 'file_reader.dart';
 
 class Question {
   String question;
@@ -191,446 +193,252 @@ class EvaluateExamPage extends StatefulWidget {
   State<EvaluateExamPage> createState() => _EvaluateExamPageState();
 }
 
-class _EvaluateExamPageState extends State<EvaluateExamPage>
-    with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _durationController = TextEditingController();
-  final TextEditingController _marksController = TextEditingController();
+class _EvaluateExamPageState extends State<EvaluateExamPage> {
+  bool csvUploaded = false;
+  List<List<dynamic>>? csvData;
 
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-  int _currentPage = 0;
-  final PageController _pageController = PageController();
-  List<List<String>> evaluationDataBuild = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
+  Future<void> pickCsvFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      withData: true, // ensure bytes are available for web
     );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
-      ),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.2),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-    );
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _durationController.dispose();
-    _marksController.dispose();
-    _animationController.dispose();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _nextPage() {
-    if (_currentPage == 0) {
-      if (_titleController.text.isNotEmpty &&
-          _durationController.text.isNotEmpty &&
-          _marksController.text.isNotEmpty) {
-        setState(() {
-          _currentPage = 1;
-        });
-        _pageController.animateToPage(
-          1,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+    if (result != null) {
+      String content = '';
+      if (kIsWeb) {
+        // On web, use bytes
+        final bytes = result.files.single.bytes;
+        if (bytes != null) {
+          content = utf8.decode(bytes);
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // On desktop/mobile, use file path
+        final path = result.files.single.path;
+        if (path != null) {
+          content = await readFileAsString(path);
+        }
+      }
+      if (content.isNotEmpty) {
+        final rows = const CsvToListConverter().convert(content);
+        setState(() {
+          csvUploaded = true;
+          csvData = rows;
+        });
+        print('CSV DATA:');
+        print(rows);
       }
     }
   }
 
-  void _previousPage() {
-    if (_currentPage > 0) {
-      setState(() {
-        _currentPage--;
-      });
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
+  int currentStep = 0;
+
+  void goToNextStep() {
+    setState(() {
+      currentStep++;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Evaluate Exam'),
-        backgroundColor: const Color(0xFF2D5A27),
-        foregroundColor: Colors.white,
-        leading: _currentPage > 0
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: _previousPage,
-              )
-            : null,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.green.shade50,
-              Colors.white,
-            ],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  children: [
-                    _buildFirstPage(),
-                    _buildSecondPage(),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildPageIndicator(0),
-                    const SizedBox(width: 8),
-                    _buildPageIndicator(1),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPageIndicator(int pageIndex) {
     return Container(
-      width: 12,
-      height: 12,
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: _currentPage == pageIndex
-            ? const Color(0xFF2D5A27)
-            : Colors.grey.shade300,
-      ),
-    );
-  }
-
-  Widget _buildFirstPage() {
-    return SingleChildScrollView(
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+      color: Colors.white,
+      width: double.infinity,
+      height: double.infinity,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (currentStep == 0) ...[
+              Container(
+                width: 450,
+                padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(32),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6DD5FA), Color(0xFF2980F2)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Exam Icon with Animation
-                      TweenAnimationBuilder(
-                        tween: Tween<double>(begin: 0, end: 2 * math.pi),
-                        duration: const Duration(seconds: 3),
-                        builder: (context, value, child) {
-                          return Transform.rotate(
-                            angle: math.sin(value) * 0.05,
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade50,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Icon(
-                                Icons.book,
-                                size: 64,
-                                color: const Color(0xFF2D5A27),
-                              ),
-                            ),
-                          );
-                        },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: const Color(0xFF624B8A),
+                          width: 6,
+                        ),
                       ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Exam Title',
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                      child: const Text(
+                        'Choose an Exam',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    const Divider(
+                      color: Colors.white,
+                      thickness: 3,
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: pickCsvFile,
+                      icon: const Icon(Icons.upload_file, color: Color(0xFF624B8A)),
+                      label: const Text(
+                        'Upload CSV',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF624B8A),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF624B8A),
+                        elevation: 2,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 18,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                    ),
+                    if (csvUploaded) ...[
+                      const SizedBox(height: 16),
+                      const Text(
+                        'CSV uploaded',
+                        style: TextStyle(
+                          color: Color(0xFF624B8A),
+                          fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
-                        textAlign: TextAlign.left,
                       ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _titleController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter exam title',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Duration (Minutes)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _durationController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter exam duration',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Total Marks',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _marksController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter total marks',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 30),
+                    ],
+                    if (csvUploaded) ...[
+                      const SizedBox(height: 32),
                       SizedBox(
-                        width: 200,
-                        height: 50,
+                        width: 180,
+                        height: 48,
                         child: ElevatedButton(
-                          onPressed: _nextPage,
+                          onPressed: goToNextStep,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2D5A27),
+                            backgroundColor: const Color(0xFF624B8A),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(24),
                             ),
                           ),
                           child: const Text(
-                            'Next →',
+                            'Next',
                             style: TextStyle(fontSize: 18),
                           ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSecondPage() {
-    return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuestionInputPage(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.shade300,
-                              Colors.blue.shade500
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 30),
-                            const Text(
-                              'Enter Questions and Answers Manually',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 60, thickness: 1),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              final result =
-                                  await FilePicker.platform.pickFiles(
-                                type: FileType.custom,
-                                allowedExtensions: ['csv'],
-                              );
-                              if (result != null &&
-                                  result.files.single.path != null) {
-                                final file = File(result.files.single.path!);
-                                final content = await file.readAsString();
-
-                                // Parse CSV
-                                List<List<String>> rowsAsListOfValues =
-                                    const CsvToListConverter().convert(content);
-
-                                // Print rows (you can replace this with your logic)
-                                setState(() {
-                                  evaluationDataBuild = rowsAsListOfValues;
-                                });
-                              } else {
-                                print('No file selected');
-                              }
-                            },
-                            icon: const Icon(Icons.upload_file),
-                            label: const Text(
-                              'Upload CSV',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black87,
-                              elevation: 2,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 16,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Center(
-                              child: Text(
-                                  "Note: CSV File should have the structure with [Exam ID, Student ID, Student Name] with no column header"))
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
+            ] else if (currentStep == 1) ...[
+              // Display CSV as a table
+              if (csvData != null && csvData!.isNotEmpty && csvData!.any((row) => row.any((cell) => cell.toString().trim().isNotEmpty))) ...[
+                Container(
+                  width: 700,
+                  constraints: const BoxConstraints(maxHeight: 500),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SingleChildScrollView(
+                      child: Table(
+                        border: TableBorder.all(color: Colors.black),
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        children: [
+                          for (int i = 0; i < csvData!.length; i++)
+                            TableRow(
+                              decoration: i == 0
+                                  ? const BoxDecoration(color: Color(0xFFE3E3F3))
+                                  : null,
+                              children: [
+                                for (final cell in csvData![i])
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                    child: Text(
+                                      cell.toString(),
+                                      style: TextStyle(
+                                        fontWeight: i == 0 ? FontWeight.bold : FontWeight.normal,
+                                        fontSize: 15,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ] else ...[
+                const Text('No CSV data to display or all cells are empty.'),
+              ],
+            ],
+            const SizedBox(height: 32),
+            // Progress indicator
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 32,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        decoration: BoxDecoration(
+                          color: currentStep == 0 ? Colors.black54 : Colors.grey[300],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Container(
+                        width: 12,
+                        height: 12,
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        decoration: BoxDecoration(
+                          color: currentStep == 1 ? Colors.black54 : Colors.grey[300],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
+          ],
         ),
       ),
     );
