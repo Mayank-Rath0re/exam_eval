@@ -1,6 +1,5 @@
 import 'dart:typed_data';
-import 'dart:html' as html;
-import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
+import 'package:exam_eval_client/exam_eval_client.dart';
 import 'package:exam_eval_flutter/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -25,16 +24,16 @@ class _ExamDefinePageState extends State<ExamDefinePage>
   TextEditingController idealAnswerController = TextEditingController();
   TextEditingController weightageController = TextEditingController();
   List<Question> questions = [];
-  int weightCalculation = 0;
+  double weightCalculation = 0;
   bool isGenerating = false;
   int currentPage = 0;
   int editIndex = -1;
 
-  int calculateWeightage() {
-    int result = 0;
+  double calculateWeightage() {
+    double result = 0;
     try {
       for (int i = 0; i < questions.length; i++) {
-        result += int.parse(questions[i].carriedMarks);
+        result += questions[i].weightage;
       }
       return result;
     } catch (err) {
@@ -97,29 +96,37 @@ class _ExamDefinePageState extends State<ExamDefinePage>
     );
   }
 
-  void ocrImage(html.File image, String filename) async {
-    try {
-      final reader = html.FileReader();
-
-      // Read the file as an ArrayBuffer (raw binary data)
-      reader.readAsArrayBuffer(image);
-      await reader.onLoad.first;
-
-      final bytes = reader.result as ByteBuffer;
-      final byteData = ByteData.view(bytes);
-
-      // Call your backend API with the binary data
-      String responseText = await client.api.imageOcr(byteData, filename);
-
-      setState(() {
-        idealAnswerController.text += responseText;
-        isGenerating = false;
-      });
-    } catch (e) {
-      print("Error during OCR call: $e");
-      setState(() {
-        isGenerating = false;
-      });
+  void submitExam() async {
+    if (weightCalculation != int.parse(_marksController.text)) {
+      // showDialog
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: Text(
+                    "Invalid: Total Weightage doesn't add up to total marks"),
+              ));
+    } else {
+      // ignore: unused_local_variable
+      var examCreate = await client.exam.createExam(
+          sessionManager.signedInUser!.id!,
+          _titleController.text,
+          double.parse(_durationController.text),
+          int.parse(_marksController.text),
+          questions);
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                  content: Column(
+                children: [
+                  Text("Exam created"),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/dashboard');
+                      },
+                      child: Text("Back to Dashboard"))
+                ],
+              )));
     }
   }
 
@@ -327,7 +334,7 @@ class _ExamDefinePageState extends State<ExamDefinePage>
             ElevatedButton(
                 onPressed: () {
                   var questionObj =
-                      Question(question: "", idealAnswer: "", carriedMarks: "");
+                      Question(query: "", images: [], weightage: 0);
                   setState(() {
                     editIndex = questions.length;
                     questions.add(questionObj);
@@ -362,11 +369,13 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                             ElevatedButton(
                                 onPressed: () {
                                   var questionObjEdited = Question(
-                                      question: questionController.text,
+                                      query: questionController.text,
                                       idealAnswer: idealAnswerController.text,
-                                      carriedMarks: weightageController.text);
+                                      images: [],
+                                      weightage: double.parse(
+                                          weightageController.text));
                                   questions[i] = questionObjEdited;
-                                  int newWeightage = calculateWeightage();
+                                  double newWeightage = calculateWeightage();
                                   questionController.text = "";
                                   idealAnswerController.text = "";
                                   weightageController.text = "";
@@ -478,18 +487,18 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(width: 10),
-                            Text(questions[i].carriedMarks),
+                            Text("${questions[i].weightage}"),
                             const Spacer(),
                             TextButton(
                                 onPressed: () {
                                   setState(() {
                                     editIndex = i;
                                     questionController.text =
-                                        questions[i].question;
+                                        questions[i].query;
                                     idealAnswerController.text =
-                                        questions[i].idealAnswer;
+                                        questions[i].idealAnswer!;
                                     weightageController.text =
-                                        questions[i].carriedMarks;
+                                        "${questions[i].weightage}";
                                   });
                                 },
                                 child: Text(
@@ -505,14 +514,14 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                           "Question: ",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(questions[i].question),
+                        Text(questions[i].query),
                         const SizedBox(height: 10),
                         Text(
                           "Ideal Answer: ",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 5),
-                        Text(questions[i].idealAnswer),
+                        Text(questions[i].idealAnswer!),
                       ],
                     ),
                   )),
@@ -525,7 +534,7 @@ class _ExamDefinePageState extends State<ExamDefinePage>
           children: [
             const Spacer(),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: submitExam,
                 child: Text(
                   "Submit Paper",
                   style: TextStyle(

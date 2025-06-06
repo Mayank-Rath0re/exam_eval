@@ -13,4 +13,9 @@ class ExamEndpoint extends Endpoint {
     // ignore: unused_local_variable
     var examInsert = Exam.db.insertRow(session, examObj);
   }
+
+  Future<Exam> fetchExam(Session session, int examId) async {
+    var examObj = await Exam.db.findById(session, examId);
+    return examObj!;
+  }
 }

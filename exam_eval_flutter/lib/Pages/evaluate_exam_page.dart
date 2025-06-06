@@ -1,190 +1,11 @@
-import 'dart:io' if (dart.library.html) 'dart:html' as html;
 import 'dart:convert';
 import 'package:csv/csv.dart';
+import 'package:exam_eval_client/exam_eval_client.dart';
+import 'package:exam_eval_flutter/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:math' as math;
 import 'file_reader.dart';
-
-class Question {
-  String question;
-  String idealAnswer;
-  String carriedMarks;
-
-  Question({
-    this.question = '',
-    this.idealAnswer = '',
-    this.carriedMarks = '',
-  });
-}
-
-class QuestionInputPage extends StatefulWidget {
-  const QuestionInputPage({super.key});
-
-  @override
-  State<QuestionInputPage> createState() => _QuestionInputPageState();
-}
-
-class _QuestionInputPageState extends State<QuestionInputPage>
-    with SingleTickerProviderStateMixin {
-  final List<Question> questions = [Question()];
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
-      ),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.2),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
-    );
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _addQuestion() {
-    setState(() {
-      questions.add(Question());
-    });
-  }
-
-  Widget _buildQuestionCard(int index) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Question Id: ${(index + 1).toString().padLeft(3, '0')}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Question',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              maxLines: 3,
-              onChanged: (value) => questions[index].question = value,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Ideal Answer',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              maxLines: 3,
-              onChanged: (value) => questions[index].idealAnswer = value,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Carried Marks',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) => questions[index].carriedMarks = value,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Questions'),
-        backgroundColor: const Color(0xFF2D5A27),
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.green.shade50,
-              Colors.white,
-            ],
-          ),
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: ListView.builder(
-                    itemCount: questions.length,
-                    itemBuilder: (context, index) => _buildQuestionCard(index),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addQuestion,
-        backgroundColor: const Color(0xFF2D5A27),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-}
 
 class EvaluateExamPage extends StatefulWidget {
   const EvaluateExamPage({super.key});
@@ -197,6 +18,8 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   bool csvUploaded = false;
   List<List<dynamic>> csvData = [];
   int evaluatingIndex = -1;
+  late Exam examData;
+  bool isLoadingExam = true;
 
   Future<void> pickCsvFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -236,6 +59,14 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   void goToNextStep() {
     setState(() {
       currentStep++;
+    });
+  }
+
+  void fetchExamData(int examId) async {
+    var examInfo = await client.exam.fetchExam(examId);
+    setState(() {
+      examData = examInfo;
+      isLoadingExam = false;
     });
   }
 
@@ -408,6 +239,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                 child: ElevatedButton(
                                     onPressed: () {
                                       // Route to evaluate scaffold
+                                      fetchExamData(csvData[i][2]);
                                       setState(() {
                                         evaluatingIndex = i;
                                         currentStep++;
@@ -457,32 +289,48 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text('Upload Answer'),
                           ),
-                        ],
-                      ),
-                      TableRow(
-                        decoration: BoxDecoration(color: Colors.grey[300]),
-                        children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text('123',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('What is mitochondria?'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                'Mitochondria is the powerhouse of the cell.'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: () {}, child: Text("Upload")),
+                            child: Text('Score'),
                           ),
                         ],
                       ),
+                      if (isLoadingExam)
+                        ...[
+                        
+                      ] else ...[
+                        for (int i = 0; i < examData.questions.length; i++) ...[
+                          TableRow(
+                            decoration: BoxDecoration(color: Colors.grey[300]),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("${i + 1}",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(examData.questions[i].query),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(examData.questions[i].idealAnswer!),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                    onPressed: () {}, child: Text("Upload")),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('Not graded'),
+                              ),
+                            ],
+                          ),
+                        ]
+                      ],
+
                       // This data will be built after building backend
                     ],
                   )),
