@@ -1,4 +1,5 @@
 import 'package:exam_eval_flutter/Components/mega_menu.dart';
+import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Constants.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
@@ -60,7 +61,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       case 0:
         return _buildDashboard();
       case 1:
-        return const Center(child: Text('Task'));
+        return const MyExamsPage();
       case 2:
         return const Center(child: Text('Report'));
       case 3:

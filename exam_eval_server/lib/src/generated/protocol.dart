@@ -21,6 +21,7 @@ import 'result.dart' as _i9;
 import 'user.dart' as _i10;
 import 'userview.dart' as _i11;
 import 'package:exam_eval_server/src/generated/question.dart' as _i12;
+import 'package:exam_eval_server/src/generated/exam.dart' as _i13;
 export 'answer.dart';
 export 'exam.dart';
 export 'example.dart';
@@ -564,6 +565,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<_i12.Question>) {
       return (data as List).map((e) => deserialize<_i12.Question>(e)).toList()
           as T;
+    }
+    if (t == List<_i13.Exam>) {
+      return (data as List).map((e) => deserialize<_i13.Exam>(e)).toList() as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

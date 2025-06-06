@@ -13,8 +13,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:exam_eval_client/src/protocol/question.dart' as _i4;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'package:exam_eval_client/src/protocol/exam.dart' as _i5;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
+import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
 class EndpointAccount extends _i1.EndpointRef {
@@ -115,6 +116,41 @@ class EndpointExam extends _i1.EndpointRef {
           'questions': questions,
         },
       );
+
+  _i2.Future<int> editExam(
+    int creatorId,
+    int examId,
+    String title,
+    double duration,
+    int totalMarks,
+    List<_i4.Question> questions,
+  ) =>
+      caller.callServerEndpoint<int>(
+        'exam',
+        'editExam',
+        {
+          'creatorId': creatorId,
+          'examId': examId,
+          'title': title,
+          'duration': duration,
+          'totalMarks': totalMarks,
+          'questions': questions,
+        },
+      );
+
+  _i2.Future<List<_i5.Exam>> fetchUserExams(int userId) =>
+      caller.callServerEndpoint<List<_i5.Exam>>(
+        'exam',
+        'fetchUserExams',
+        {'userId': userId},
+      );
+
+  _i2.Future<_i5.Exam> fetchExam(int examId) =>
+      caller.callServerEndpoint<_i5.Exam>(
+        'exam',
+        'fetchExam',
+        {'examId': examId},
+      );
 }
 
 /// {@category Endpoint}
@@ -133,10 +169,10 @@ class EndpointExample extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    auth = _i5.Caller(client);
+    auth = _i6.Caller(client);
   }
 
-  late final _i5.Caller auth;
+  late final _i6.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -155,7 +191,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i6.Protocol(),
+          _i7.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

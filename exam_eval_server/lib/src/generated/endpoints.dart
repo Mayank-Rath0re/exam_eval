@@ -230,7 +230,91 @@ class Endpoints extends _i1.EndpointDispatch {
             params['totalMarks'],
             params['questions'],
           ),
-        )
+        ),
+        'editExam': _i1.MethodConnector(
+          name: 'editExam',
+          params: {
+            'creatorId': _i1.ParameterDescription(
+              name: 'creatorId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'examId': _i1.ParameterDescription(
+              name: 'examId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'duration': _i1.ParameterDescription(
+              name: 'duration',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'totalMarks': _i1.ParameterDescription(
+              name: 'totalMarks',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'questions': _i1.ParameterDescription(
+              name: 'questions',
+              type: _i1.getType<List<_i7.Question>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).editExam(
+            session,
+            params['creatorId'],
+            params['examId'],
+            params['title'],
+            params['duration'],
+            params['totalMarks'],
+            params['questions'],
+          ),
+        ),
+        'fetchUserExams': _i1.MethodConnector(
+          name: 'fetchUserExams',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).fetchUserExams(
+            session,
+            params['userId'],
+          ),
+        ),
+        'fetchExam': _i1.MethodConnector(
+          name: 'fetchExam',
+          params: {
+            'examId': _i1.ParameterDescription(
+              name: 'examId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).fetchExam(
+            session,
+            params['examId'],
+          ),
+        ),
       },
     );
     connectors['example'] = _i1.EndpointConnector(

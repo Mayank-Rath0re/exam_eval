@@ -19,7 +19,8 @@ import 'result.dart' as _i7;
 import 'user.dart' as _i8;
 import 'userview.dart' as _i9;
 import 'package:exam_eval_client/src/protocol/question.dart' as _i10;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i11;
+import 'package:exam_eval_client/src/protocol/exam.dart' as _i11;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i12;
 export 'answer.dart';
 export 'exam.dart';
 export 'example.dart';
@@ -112,8 +113,11 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i10.Question>(e)).toList()
           as T;
     }
+    if (t == List<_i11.Exam>) {
+      return (data as List).map((e) => deserialize<_i11.Exam>(e)).toList() as T;
+    }
     try {
-      return _i11.Protocol().deserialize<T>(data, t);
+      return _i12.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -146,7 +150,7 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i9.UserView) {
       return 'UserView';
     }
-    className = _i11.Protocol().getClassNameForObject(data);
+    className = _i12.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -185,7 +189,7 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i11.Protocol().deserializeByClassName(data);
+      return _i12.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

@@ -6,5 +6,8 @@ api:
   - imageOcr:
 exam:
   - createExam:
+  - editExam:
+  - fetchUserExams:
+  - fetchExam:
 example:
   - hello:

@@ -25,7 +25,7 @@ class MegaMenu extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       itemBuilder: (context) => [
         _buildMenuItem('Dashboard', Icons.dashboard_outlined, 0),
-        _buildMenuItem('Task', Icons.task, 1),
+        _buildMenuItem('My Exams', Icons.task, 1),
         _buildMenuItem('Report', Icons.receipt_outlined, 2),
         _buildMenuItem('Evaluate Exam', Icons.assessment, 3),
         _buildMenuItem('Results', Icons.bar_chart, 4),
@@ -98,4 +98,4 @@ class MegaMenu extends StatelessWidget {
       ),
     );
   }
-} 
+}
