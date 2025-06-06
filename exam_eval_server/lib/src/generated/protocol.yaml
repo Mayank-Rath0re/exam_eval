@@ -7,6 +7,7 @@ api:
 exam:
   - createExam:
   - editExam:
+  - deleteExam:
   - fetchUserExams:
   - fetchExam:
 example:

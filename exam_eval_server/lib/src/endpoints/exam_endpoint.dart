@@ -32,6 +32,13 @@ class ExamEndpoint extends Endpoint {
     return 1;
   }
 
+  Future<void> deleteExam(Session session, int examId) async {
+    // ignore: unused_local_variable
+    var examDel =
+        await Exam.db.deleteWhere(session, where: (t) => t.id.equals(examId));
+    // Result Objects could be linked to this, need to figure out and code accordingly
+  }
+
   Future<List<Exam>> fetchUserExams(Session session, int userId) async {
     var exams =
         await Exam.db.find(session, where: (t) => t.creatorId.equals(userId));

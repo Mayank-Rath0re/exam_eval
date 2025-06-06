@@ -1,5 +1,6 @@
 import 'package:exam_eval_client/exam_eval_client.dart';
 import 'package:exam_eval_flutter/Pages/exam_create_edit.dart';
+import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 import 'package:exam_eval_flutter/main.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +53,9 @@ class _MyExamsPageState extends State<MyExamsPage> {
               children: [
                 Text("My Exams", style: TextStyle(fontSize: 30)),
                 const SizedBox(height: 30),
+                if (examData.isEmpty) ...[
+                  Center(child: Text("No Exams Created")),
+                ],
                 for (int i = 0; i < examData.length; i++) ...[
                   Container(
                     decoration: BoxDecoration(
@@ -61,7 +65,6 @@ class _MyExamsPageState extends State<MyExamsPage> {
                       padding: const EdgeInsets.all(10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("${examData[i].id!}."),
                           const SizedBox(width: 10),
@@ -80,23 +83,61 @@ class _MyExamsPageState extends State<MyExamsPage> {
                           Text(
                             "${examData[i].questions.length} questions",
                           ),
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            editPage(examData[i])));
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit_document),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    "Edit",
-                                  )
-                                ],
-                              ))
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                editPage(examData[i])));
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit_document),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        "Edit",
+                                      )
+                                    ],
+                                  )),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                              content: Text("Are you sure?"),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text("Cancel")),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      client.exam.deleteExam(
+                                                          examData[i].id!);
+                                                      setState(() {
+                                                        examData.removeAt(i);
+                                                      });
+                                                    },
+                                                    child: Text("Yes"))
+                                              ],
+                                            ));
+                                  },
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStatePropertyAll(Colors.red)),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete_outline),
+                                      const SizedBox(width: 3),
+                                      Text("Delete")
+                                    ],
+                                  ))
+                            ],
+                          )
                         ],
                       ),
                     ),

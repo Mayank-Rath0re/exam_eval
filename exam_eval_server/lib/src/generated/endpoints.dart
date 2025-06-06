@@ -279,6 +279,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['questions'],
           ),
         ),
+        'deleteExam': _i1.MethodConnector(
+          name: 'deleteExam',
+          params: {
+            'examId': _i1.ParameterDescription(
+              name: 'examId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).deleteExam(
+            session,
+            params['examId'],
+          ),
+        ),
         'fetchUserExams': _i1.MethodConnector(
           name: 'fetchUserExams',
           params: {

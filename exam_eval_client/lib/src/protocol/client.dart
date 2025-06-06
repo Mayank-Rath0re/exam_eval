@@ -138,6 +138,12 @@ class EndpointExam extends _i1.EndpointRef {
         },
       );
 
+  _i2.Future<void> deleteExam(int examId) => caller.callServerEndpoint<void>(
+        'exam',
+        'deleteExam',
+        {'examId': examId},
+      );
+
   _i2.Future<List<_i5.Exam>> fetchUserExams(int userId) =>
       caller.callServerEndpoint<List<_i5.Exam>>(
         'exam',

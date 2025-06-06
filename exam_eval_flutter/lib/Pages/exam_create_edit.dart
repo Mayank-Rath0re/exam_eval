@@ -171,250 +171,260 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: isLoading
-          ? [const Center(child: CircularProgressIndicator())]
-          : [
-              if (widget.mode == 2) ...[
-                TextField(
-                  controller: titleController,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: durationController,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: marksController,
-                ),
-                const SizedBox(height: 10),
-              ],
-              Row(
-                children: [
-                  Text(
-                      "Questions Weightage: $weightCalculation/${widget.marks}"),
-                  const Spacer(),
-                  ElevatedButton(
-                      onPressed: () {
-                        var questionObj =
-                            Question(query: "", images: [], weightage: 0);
-                        setState(() {
-                          editIndex = questions.length;
-                          questions.add(questionObj);
-                        });
-                      },
-                      child: Text("Create New Question")),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ListView(
+        shrinkWrap: true,
+        children: isLoading
+            ? [const Center(child: CircularProgressIndicator())]
+            : [
+                if (widget.mode == 2) ...[
+                  Text("Title"),
+                  TextField(
+                    controller: titleController,
+                  ),
+                  const SizedBox(height: 10),
+                  Text("Duration"),
+                  TextField(
+                    controller: durationController,
+                  ),
+                  const SizedBox(height: 10),
+                  Text("Marks"),
+                  TextField(
+                    controller: marksController,
+                  ),
+                  const SizedBox(height: 10),
                 ],
-              ),
-              const SizedBox(height: 20),
-              if (questions.isNotEmpty) ...[
-                for (int i = 0; i < questions.length; i++) ...[
-                  if (i == editIndex) ...[
-                    Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                width: 1, color: const Color(0xFF2D5A27)),
-                            borderRadius: BorderRadius.circular(6)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                      width: 100,
-                                      child: TextField(
-                                          decoration: InputDecoration(
-                                              hintText: "Weight"),
-                                          controller: weightageController)),
-                                  const Spacer(),
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        var questionObjEdited = Question(
-                                            query: questionController.text,
-                                            idealAnswer:
-                                                idealAnswerController.text,
-                                            images: [],
-                                            weightage: double.parse(
-                                                weightageController.text));
-                                        questions[i] = questionObjEdited;
-                                        double newWeightage =
-                                            calculateWeightage();
-                                        questionController.text = "";
-                                        idealAnswerController.text = "";
-                                        weightageController.text = "";
-                                        setState(() {
-                                          editIndex = -1;
-                                          weightCalculation = newWeightage;
-                                        });
-                                      },
-                                      child: Text(
-                                        "Save",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            decoration:
-                                                TextDecoration.underline),
-                                      ))
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text("Question: ${i + 1}"),
-                              const SizedBox(height: 10),
-                              TextField(
-                                  minLines: 1,
-                                  maxLines: 5,
-                                  decoration:
-                                      InputDecoration(hintText: "Question"),
-                                  controller: questionController),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  ocrImageButton(),
-                                  /*
-                            ElevatedButton(
-                                onPressed: () async {
-                                  FilePickerResult? result =
-                                      await FilePicker.platform.pickFiles(
-                                    type: FileType.image,
-                                    withData:
-                                        true, // This is important for Web to get file bytes
-                                  );
-
-                                  if (result != null &&
-                                      result.files.single.bytes != null) {
-                                    setState(() {
-                                      isGenerating = true;
-                                    });
-
-                                    final platformFile = result.files.single;
-                                    final bytes = platformFile.bytes!;
-                                    final byteData =
-                                        ByteData.view(bytes.buffer);
-
-                                    print(
-                                        "Picked file name: ${platformFile.name}");
-                                    // You can now use the list of image file paths
-                                    ocrImage(
-                                        byteData, result.files.single.name);
-                                  } else {
-                                    print("User canceled the picker");
-                                  }
-                                },
-                                child: Text(
-                                  "Upload from Image",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      decoration: TextDecoration.underline),
-                                )),*/
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          isGenerating = true;
-                                        });
-                                        generateAnswer(questionController.text);
-                                      },
-                                      child: Text(
-                                        "Write with Gemini",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            decoration:
-                                                TextDecoration.underline),
-                                      ))
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              if (isGenerating) ...[
+                Row(
+                  children: [
+                    Text(
+                        "Questions Weightage: $weightCalculation/${widget.marks}"),
+                    const Spacer(),
+                    ElevatedButton(
+                        onPressed: () {
+                          var questionObj =
+                              Question(query: "", images: [], weightage: 0);
+                          setState(() {
+                            editIndex = questions.length;
+                            questions.add(questionObj);
+                          });
+                        },
+                        child: Text("Create New Question")),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                if (questions.isNotEmpty) ...[
+                  for (int i = 0; i < questions.length; i++) ...[
+                    if (i == editIndex) ...[
+                      Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1, color: const Color(0xFF2D5A27)),
+                              borderRadius: BorderRadius.circular(6)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [CircularProgressIndicator()])
-                              ] else ...[
+                                  children: [
+                                    SizedBox(
+                                        width: 100,
+                                        child: TextField(
+                                            decoration: InputDecoration(
+                                                hintText: "Weight"),
+                                            controller: weightageController)),
+                                    const Spacer(),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          var questionObjEdited = Question(
+                                              query: questionController.text,
+                                              idealAnswer:
+                                                  idealAnswerController.text,
+                                              images: [],
+                                              weightage: double.parse(
+                                                  weightageController.text));
+                                          questions[i] = questionObjEdited;
+                                          double newWeightage =
+                                              calculateWeightage();
+                                          questionController.text = "";
+                                          idealAnswerController.text = "";
+                                          weightageController.text = "";
+                                          setState(() {
+                                            editIndex = -1;
+                                            weightCalculation = newWeightage;
+                                          });
+                                        },
+                                        child: Text(
+                                          "Save",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ))
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Text("Question: ${i + 1}"),
+                                const SizedBox(height: 10),
                                 TextField(
                                     minLines: 1,
-                                    maxLines: 15,
-                                    decoration: InputDecoration(
-                                        hintText: "Ideal Answer"),
-                                    controller: idealAnswerController)
-                              ],
-                            ],
-                          ),
-                        )),
-                  ] else ...[
-                    Container(
-                        decoration: BoxDecoration(border: Border.all(width: 1)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    "Weightage: ",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text("${questions[i].weightage}"),
-                                  const Spacer(),
-                                  TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          editIndex = i;
-                                          questionController.text =
-                                              questions[i].query;
-                                          idealAnswerController.text =
-                                              questions[i].idealAnswer!;
-                                          weightageController.text =
-                                              "${questions[i].weightage}";
-                                        });
-                                      },
-                                      child: Text(
-                                        "Edit",
-                                        style: TextStyle(
-                                            color: const Color(0xFF2D5A27),
-                                            decoration:
-                                                TextDecoration.underline),
-                                      ))
+                                    maxLines: 5,
+                                    decoration:
+                                        InputDecoration(hintText: "Question"),
+                                    controller: questionController),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ocrImageButton(),
+                                    /*
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    FilePickerResult? result =
+                                        await FilePicker.platform.pickFiles(
+                                      type: FileType.image,
+                                      withData:
+                                          true, // This is important for Web to get file bytes
+                                    );
+      
+                                    if (result != null &&
+                                        result.files.single.bytes != null) {
+                                      setState(() {
+                                        isGenerating = true;
+                                      });
+      
+                                      final platformFile = result.files.single;
+                                      final bytes = platformFile.bytes!;
+                                      final byteData =
+                                          ByteData.view(bytes.buffer);
+      
+                                      print(
+                                          "Picked file name: ${platformFile.name}");
+                                      // You can now use the list of image file paths
+                                      ocrImage(
+                                          byteData, result.files.single.name);
+                                    } else {
+                                      print("User canceled the picker");
+                                    }
+                                  },
+                                  child: Text(
+                                    "Upload from Image",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        decoration: TextDecoration.underline),
+                                  )),*/
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isGenerating = true;
+                                          });
+                                          generateAnswer(
+                                              questionController.text);
+                                        },
+                                        child: Text(
+                                          "Write with Gemini",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ))
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                if (isGenerating) ...[
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [CircularProgressIndicator()])
+                                ] else ...[
+                                  TextField(
+                                      minLines: 1,
+                                      maxLines: 15,
+                                      decoration: InputDecoration(
+                                          hintText: "Ideal Answer"),
+                                      controller: idealAnswerController)
                                 ],
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                "Question: ",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text(questions[i].query),
-                              const SizedBox(height: 10),
-                              Text(
-                                "Ideal Answer: ",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(questions[i].idealAnswer!),
-                            ],
-                          ),
-                        )),
-                  ],
-                  const SizedBox(height: 10),
-                ]
-              ],
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Spacer(),
-                  ElevatedButton(
-                      onPressed: submitExam,
-                      child: Text(
-                        "Submit Paper",
-                        style: TextStyle(
-                            color: Colors.white,
-                            decoration: TextDecoration.underline),
-                      ))
+                              ],
+                            ),
+                          )),
+                    ] else ...[
+                      Container(
+                          decoration:
+                              BoxDecoration(border: Border.all(width: 1)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Weightage: ",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text("${questions[i].weightage}"),
+                                    const Spacer(),
+                                    TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            editIndex = i;
+                                            questionController.text =
+                                                questions[i].query;
+                                            idealAnswerController.text =
+                                                questions[i].idealAnswer!;
+                                            weightageController.text =
+                                                "${questions[i].weightage}";
+                                          });
+                                        },
+                                        child: Text(
+                                          "Edit",
+                                          style: TextStyle(
+                                              color: const Color(0xFF2D5A27),
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ))
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "Question: ",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(questions[i].query),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "Ideal Answer: ",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(questions[i].idealAnswer!),
+                              ],
+                            ),
+                          )),
+                    ],
+                    const SizedBox(height: 10),
+                  ]
                 ],
-              )
-            ],
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    const Spacer(),
+                    ElevatedButton(
+                        onPressed: submitExam,
+                        child: Text(
+                          "Submit Paper",
+                          style: TextStyle(
+                              color: Colors.white,
+                              decoration: TextDecoration.underline),
+                        ))
+                  ],
+                )
+              ],
+      ),
     );
   }
 }
