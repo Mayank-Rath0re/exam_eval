@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'student_exam_analysis_page.dart';
 
 class StudentResult {
   final String studentName;
@@ -14,9 +15,14 @@ class StudentResult {
   });
 }
 
-class StudentResultsPage extends StatelessWidget {
-  StudentResultsPage({super.key});
+class StudentResultsPage extends StatefulWidget {
+  const StudentResultsPage({super.key});
 
+  @override
+  State<StudentResultsPage> createState() => _StudentResultsPageState();
+}
+
+class _StudentResultsPageState extends State<StudentResultsPage> {
   // Sample data - in a real app this would come from a database
   final List<StudentResult> results = [
     StudentResult(
@@ -167,12 +173,45 @@ class StudentResultsPage extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              result.date,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade500,
-              ),
+            Row(
+              children: [
+                Text(
+                  result.date,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                  color: Colors.grey.shade600,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => StudentExamAnalysisPage(
+                          studentName: result.studentName,
+                          subject: result.subject,
+                          date: result.date,
+                          totalMarks: result.marks,
+                        ),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOutCubic;
+                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 500),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

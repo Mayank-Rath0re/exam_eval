@@ -1,8 +1,9 @@
-import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
+import 'package:exam_eval_flutter/Components/mega_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Constants.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
+import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({Key? key}) : super(key: key);
@@ -12,77 +13,66 @@ class DesktopScaffold extends StatefulWidget {
 }
 
 class _DesktopScaffoldState extends State<DesktopScaffold> {
-  int selectedTabIndex = 0;
+  int _selectedIndex = 0;
 
-  void handleTabChange(int index) {
+  void _onTabChange(int index) {
     setState(() {
-      selectedTabIndex = index;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DefaultBackground,
-      appBar: DefaultAppbar,
-      drawer: SideBar(onTabChange: handleTabChange),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Sidebar
-
-          // Main content area
-          Expanded(
-            flex: 3,
-            child: _getSelectedPage(),
-          ),
-          // Sidebar content (e.g., Timetable)
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20, right: 20),
-              child: Container(
-                height: 300,
-                decoration: BoxDecoration(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFF2D5A27),
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                'EXAM EVAL',
+                style: TextStyle(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black12, blurRadius: 4),
-                  ],
-                ),
-                child: const Center(
-                  child: Text(
-                    "🕒 Timetable",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
-          ),
-        ],
+            const Spacer(),
+            MegaMenu(
+              onTabChange: _onTabChange,
+              isMobile: false,
+            ),
+          ],
+        ),
+        toolbarHeight: 70,
       ),
+      body: _buildBody(),
     );
   }
 
-  // Return the correct page for selected tab
-  Widget _getSelectedPage() {
-    switch (selectedTabIndex) {
+  Widget _buildBody() {
+    switch (_selectedIndex) {
       case 0:
-        return _buildDashboard(); // Your current content
+        return _buildDashboard();
       case 1:
-        return Center(child: Text("Tasks Page")); // placeholder
+        return const Center(child: Text('Task'));
       case 2:
-        return Center(child: Text("Reports Page")); // placeholder
+        return const Center(child: Text('Report'));
       case 3:
-        return const ResponsiveEvaluateExam(); // Import this
+        return const ResponsiveEvaluateExam();
       case 4:
-        return const ResponsiveResultsPage(); // Import this
+        return const ResponsiveResultsPage();
       case 5:
-        return Center(child: Text("Settings Page")); // placeholder
+        return const Center(child: Text('Settings'));
       case 6:
-        return Center(child: Text("Support Page"));
+        return const Center(child: Text('Support'));
       case 7:
-        return const ExamDefinePage(); // placeholder
+        return const ExamDefinePage();
       default:
         return _buildDashboard();
     }
