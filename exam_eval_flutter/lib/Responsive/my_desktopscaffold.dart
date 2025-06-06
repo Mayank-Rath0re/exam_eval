@@ -1,7 +1,6 @@
 import 'package:exam_eval_flutter/Components/mega_menu.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
 import 'package:flutter/material.dart';
-import 'package:exam_eval_flutter/Constants.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/exam_define_page.dart';

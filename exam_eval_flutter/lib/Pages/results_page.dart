@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'student_results_page.dart';
 
 class ExamData {
   final String title;
   final bool isComplete;
-  
+
   ExamData({required this.title, required this.isComplete});
 }
 
@@ -21,7 +20,7 @@ class _ResultsPageState extends State<ResultsPage>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   // Sample exam data
   final List<ExamData> exams = [
     ExamData(title: 'Science Exam - 10th', isComplete: true),
@@ -35,14 +34,14 @@ class _ResultsPageState extends State<ResultsPage>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeIn,
       ),
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
@@ -52,7 +51,7 @@ class _ResultsPageState extends State<ResultsPage>
         curve: Curves.easeOut,
       ),
     );
-    
+
     _animationController.forward();
   }
 
@@ -153,7 +152,7 @@ class ExamResultCard extends StatefulWidget {
   final bool isComplete;
 
   const ExamResultCard({
-    super.key, 
+    super.key,
     required this.title,
     required this.isComplete,
   });
@@ -162,7 +161,8 @@ class ExamResultCard extends StatefulWidget {
   State<ExamResultCard> createState() => _ExamResultCardState();
 }
 
-class _ExamResultCardState extends State<ExamResultCard> with SingleTickerProviderStateMixin {
+class _ExamResultCardState extends State<ExamResultCard>
+    with SingleTickerProviderStateMixin {
   bool _isHovering = false;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -197,7 +197,7 @@ class _ExamResultCardState extends State<ExamResultCard> with SingleTickerProvid
       onExit: (_) => setState(() => _isHovering = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        transform: _isHovering 
+        transform: _isHovering
             ? (Matrix4.identity()..scale(1.03))
             : Matrix4.identity(),
         transformAlignment: Alignment.center,
@@ -257,7 +257,7 @@ class _ExamResultCardState extends State<ExamResultCard> with SingleTickerProvid
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
-                  
+
                   // Button based on completion status
                   GestureDetector(
                     onTap: () {
@@ -283,19 +283,23 @@ class _ExamResultCardState extends State<ExamResultCard> with SingleTickerProvid
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(25),
-                        boxShadow: _isHovering ? [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          )
-                        ] : null,
+                        boxShadow: _isHovering
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                )
+                              ]
+                            : null,
                       ),
                       child: Center(
                         child: Text(
-                          widget.isComplete ? 'CHECK RESULTS' : 'CALCULATING....',
+                          widget.isComplete
+                              ? 'CHECK RESULTS'
+                              : 'CALCULATING....',
                           style: TextStyle(
-                            fontSize: 16, 
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.blue.shade700,
                           ),
@@ -321,4 +325,4 @@ class ResponsiveResultsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const ResultsPage();
   }
-} 
+}
