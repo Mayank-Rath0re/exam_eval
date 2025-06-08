@@ -7,6 +7,7 @@ import 'package:exam_eval_flutter/Responsive/my_tabletscaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
+import 'package:exam_eval_flutter/Pages/profile_page.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
             ),
         '/evaluate_exam': (context) => const ResponsiveEvaluateExam(),
         '/results': (context) => const ResponsiveResultsPage(),
+        '/profile': (context) => const ProfilePage(),
       },
       initialRoute: '/',
     );

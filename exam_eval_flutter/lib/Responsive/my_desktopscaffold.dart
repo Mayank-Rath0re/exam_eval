@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
+import 'package:exam_eval_flutter/Pages/settings_page.dart';
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({Key? key}) : super(key: key);
@@ -68,7 +69,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       case 4:
         return const ResponsiveResultsPage();
       case 5:
-        return const Center(child: Text('Settings'));
+        return const SettingsPage();
       case 6:
         return const Center(child: Text('Support'));
       case 7:

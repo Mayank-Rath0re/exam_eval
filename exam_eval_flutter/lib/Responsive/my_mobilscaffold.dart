@@ -1,5 +1,6 @@
 import 'package:exam_eval_flutter/Constants.dart';
 import 'package:flutter/material.dart';
+import 'package:exam_eval_flutter/Pages/settings_page.dart';
 
 class MobileScaffold extends StatefulWidget {
   const MobileScaffold({Key? key}) : super(key: key);
@@ -55,7 +56,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
       case 4:
         return const Center(child: Text('Results'));
       case 5:
-        return const Center(child: Text('Settings'));
+        return const SettingsPage();
       case 6:
         return const Center(child: Text('Support'));
       case 7:
