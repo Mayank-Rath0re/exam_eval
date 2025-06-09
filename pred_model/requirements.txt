@@ -1,3 +1,7 @@
+# Force CPU-only PyTorch
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2+cpu
+
 # Web API
 fastapi
 uvicorn
@@ -16,8 +20,5 @@ gensim
 spacy
 nltk
 
-# Vectorization
-scikit-learn  # already included, needed for TfidfVectorizer
-
 # Utility
-regex  # for re (optional, improves regex speed vs built-in re)
+regex

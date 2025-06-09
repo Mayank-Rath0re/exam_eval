@@ -9,11 +9,8 @@ import spacy
 import re
 import pickle
 from gensim.models import LdaModel
-from fastapi import FastAPI, Request
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-
-app = FastAPI()
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
 vectorizer = TfidfVectorizer()
@@ -35,6 +32,7 @@ def preprocess_text(text):
     tokens = word_tokenize(text.lower())
     return [word for word in tokens if word.isalpha() and word not in stop_words]
 
+# Need to remove this in future and replace with the model file only
 def train_lda_model(ideal_answers):
     """Train LDA model on a collection of ideal answers"""
     global lda_model, dictionary
@@ -194,8 +192,7 @@ def mark_score(weightage,category,final_score):
     return round((weightage*0)+((weightage*0.2 - weightage*0)*final_score))
 
 # Prediction Function
-@app.post("/predict")
-async def predict(question, ideal_answer, subjective_answer,weightage,request: Request):
+def predict(question, ideal_answer, subjective_answer,weightage):
     """
     Evaluate a subjective answer based on semantic similarity, keyword overlap, grammar, coherence, topic relevance, and specificity.
     """
