@@ -1,0 +1,23 @@
+# Web API
+fastapi
+uvicorn
+
+# Data processing and ML
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+
+# NLP & embeddings
+sentence-transformers
+language-tool-python
+gensim
+spacy
+nltk
+
+# Vectorization
+scikit-learn  # already included, needed for TfidfVectorizer
+
+# Utility
+regex  # for re (optional, improves regex speed vs built-in re)
