@@ -7,20 +7,25 @@ import language_tool_python
 from gensim import corpora
 import spacy
 import re
-import pickle
+import joblib
 from gensim.models import LdaModel
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from fastapi import FastAPI
+from pydantic import BaseModel
+import json
 
+app = FastAPI()
+
+print("Importing Models")
 model = SentenceTransformer('all-MiniLM-L6-v2')
 vectorizer = TfidfVectorizer()
 tool = language_tool_python.LanguageTool('en-US')
-imputer = SimpleImputer(strategy='median')
+imputer = joblib.load("imputer.pkl")
 # Load spaCy model for sentence parsing
 nlp = spacy.load("en_core_web_sm")
 
-with open('random_forest_model.pkl', 'rb') as f:
-    rf = pickle.load(f)
+rf = joblib.load("answer_classifier_model.pkl")
 
 # LDA Model
 #Initialize these globally or as part of a class
@@ -31,6 +36,13 @@ dictionary = None
 def preprocess_text(text):
     tokens = word_tokenize(text.lower())
     return [word for word in tokens if word.isalpha() and word not in stop_words]
+
+def convert_to_serializable(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, (np.generic,)):
+        return obj.item()
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
 # Need to remove this in future and replace with the model file only
 def train_lda_model(ideal_answers):
@@ -196,35 +208,43 @@ def predict(question, ideal_answer, subjective_answer,weightage):
     """
     Evaluate a subjective answer based on semantic similarity, keyword overlap, grammar, coherence, topic relevance, and specificity.
     """
-
+    print("Training LDA for topic relevance")
+    train_lda_model(ideal_answers=ideal_answer)
     # Step 1: Compute Semantic Similarity (between ideal and subjective answers)
+    print("Performing Encoding")
     ideal_embedding = model.encode(ideal_answer, convert_to_tensor=True)
     subjective_embedding = model.encode(subjective_answer, convert_to_tensor=True)
     semantic_similarity = util.cos_sim(ideal_embedding, subjective_embedding).item()
 
     # Step 2: Compute Keyword Overlap (between ideal and subjective answers)
-    
+    print("Computing vectors")
     tfidf_matrix = vectorizer.fit_transform([ideal_answer, subjective_answer])
     keyword_overlap = (tfidf_matrix * tfidf_matrix.T).toarray()[0, 1]
 
     # Step 3: Grammar Checking
       # Use 'en-US' for US English
+    print("Grammar Checking")
     matches = tool.check(subjective_answer)
     grammar_score = 1 - (len(matches) / max(len(subjective_answer.split()), 1))  # Normalize by answer length
 
     # Step 4: Coherence Analysis
+    print("Coherence Analysis")
     coherence_score = analyze_coherence(subjective_answer)
 
     # Step 5: Topic Relevance Analysis
+    print("Topic Relevance")
     relevance_score = analyze_topic_relevance(question, subjective_answer)
 
     #Step 6: Sentence Complexity Analysis
+    print("Complexity Analysis")
     complexity_score = analyze_sentence_complexity(subjective_answer)
 
     #Step 7: ANswer length
+    print("Answer Length")
     length_score = analyze_answer_length(subjective_answer, ideal_answer)
 
     #Step 8: Categorizing answers
+    print("Answer Categorization")
     topic_similarity = get_topic_similarity(ideal_answer, subjective_answer)
 
 
@@ -254,7 +274,7 @@ def predict(question, ideal_answer, subjective_answer,weightage):
     #marking
     marks = mark_score(weightage,category,final_score)
 
-    return {
+    data = {
         "semantic_similarity": semantic_similarity,
         "keyword_overlap": keyword_overlap,
         "grammar_score": grammar_score,
@@ -268,3 +288,25 @@ def predict(question, ideal_answer, subjective_answer,weightage):
         "category": category,
         "marks": marks
     }
+
+    # Serialize to JSON
+    json_string = json.dumps(data, default=convert_to_serializable)
+
+    return json_string
+
+# Define the request body model
+class EvaluationRequest(BaseModel):
+    question: str
+    ideal_answer: str
+    subjective_answer: str
+    weightage: float
+
+@app.post("/evaluate")
+def evaluate_answer(data: EvaluationRequest):
+    result = predict(
+        question=data.question,
+        ideal_answer=data.ideal_answer,
+        subjective_answer=data.subjective_answer,
+        weightage=data.weightage
+    )
+    return result

@@ -21,10 +21,11 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m spacy download en_core_web_sm
 RUN python -c "import language_tool_python; language_tool_python.LanguageTool('en-US')"
 
 # Download necessary NLTK data
-RUN python -m nltk.downloader punkt stopwords
+RUN python -m nltk.downloader punkt_tab stopwords
 
 # Copy the rest of the application
 COPY . .
@@ -33,4 +34,4 @@ COPY . .
 EXPOSE 4000
 
 # Start the FastAPI server
-CMD ["uvicorn", "model_api:app", "--host", "0.0.0.0", "--port", "4000"]
+CMD ["uvicorn", "eval_model:app", "--host", "0.0.0.0", "--port", "4000"]
