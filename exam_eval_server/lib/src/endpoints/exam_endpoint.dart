@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:exam_eval_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -37,6 +39,40 @@ class ExamEndpoint extends Endpoint {
     var examDel =
         await Exam.db.deleteWhere(session, where: (t) => t.id.equals(examId));
     // Result Objects could be linked to this, need to figure out and code accordingly
+  }
+
+  Future<void> evaluateExam(Session session, int examId,int studentId, List<String> submittedAnswers) async {
+    final url = Uri.parse('http://locahost:4000/evaluate');
+    // Update the state to processing for evaluation
+    var examData = await Exam.db.findById(session, examId);
+    List<String> questions = [];
+    List<String> idealAnswer = [];
+    List<double> weightage = [];
+    for( int i=0;i<examData!.questions.length;i++){
+      questions.add(examData.questions[i].query);
+      idealAnswer.add(examData.questions[i].idealAnswer!);
+      weightage.add(examData.questions[i].weightage);
+    }
+    Map<String, dynamic> commandInput = {"question": questions, "ideal_answer":idealAnswer,"subjective_answer": submittedAnswers,"weightage":weightage};
+    
+    try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(commandInput),
+    );
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      // For debugging only
+      print('Output: ${responseBody['output']}');
+      // Update the status to completed evaluation
+      // Notify the user
+    } else {
+      print('Response body: ${response.body}');
+    }
+  } catch (e) {
+    print('Failed to connect to Evaluation server: $e');
+  }
   }
 
   Future<List<Exam>> fetchUserExams(Session session, int userId) async {

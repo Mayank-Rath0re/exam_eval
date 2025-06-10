@@ -12,6 +12,7 @@ from gensim.models import LdaModel
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from fastapi import FastAPI
+from typing import List
 from pydantic import BaseModel
 import json
 
@@ -204,109 +205,116 @@ def mark_score(weightage,category,final_score):
     return round((weightage*0)+((weightage*0.2 - weightage*0)*final_score))
 
 # Prediction Function
-def predict(question, ideal_answer, subjective_answer,weightage):
+def predict(questionList, idealAnswerList, subjectiveAnswerList,weightageList):
+    final_evaluation = []
     """
     Evaluate a subjective answer based on semantic similarity, keyword overlap, grammar, coherence, topic relevance, and specificity.
     """
     print("Training LDA for topic relevance")
-    train_lda_model(ideal_answers=ideal_answer)
-    # Step 1: Compute Semantic Similarity (between ideal and subjective answers)
-    print("Performing Encoding")
-    ideal_embedding = model.encode(ideal_answer, convert_to_tensor=True)
-    subjective_embedding = model.encode(subjective_answer, convert_to_tensor=True)
-    semantic_similarity = util.cos_sim(ideal_embedding, subjective_embedding).item()
+    train_lda_model(ideal_answers=idealAnswerList)
 
-    # Step 2: Compute Keyword Overlap (between ideal and subjective answers)
-    print("Computing vectors")
-    tfidf_matrix = vectorizer.fit_transform([ideal_answer, subjective_answer])
-    keyword_overlap = (tfidf_matrix * tfidf_matrix.T).toarray()[0, 1]
+    for i in range(len(questionList)):
+        question, weightage = questionList[i], weightageList[i]
+        ideal_answer, subjective_answer = idealAnswerList[i], subjectiveAnswerList[i]
 
-    # Step 3: Grammar Checking
-      # Use 'en-US' for US English
-    print("Grammar Checking")
-    matches = tool.check(subjective_answer)
-    grammar_score = 1 - (len(matches) / max(len(subjective_answer.split()), 1))  # Normalize by answer length
+        # Step 1: Compute Semantic Similarity (between ideal and subjective answers)
+        print("Performing Encoding")
+        ideal_embedding = model.encode(ideal_answer, convert_to_tensor=True)
+        subjective_embedding = model.encode(subjective_answer, convert_to_tensor=True)
+        semantic_similarity = util.cos_sim(ideal_embedding, subjective_embedding).item()
+        # Step 2: Compute Keyword Overlap (between ideal and subjective answers)
+        print("Computing vectors")
+        tfidf_matrix = vectorizer.fit_transform([ideal_answer, subjective_answer])
+        keyword_overlap = (tfidf_matrix * tfidf_matrix.T).toarray()[0, 1]
 
-    # Step 4: Coherence Analysis
-    print("Coherence Analysis")
-    coherence_score = analyze_coherence(subjective_answer)
+        # Step 3: Grammar Checking
+        # Use 'en-US' for US English
+        print("Grammar Checking")
+        matches = tool.check(subjective_answer)
+        grammar_score = 1 - (len(matches) / max(len(subjective_answer.split()), 1))  # Normalize by answer length
 
-    # Step 5: Topic Relevance Analysis
-    print("Topic Relevance")
-    relevance_score = analyze_topic_relevance(question, subjective_answer)
+        # Step 4: Coherence Analysis
+        print("Coherence Analysis")
+        coherence_score = analyze_coherence(subjective_answer)
 
-    #Step 6: Sentence Complexity Analysis
-    print("Complexity Analysis")
-    complexity_score = analyze_sentence_complexity(subjective_answer)
+        # Step 5: Topic Relevance Analysis
+        print("Topic Relevance")
+        relevance_score = analyze_topic_relevance(question, subjective_answer)
 
-    #Step 7: ANswer length
-    print("Answer Length")
-    length_score = analyze_answer_length(subjective_answer, ideal_answer)
+        #Step 6: Sentence Complexity Analysis
+        print("Complexity Analysis")
+        complexity_score = analyze_sentence_complexity(subjective_answer)
 
-    #Step 8: Categorizing answers
-    print("Answer Categorization")
-    topic_similarity = get_topic_similarity(ideal_answer, subjective_answer)
+        #Step 7: ANswer length
+        print("Answer Length")
+        length_score = analyze_answer_length(subjective_answer, ideal_answer)
+
+        #Step 8: Categorizing answers
+        print("Answer Categorization")
+        topic_similarity = get_topic_similarity(ideal_answer, subjective_answer)
 
 
-    # Step 9: Combine Scores (weighted average)
-    semantic_weight = 0.3  # Weight for semantic similarity
-    keyword_weight = 0.1 # Weight for keyword overlap
-    grammar_weight = 0.05   # Weight for grammar score
-    coherence_weight = 0.15 # Weight for coherence score
-    relevance_weight = 0.15 # Weight for topic relevance
-    length_weight = 0.1    # Weight for answer length
-    complexity_weight = 0.05 #Weight for Sentence Complexity
-    topic_weight = 0.1 #Weight for Topic Similarity
-    final_score = (
-        (semantic_weight * semantic_similarity) +
-        (keyword_weight * keyword_overlap) +
-        (grammar_weight * grammar_score) +
-        (coherence_weight * coherence_score) +
-        (relevance_weight * relevance_score) +
-        (complexity_weight * complexity_score) +
-        (length_weight * length_score) +
-        (topic_weight * topic_similarity)
-    )
+        # Step 9: Combine Scores (weighted average)
+        semantic_weight = 0.3  # Weight for semantic similarity
+        keyword_weight = 0.1 # Weight for keyword overlap
+        grammar_weight = 0.05   # Weight for grammar score
+        coherence_weight = 0.15 # Weight for coherence score
+        relevance_weight = 0.15 # Weight for topic relevance
+        length_weight = 0.1    # Weight for answer length
+        complexity_weight = 0.05 #Weight for Sentence Complexity
+        topic_weight = 0.1 #Weight for Topic Similarity
+        final_score = (
+            (semantic_weight * semantic_similarity) +
+            (keyword_weight * keyword_overlap) +
+            (grammar_weight * grammar_score) +
+            (coherence_weight * coherence_score) +
+            (relevance_weight * relevance_score) +
+            (complexity_weight * complexity_score) +
+            (length_weight * length_score) +
+            (topic_weight * topic_similarity)
+        )
 
-    #predited category
-    category = predict_answer_category(final_score,semantic_similarity,keyword_overlap,length_score,relevance_score,coherence_score,topic_similarity)
+        #predited category
+        category = predict_answer_category(final_score,semantic_similarity,keyword_overlap,length_score,relevance_score,coherence_score,topic_similarity)
 
-    #marking
-    marks = mark_score(weightage,category,final_score)
+        #marking
+        marks = mark_score(weightage,category,final_score)
 
-    data = {
-        "semantic_similarity": semantic_similarity,
-        "keyword_overlap": keyword_overlap,
-        "grammar_score": grammar_score,
-        "coherence_score": coherence_score,
-        "topic_relevance": relevance_score,
-        "complexity_score": complexity_score,
-        "length_score": length_score,
-        "topic_similarity": topic_similarity,
-        "final_score": final_score,
-        "grammar_errors": [match.ruleId for match in matches],  # List of grammar errors
-        "category": category,
-        "marks": marks
-    }
+        data = {
+            "semantic_similarity": semantic_similarity,
+            "keyword_overlap": keyword_overlap,
+            "grammar_score": grammar_score,
+            "coherence_score": coherence_score,
+            "topic_relevance": relevance_score,
+            "complexity_score": complexity_score,
+            "length_score": length_score,
+            "topic_similarity": topic_similarity,
+            "final_score": final_score,
+            "grammar_errors": [match.ruleId for match in matches],  # List of grammar errors
+            "category": category,
+            "marks": marks
+        }
+
+        final_evaluation.append(data)
 
     # Serialize to JSON
-    json_string = json.dumps(data, default=convert_to_serializable)
+    json_string = json.dumps(final_evaluation, default=convert_to_serializable)
 
     return json_string
 
 # Define the request body model
 class EvaluationRequest(BaseModel):
-    question: str
-    ideal_answer: str
-    subjective_answer: str
-    weightage: float
+    question: List[str]
+    ideal_answer: List[str]
+    subjective_answer: List[str]
+    weightage: List[float]
 
 @app.post("/evaluate")
 def evaluate_answer(data: EvaluationRequest):
     result = predict(
-        question=data.question,
-        ideal_answer=data.ideal_answer,
-        subjective_answer=data.subjective_answer,
-        weightage=data.weightage
+        questionList=data.question,
+        idealAnswerList=data.ideal_answer,
+        subjectiveAnswerList=data.subjective_answer,
+        weightageList=data.weightage
     )
     return result
