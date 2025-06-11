@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:csv/csv.dart';
 import 'package:exam_eval_client/exam_eval_client.dart';
+import 'package:exam_eval_flutter/Components/abs_eval_ques.dart';
 import 'package:exam_eval_flutter/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,9 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   int evaluatingIndex = -1;
   late Exam examData;
   bool isLoadingExam = true;
+  List<Answer> uploadedAnswers = [];
+  bool evaluatingExam = false;
+  List<int> generatingIndex = [];
 
   Future<void> pickCsvFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -69,6 +73,14 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
       isLoadingExam = false;
     });
   }
+
+  void initializeUploadedArray(int len) {
+    for(int i=0;i<len;i++){
+      uploadedAnswers.add(Answer(questionIndex: i+1, submittedAnswer: "", evaluatedScore: -1));
+    }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -240,6 +252,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                     onPressed: () {
                                       // Route to evaluate scaffold
                                       fetchExamData(csvData[i][2]);
+                                      initializeUploadedArray(examData.questions.length);
                                       setState(() {
                                         evaluatingIndex = i;
                                         currentStep++;
@@ -258,82 +271,21 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
             ] else if (currentStep == 2) ...[
               Text(csvData[evaluatingIndex][1]),
               Text("Exam ID: ${csvData[evaluatingIndex][2]}"),
-              Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Table(
-                    border: TableBorder
-                        .all(), // Optional: adds borders around cells
-                    columnWidths: const {
-                      0: FlexColumnWidth(2),
-                      1: FlexColumnWidth(3),
-                    },
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    children: [
-                      TableRow(
-                        decoration: BoxDecoration(color: Colors.grey[300]),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Question ID',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Question'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Ideal Answer'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Upload Answer'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Score'),
-                          ),
-                        ],
-                      ),
-                      if (isLoadingExam)
-                        ...[
-                        
-                      ] else ...[
-                        for (int i = 0; i < examData.questions.length; i++) ...[
-                          TableRow(
-                            decoration: BoxDecoration(color: Colors.grey[300]),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text("${i + 1}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(examData.questions[i].query),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(examData.questions[i].idealAnswer!),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                    onPressed: () {}, child: Text("Upload")),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text('Not graded'),
-                              ),
-                            ],
-                          ),
-                        ]
-                      ],
-
-                      // This data will be built after building backend
-                    ],
-                  )),
+              Row(mainAxisAlignment: MainAxisAlignment.end,children: [
+                        ElevatedButton(onPressed: () {},child: Text("Evaluate Exam"))
+                      ]),
+              const SizedBox(height: 20),
+              for (int i = 0; i < examData.questions.length; i++) ...[
+                AbsEvalQues(index: i,
+                 question: examData.questions[i],
+                 answerObj: uploadedAnswers[i],
+                 onGenerated: (val) {
+                  setState(() {
+                    uploadedAnswers[i].submittedAnswer = val;
+                  });
+                 }),
+                 const SizedBox(height: 5),
+              ],
             ],
             const SizedBox(height: 32),
             // Progress indicator
