@@ -63,6 +63,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   void goToNextStep() {
     setState(() {
       currentStep++;
+      print(currentStep);
     });
   }
 
@@ -255,7 +256,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                       initializeUploadedArray(examData.questions.length);
                                       setState(() {
                                         evaluatingIndex = i;
-                                        currentStep++;
+                                        goToNextStep();
                                       });
                                     },
                                     child: Text("Evaluate"))),
@@ -272,7 +273,31 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
               Text(csvData[evaluatingIndex][1]),
               Text("Exam ID: ${csvData[evaluatingIndex][2]}"),
               Row(mainAxisAlignment: MainAxisAlignment.end,children: [
-                        ElevatedButton(onPressed: () {},child: Text("Evaluate Exam"))
+                        ElevatedButton(onPressed: () async {
+                          bool check = true;
+                          for(int i=0;i<uploadedAnswers.length;i++){
+                            if(uploadedAnswers[i].submittedAnswer.isEmpty){
+                              showDialog(context: context, builder: (context) => AlertDialog(content: Text("Not all answers are uploaded"),));
+                              check = false;
+                              break;
+                            }
+                          }
+                          if(check){
+                            // Send for evaluation
+                            try{
+                            // ignore: unused_local_variable
+                            var evalReq = await client.exam.evaluateExam(csvData[evaluatingIndex][2],
+                             csvData[evaluatingIndex][0],
+                             uploadedAnswers.map((ans) {return ans.submittedAnswer;}).toList());
+                            setState(() {
+                              currentStep--;
+                              uploadedAnswers=[];
+                            });
+                            } catch(err) {
+                              showDialog(context: context, builder: (context) => AlertDialog(content: Text("Some error occured"),));
+                            }
+                          }
+                        },child: Text("Evaluate Exam"))
                       ]),
               const SizedBox(height: 20),
               for (int i = 0; i < examData.questions.length; i++) ...[

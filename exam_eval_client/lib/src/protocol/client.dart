@@ -144,6 +144,21 @@ class EndpointExam extends _i1.EndpointRef {
         {'examId': examId},
       );
 
+  _i2.Future<void> evaluateExam(
+    int examId,
+    int studentId,
+    List<String> submittedAnswers,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'exam',
+        'evaluateExam',
+        {
+          'examId': examId,
+          'studentId': studentId,
+          'submittedAnswers': submittedAnswers,
+        },
+      );
+
   _i2.Future<List<_i5.Exam>> fetchUserExams(int userId) =>
       caller.callServerEndpoint<List<_i5.Exam>>(
         'exam',

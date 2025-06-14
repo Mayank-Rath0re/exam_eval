@@ -3,5 +3,6 @@ table: result
 fields:
     examId: int, relation(parent=exam)
     rollNo: int
+    name: String
     finalScore: double
     answers: List<Answer>

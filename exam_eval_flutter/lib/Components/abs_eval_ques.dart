@@ -47,6 +47,7 @@ class _AbsEvalQuesState extends State<AbsEvalQues> {
               isGenerating = false;
             });
           } catch (e) {
+            showDialog(context: context, builder: (context) => AlertDialog(content: Text("$e"),));
             print("Error during OCR call: $e");
             setState(() {
               isGenerating = false;

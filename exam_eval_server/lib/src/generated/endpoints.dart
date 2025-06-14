@@ -297,6 +297,36 @@ class Endpoints extends _i1.EndpointDispatch {
             params['examId'],
           ),
         ),
+        'evaluateExam': _i1.MethodConnector(
+          name: 'evaluateExam',
+          params: {
+            'examId': _i1.ParameterDescription(
+              name: 'examId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'studentId': _i1.ParameterDescription(
+              name: 'studentId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'submittedAnswers': _i1.ParameterDescription(
+              name: 'submittedAnswers',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).evaluateExam(
+            session,
+            params['examId'],
+            params['studentId'],
+            params['submittedAnswers'],
+          ),
+        ),
         'fetchUserExams': _i1.MethodConnector(
           name: 'fetchUserExams',
           params: {

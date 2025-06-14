@@ -8,6 +8,7 @@ exam:
   - createExam:
   - editExam:
   - deleteExam:
+  - evaluateExam:
   - fetchUserExams:
   - fetchExam:
 example:
