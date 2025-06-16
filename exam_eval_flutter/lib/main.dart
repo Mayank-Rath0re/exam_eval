@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       title: 'Exam Evaluation',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: const Color(0xFF2D5A27),
+        primaryColor: Color.fromRGBO(6, 48, 43, 1),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2D5A27),
           primary: const Color(0xFF2D5A27),

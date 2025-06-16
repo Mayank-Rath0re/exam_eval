@@ -43,17 +43,15 @@ class MegaMenu extends StatelessWidget {
 
   Widget _buildDesktopMenu(BuildContext context) {
     return Container(
-      color: const Color(0xFF2D5A27),
+      color: Colors.transparent, // or remove this line completely
       child: Row(
         children: [
           _buildMenuButton('Dashboard', Icons.dashboard_outlined, 0),
-          _buildMenuButton('Task', Icons.task, 1),
-          _buildMenuButton('Report', Icons.receipt_outlined, 2),
-          _buildMenuButton('Evaluate Exam', Icons.assessment, 3),
+          _buildMenuButton('Create Exam', Icons.task, 7),
+          _buildMenuButton('Evaluate', Icons.assessment, 3),
           _buildMenuButton('Results', Icons.bar_chart, 4),
           _buildMenuButton('Settings', Icons.settings, 5),
           _buildMenuButton('Support', Icons.help, 6),
-          _buildMenuButton('Create Exam', Icons.task, 7),
         ],
       ),
     );
@@ -77,19 +75,22 @@ class MegaMenu extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: InkWell(
         onTap: () => onTabChange(index),
-        hoverColor: Colors.white.withOpacity(0.1),
+        // hoverColor: Color.fromRGBO(44, 194, 149, 1),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           child: Row(
             children: [
-              Icon(icon, color: Colors.white, size: 20),
+              Icon(icon, color: Color.fromRGBO(54, 87, 78, 1), size: 20),
               const SizedBox(width: 8),
               Text(
                 title,
                 style: const TextStyle(
-                  color: Colors.white,
+                  fontFamily:
+                      'Blanka', // 👈 Use the font family name declared in pubspec.yaml
+                  color: Color.fromRGBO(54, 87, 78, 1),
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight:
+                      FontWeight.w500, // Note: Some .otf fonts ignore this
                 ),
               ),
             ],

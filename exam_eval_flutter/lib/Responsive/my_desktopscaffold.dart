@@ -1,4 +1,5 @@
 import 'package:exam_eval_flutter/Components/mega_menu.dart';
+import 'package:exam_eval_flutter/Components/profile_listTile.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
@@ -25,34 +26,63 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFF2D5A27),
-        titleSpacing: 0,
-        title: Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Text(
-                'EXAM EVAL',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                  letterSpacing: 1.2,
-                ),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment(0.8, 0.8),
+                radius: 2.3,
+                colors: [
+                  Color.fromRGBO(247, 245, 243, 1),
+                  Color.fromRGBO(227, 221, 211, 1),
+                  Color.fromRGBO(212, 199, 130, 1),
+                  Color.fromRGBO(54, 87, 78, 1),
+                ],
+                stops: [0.0, 0.1, 0.52, 0.81],
               ),
             ),
-            const Spacer(),
-            MegaMenu(
-              onTabChange: _onTabChange,
-              isMobile: false,
-            ),
-          ],
-        ),
-        toolbarHeight: 70,
+          ),
+          Column(
+            children: [
+              _buildAppBar(),
+              Expanded(child: _buildBody()),
+            ],
+          ),
+        ],
       ),
-      body: _buildBody(),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      titleSpacing: 0,
+      title: Row(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Text(
+              'EXAM EVAL',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          const Spacer(),
+          MegaMenu(
+            onTabChange: _onTabChange,
+            isMobile: false,
+          ),
+        ],
+      ),
+      toolbarHeight: 70,
     );
   }
 
@@ -80,87 +110,104 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   }
 
   Widget _buildDashboard() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Hi, User",
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  Text("Welcome back to your dashboard",
-                      style: TextStyle(fontSize: 12)),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          // Performance container
-          Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(maxWidth: 1000),
+    return Row(
+      children: [
+        // Left Panel
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Container(
+            width: 350,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
+              color: const Color.fromRGBO(227, 221, 211, 1),
               boxShadow: const [
                 BoxShadow(
-                    color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+                  color: Colors.black26,
+                  blurRadius: 12,
+                  spreadRadius: 4,
+                  offset: Offset(0, 4),
+                ),
               ],
+              borderRadius: BorderRadius.circular(20),
             ),
-            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    const Icon(Icons.person_outline_sharp,
+                        color: Colors.black, size: 130),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Sushant Jaiswal",
+                      style: TextStyle(
+                        fontFamily: 'Axiforma',
+                        color: Color.fromRGBO(54, 87, 78, 1),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    buildProfileMenu()
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Right Scrollable Content Area
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Class Performance Overview",
-                        style: TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.bold)),
-                    Text("View all",
-                        style: TextStyle(color: Colors.blue, fontSize: 14)),
-                  ],
+                const Text(
+                  "Main Content Area",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 25),
-                Wrap(
-                  spacing: 20,
-                  runSpacing: 20,
-                  children: [
-                    _buildInfoCard("Average Score", "85", Colors.grey.shade200),
-                    _buildInfoCard(
-                        "Class Participation", "70%", Colors.grey.shade200),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                const Text("Performance Distribution",
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 25),
-                Wrap(
-                  spacing: 20,
-                  runSpacing: 20,
-                  children: [
-                    _buildInfoCard("Excellent", "5", Colors.green.shade200),
-                    _buildInfoCard("Good", "10", Colors.blue.shade200),
-                    _buildInfoCard("Average", "6", Colors.yellow.shade200),
-                    _buildInfoCard(
-                        "Needs Improvement", "7", Colors.red.shade200),
-                  ],
-                ),
+                const SizedBox(height: 20),
+                for (int i = 1; i <= 20; i++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      "Scrollable content line $i",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
               ],
             ),
           ),
-          const SizedBox(height: 25),
-          _buildHistorySection(),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildProfileMenu() {
+    return Column(
+      children: [
+        ProfileOptionTile(
+          title: 'Edit Profile',
+          onTap: () {},
+        ),
+        ProfileOptionTile(
+          title: 'Analyze Performance',
+          onTap: () {},
+        ),
+        ProfileOptionTile(
+          title: 'Activity Log',
+          onTap: () {},
+        ),
+        ProfileOptionTile(
+          title: 'Uploaded Documents',
+          onTap: () {},
+        ),
+        ProfileOptionTile(
+          title: 'Preferences',
+          onTap: () {},
+        ),
+      ],
     );
   }
 
@@ -170,7 +217,9 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       child: Container(
         height: 100,
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(20)),
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+        ),
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
