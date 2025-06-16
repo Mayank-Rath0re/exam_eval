@@ -31,7 +31,8 @@ class SettingsPage extends StatelessWidget {
               ],
             ),
             child: ListTile(
-              leading: const Icon(Icons.person_outline, color: Color(0xFF2D5A27)),
+              leading:
+                  const Icon(Icons.person_outline, color: Color(0xFF2D5A27)),
               title: const Text(
                 "Your Profile",
                 style: TextStyle(
@@ -49,4 +50,4 @@ class SettingsPage extends StatelessWidget {
       ),
     );
   }
-} 
+}

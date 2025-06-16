@@ -50,203 +50,317 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFF2D5A27),
-        titleSpacing: 0,
-        title: Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Text(
-                'EXAM EVAL',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-            const Spacer(),
-            MegaMenu(
-              onTabChange: _onTabChange,
-              isMobile: false,
-            ),
-          ],
-        ),
-        toolbarHeight: 70,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Your Profile",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-            Center(
-              child: Column(
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.person,
-                      size: 80,
-                      color: Color(0xFF2D5A27),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Editable Name TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Editable Email TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Editable Password TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Editable Date of Birth TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: dobController,
-                      decoration: const InputDecoration(
-                        labelText: 'Date of Birth',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Editable Gender TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: genderController,
-                      decoration: const InputDecoration(
-                        labelText: 'Gender',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Editable Education TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: educationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Education',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Editable Institution TextField
-                  SizedBox(
-                    width: 300,
-                    child: TextField(
-                      controller: institutionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Institution',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment(0.8, 0.8),
+                radius: 2.3,
+                colors: [
+                  Color.fromRGBO(247, 245, 243, 1),
+                  Color.fromRGBO(227, 221, 211, 1),
+                  Color.fromRGBO(212, 199, 130, 1),
+                  Color.fromRGBO(54, 87, 78, 1),
                 ],
+                stops: [0.0, 0.1, 0.52, 0.81],
               ),
             ),
-            const SizedBox(height: 40),
-            Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 500),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
+          ),
+          Column(
+            children: [
+              AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                titleSpacing: 0,
+                title: Row(
                   children: [
-                    _buildProfileItem(
-                      icon: Icons.person_outline,
-                      title: "Personal Information",
-                      onTap: () {
-                        // TODO: Implement personal information edit
-                      },
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Text(
+                        'EXAM EVAL',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
                     ),
-                    const Divider(height: 1),
-                    _buildProfileItem(
-                      icon: Icons.lock_outline,
-                      title: "Change Password",
-                      onTap: () {
-                        // TODO: Implement password change
-                      },
-                    ),
-                    const Divider(height: 1),
-                    _buildProfileItem(
-                      icon: Icons.notifications_outlined,
-                      title: "Notification Settings",
-                      onTap: () {
-                        // TODO: Implement notification settings
-                      },
+                    const Spacer(),
+                    MegaMenu(
+                      onTabChange: _onTabChange,
+                      isMobile: false,
                     ),
                   ],
                 ),
+                toolbarHeight: 70,
               ),
-            ),
-          ],
-        ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Your Profile",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(54, 87, 78, 1),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Center(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(227, 221, 211, 1),
+                                shape: BoxShape.circle,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 12,
+                                    spreadRadius: 4,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                size: 80,
+                                color: Color.fromRGBO(54, 87, 78, 1),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // Editable Name TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: nameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Name',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Editable Email TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Editable Password TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Editable Date of Birth TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: dobController,
+                                decoration: InputDecoration(
+                                  labelText: 'Date of Birth',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Editable Gender TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: genderController,
+                                decoration: InputDecoration(
+                                  labelText: 'Gender',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Editable Education TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: educationController,
+                                decoration: InputDecoration(
+                                  labelText: 'Education',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Editable Institution TextField
+                            SizedBox(
+                              width: 300,
+                              child: TextField(
+                                controller: institutionController,
+                                decoration: InputDecoration(
+                                  labelText: 'Institution',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      Center(
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 500),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(227, 221, 211, 1),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 12,
+                                spreadRadius: 4,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildProfileItem(
+                                icon: Icons.person_outline,
+                                title: "Personal Information",
+                                onTap: () {
+                                  // TODO: Implement personal information edit
+                                },
+                              ),
+                              const Divider(height: 1),
+                              _buildProfileItem(
+                                icon: Icons.lock_outline,
+                                title: "Change Password",
+                                onTap: () {
+                                  // TODO: Implement password change
+                                },
+                              ),
+                              const Divider(height: 1),
+                              _buildProfileItem(
+                                icon: Icons.notifications_outlined,
+                                title: "Notification Settings",
+                                onTap: () {
+                                  // TODO: Implement notification settings
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -257,15 +371,22 @@ class _ProfilePageState extends State<ProfilePage> {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2D5A27)),
+      leading: Icon(
+        icon,
+        color: const Color.fromRGBO(54, 87, 78, 1),
+      ),
       title: Text(
         title,
         style: const TextStyle(
-          fontSize: 16,
+          color: Color.fromRGBO(54, 87, 78, 1),
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Color.fromRGBO(54, 87, 78, 1),
+      ),
       onTap: onTap,
     );
   }
