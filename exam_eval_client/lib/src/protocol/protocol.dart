@@ -16,17 +16,20 @@ import 'example.dart' as _i4;
 import 'question.dart' as _i5;
 import 'registrations.dart' as _i6;
 import 'result.dart' as _i7;
-import 'user.dart' as _i8;
-import 'userview.dart' as _i9;
-import 'package:exam_eval_client/src/protocol/question.dart' as _i10;
-import 'package:exam_eval_client/src/protocol/exam.dart' as _i11;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i12;
+import 'result_batch.dart' as _i8;
+import 'user.dart' as _i9;
+import 'userview.dart' as _i10;
+import 'package:exam_eval_client/src/protocol/question.dart' as _i11;
+import 'package:exam_eval_client/src/protocol/result.dart' as _i12;
+import 'package:exam_eval_client/src/protocol/exam.dart' as _i13;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i14;
 export 'answer.dart';
 export 'exam.dart';
 export 'example.dart';
 export 'question.dart';
 export 'registrations.dart';
 export 'result.dart';
+export 'result_batch.dart';
 export 'user.dart';
 export 'userview.dart';
 export 'client.dart';
@@ -62,11 +65,14 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i7.Result) {
       return _i7.Result.fromJson(data) as T;
     }
-    if (t == _i8.User) {
-      return _i8.User.fromJson(data) as T;
+    if (t == _i8.ResultBatch) {
+      return _i8.ResultBatch.fromJson(data) as T;
     }
-    if (t == _i9.UserView) {
-      return _i9.UserView.fromJson(data) as T;
+    if (t == _i9.User) {
+      return _i9.User.fromJson(data) as T;
+    }
+    if (t == _i10.UserView) {
+      return _i10.UserView.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Answer?>()) {
       return (data != null ? _i2.Answer.fromJson(data) : null) as T;
@@ -86,11 +92,20 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i7.Result?>()) {
       return (data != null ? _i7.Result.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.User?>()) {
-      return (data != null ? _i8.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i8.ResultBatch?>()) {
+      return (data != null ? _i8.ResultBatch.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.UserView?>()) {
-      return (data != null ? _i9.UserView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.User?>()) {
+      return (data != null ? _i9.User.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.UserView?>()) {
+      return (data != null ? _i10.UserView.fromJson(data) : null) as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<double>) {
+      return (data as List).map((e) => deserialize<double>(e)).toList() as T;
     }
     if (t == List<_i5.Question>) {
       return (data as List).map((e) => deserialize<_i5.Question>(e)).toList()
@@ -99,25 +114,29 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<String?>) {
       return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
     }
-    if (t == List<_i2.Answer>) {
-      return (data as List).map((e) => deserialize<_i2.Answer>(e)).toList()
+    if (t == List<_i7.Result>) {
+      return (data as List).map((e) => deserialize<_i7.Result>(e)).toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
-    if (t == List<_i10.Question>) {
-      return (data as List).map((e) => deserialize<_i10.Question>(e)).toList()
+    if (t == List<_i11.Question>) {
+      return (data as List).map((e) => deserialize<_i11.Question>(e)).toList()
           as T;
     }
-    if (t == List<_i11.Exam>) {
-      return (data as List).map((e) => deserialize<_i11.Exam>(e)).toList() as T;
+    if (t == List<_i12.Result>) {
+      return (data as List).map((e) => deserialize<_i12.Result>(e)).toList()
+          as T;
+    }
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
+    }
+    if (t == List<_i13.Exam>) {
+      return (data as List).map((e) => deserialize<_i13.Exam>(e)).toList() as T;
     }
     try {
-      return _i12.Protocol().deserialize<T>(data, t);
+      return _i14.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -144,13 +163,16 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i7.Result) {
       return 'Result';
     }
-    if (data is _i8.User) {
+    if (data is _i8.ResultBatch) {
+      return 'ResultBatch';
+    }
+    if (data is _i9.User) {
       return 'User';
     }
-    if (data is _i9.UserView) {
+    if (data is _i10.UserView) {
       return 'UserView';
     }
-    className = _i12.Protocol().getClassNameForObject(data);
+    className = _i14.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -181,15 +203,18 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Result') {
       return deserialize<_i7.Result>(data['data']);
     }
+    if (dataClassName == 'ResultBatch') {
+      return deserialize<_i8.ResultBatch>(data['data']);
+    }
     if (dataClassName == 'User') {
-      return deserialize<_i8.User>(data['data']);
+      return deserialize<_i9.User>(data['data']);
     }
     if (dataClassName == 'UserView') {
-      return deserialize<_i9.UserView>(data['data']);
+      return deserialize<_i10.UserView>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i12.Protocol().deserializeByClassName(data);
+      return _i14.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

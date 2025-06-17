@@ -5,12 +5,20 @@ import 'package:exam_eval_flutter/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class AbsEvalQues extends StatefulWidget {
   final int index;
   final Question question;
-  final Answer answerObj;
+  String? uploadedAnswer;
+  final double evaluatedScore;
   final Function(String)? onGenerated;
-  const AbsEvalQues({super.key,required this.index, required this.question, required this.answerObj, required this.onGenerated});
+  AbsEvalQues(
+      {super.key,
+      required this.index,
+      required this.question,
+      required this.uploadedAnswer,
+      required this.evaluatedScore,
+      required this.onGenerated});
 
   @override
   State<AbsEvalQues> createState() => _AbsEvalQuesState();
@@ -43,11 +51,15 @@ class _AbsEvalQuesState extends State<AbsEvalQues> {
                 await client.api.imageOcr(byteData, platformFile.name);
             widget.onGenerated!(responseText);
             setState(() {
-              widget.answerObj.submittedAnswer = responseText;
+              widget.uploadedAnswer = responseText;
               isGenerating = false;
             });
           } catch (e) {
-            showDialog(context: context, builder: (context) => AlertDialog(content: Text("$e"),));
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      content: Text("$e"),
+                    ));
             print("Error during OCR call: $e");
             setState(() {
               isGenerating = false;
@@ -70,36 +82,41 @@ class _AbsEvalQuesState extends State<AbsEvalQues> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(border: Border.all(width:1), borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(children: [
-                            Text("Question: ${widget.index + 1}"),
-                            const Spacer(),
-                            Text("Final Score: ${widget.answerObj.evaluatedScore==-1 ? "Not evaluated" : widget.answerObj.evaluatedScore}")
-                          ],),
-                          const SizedBox(height: 10),
-                          Text("Question: ${widget.question.query}"),
-                          const SizedBox(height: 10),
-                          Text("Ideal Answer: ${widget.question.idealAnswer}"),
-                          const SizedBox(height: 10),
-                          if(isGenerating)...[
-                            const Center(child: CircularProgressIndicator())
-                          ] else...[
-                            if(widget.answerObj.submittedAnswer.isEmpty)...[
-                              ocrImageButton()
-                            ]else...[
-                              Text(widget.answerObj.submittedAnswer)
-                            ]
-                          ]
-                        ],
-                      ),
-                    )),
-                );
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+          decoration: BoxDecoration(
+              border: Border.all(width: 1),
+              borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text("Question: ${widget.index + 1}"),
+                    const Spacer(),
+                    Text(
+                        "Final Score: ${widget.evaluatedScore == -1 ? "Not evaluated" : widget.evaluatedScore}")
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text("Question: ${widget.question.query}"),
+                const SizedBox(height: 10),
+                Text("Ideal Answer: ${widget.question.idealAnswer}"),
+                const SizedBox(height: 10),
+                if (isGenerating) ...[
+                  const Center(child: CircularProgressIndicator())
+                ] else ...[
+                  if (widget.uploadedAnswer == null) ...[
+                    ocrImageButton()
+                  ] else ...[
+                    Text(widget.uploadedAnswer!)
+                  ]
+                ]
+              ],
+            ),
+          )),
+    );
   }
 }

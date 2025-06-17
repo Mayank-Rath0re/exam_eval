@@ -1,6 +1,5 @@
 class: Answer
 table: answer
 fields:
-    questionIndex: int
-    submittedAnswer: String
-    evaluatedScore: double
+    submittedAnswer: List<String>
+    evaluatedScore: List<double>

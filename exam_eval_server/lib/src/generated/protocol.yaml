@@ -8,8 +8,11 @@ exam:
   - createExam:
   - editExam:
   - deleteExam:
+  - createResultBatch:
+  - saveAnswers:
   - evaluateExam:
   - fetchUserExams:
   - fetchExam:
+  - fetchAnswer:
 example:
   - hello:

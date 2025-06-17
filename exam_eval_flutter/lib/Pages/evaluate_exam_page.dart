@@ -18,10 +18,11 @@ class EvaluateExamPage extends StatefulWidget {
 class _EvaluateExamPageState extends State<EvaluateExamPage> {
   bool csvUploaded = false;
   List<List<dynamic>> csvData = [];
+  late List<Result> resultData;
   int evaluatingIndex = -1;
   late Exam examData;
   bool isLoadingExam = true;
-  List<Answer> uploadedAnswers = [];
+  Answer? uploadedAnswers;
   bool evaluatingExam = false;
   List<int> generatingIndex = [];
 
@@ -76,12 +77,24 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   }
 
   void initializeUploadedArray(int len) {
-    for(int i=0;i<len;i++){
-      uploadedAnswers.add(Answer(questionIndex: i+1, submittedAnswer: "", evaluatedScore: -1));
+    for (int i = 0; i < len; i++) {
+      setState(() {
+        uploadedAnswers!.submittedAnswer.add("");
+        uploadedAnswers!.evaluatedScore.add(-1);
+      });
     }
   }
 
-  
+  void answerBuild(int answerId) async {
+    var answerObj = await client.exam.fetchAnswer(answerId);
+    if (answerObj!.submittedAnswer.isEmpty) {
+      initializeUploadedArray(examData.questions.length);
+    } else {
+      setState(() {
+        uploadedAnswers = answerObj;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +189,25 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                         width: 180,
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: goToNextStep,
+                          onPressed: () async {
+                            var resultInfo =
+                                await client.exam.createResultBatch(
+                                    sessionManager.signedInUser!.id!,
+                                    csvData[0].map((studentId) {
+                                      return int.parse(studentId);
+                                    }).toList(),
+                                    csvData[0].map((studentName) {
+                                      return "$studentName";
+                                    }).toList(),
+                                    csvData[3].map((examId) {
+                                      return int.parse(examId);
+                                    }).toList());
+                            setState(() {
+                              resultData = resultInfo;
+                              csvData = [];
+                            });
+                            goToNextStep;
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF624B8A),
                             foregroundColor: Colors.white,
@@ -195,6 +226,14 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                 ),
               ),
             ] else if (currentStep == 1) ...[
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    currentStep--;
+                  });
+                },
+              ),
               // Display CSV as a table
               if (csvData.isNotEmpty &&
                   csvData.any((row) => row
@@ -228,38 +267,49 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
+                            child: Text('Final Score'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: Text('Required Action'),
                           ),
                         ],
                       ),
-                      for (int i = 0; i < csvData.length; i++) ...[
+                      for (int i = 0; i < resultData.length; i++) ...[
                         TableRow(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("${csvData[i][0]}"),
+                              child: Text("${resultData[i].rollNo}"),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("${csvData[i][1]}"),
+                              child: Text(resultData[i].name),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("${csvData[i][2]}"),
+                              child: Text("${resultData[i].examId}"),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: resultData[i].status != "Evaluated"
+                                  ? Text(resultData[i].status)
+                                  : Text("${resultData[i].finalScore}"),
                             ),
                             Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton(
                                     onPressed: () {
                                       // Route to evaluate scaffold
-                                      fetchExamData(csvData[i][2]);
-                                      initializeUploadedArray(examData.questions.length);
+                                      fetchExamData(resultData[i].examId);
+                                      initializeUploadedArray(
+                                          examData.questions.length);
                                       setState(() {
                                         evaluatingIndex = i;
                                         goToNextStep();
                                       });
                                     },
-                                    child: Text("Evaluate"))),
+                                    child: Text("Upload"))),
                           ],
                         ),
                       ],
@@ -270,46 +320,94 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                 const Text('No CSV data to display or all cells are empty.'),
               ],
             ] else if (currentStep == 2) ...[
-              Text(csvData[evaluatingIndex][1]),
-              Text("Exam ID: ${csvData[evaluatingIndex][2]}"),
-              Row(mainAxisAlignment: MainAxisAlignment.end,children: [
-                        ElevatedButton(onPressed: () async {
-                          bool check = true;
-                          for(int i=0;i<uploadedAnswers.length;i++){
-                            if(uploadedAnswers[i].submittedAnswer.isEmpty){
-                              showDialog(context: context, builder: (context) => AlertDialog(content: Text("Not all answers are uploaded"),));
-                              check = false;
-                              break;
-                            }
-                          }
-                          if(check){
-                            // Send for evaluation
-                            try{
-                            // ignore: unused_local_variable
-                            var evalReq = await client.exam.evaluateExam(csvData[evaluatingIndex][2],
-                             csvData[evaluatingIndex][0],
-                             uploadedAnswers.map((ans) {return ans.submittedAnswer;}).toList());
-                            setState(() {
-                              currentStep--;
-                              uploadedAnswers=[];
-                            });
-                            } catch(err) {
-                              showDialog(context: context, builder: (context) => AlertDialog(content: Text("Some error occured"),));
-                            }
-                          }
-                        },child: Text("Evaluate Exam"))
-                      ]),
+              Text(resultData[evaluatingIndex].name),
+              Text("Exam ID: ${resultData[evaluatingIndex].examId}"),
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                content: Center(child: Text("Save Changes?")),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          currentStep--;
+                                        });
+                                      },
+                                      child: Text("Discard")),
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        // Save Draft
+                                        await client.exam
+                                            .saveAnswers(uploadedAnswers!);
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          currentStep--;
+                                        });
+                                      },
+                                      child: Text("Save"))
+                                ],
+                              ));
+                    },
+                    icon: Icon(Icons.arrow_back)),
+                const Spacer(),
+                ElevatedButton(
+                    onPressed: () async {
+                      bool check = true;
+                      for (int i = 0;
+                          i < uploadedAnswers!.submittedAnswer.length;
+                          i++) {
+                        if (uploadedAnswers!.submittedAnswer[i].isEmpty) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    content:
+                                        Text("Not all answers are uploaded"),
+                                  ));
+                          check = false;
+                          break;
+                        }
+                      }
+                      if (check) {
+                        // Send for evaluation
+                        try {
+                          await client.exam.saveAnswers(uploadedAnswers!);
+                          // ignore: unused_local_variable
+                          var evalReq = await client.exam.evaluateExam(
+                              resultData[evaluatingIndex].examId,
+                              resultData[evaluatingIndex].rollNo,
+                              resultData[evaluatingIndex].answers);
+                          setState(() {
+                            currentStep--;
+                            uploadedAnswers = null;
+                          });
+                        } catch (err) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    content: Text("Some error occured"),
+                                  ));
+                        }
+                      }
+                    },
+                    child: Text("Evaluate Exam"))
+              ]),
               const SizedBox(height: 20),
               for (int i = 0; i < examData.questions.length; i++) ...[
-                AbsEvalQues(index: i,
-                 question: examData.questions[i],
-                 answerObj: uploadedAnswers[i],
-                 onGenerated: (val) {
-                  setState(() {
-                    uploadedAnswers[i].submittedAnswer = val;
-                  });
-                 }),
-                 const SizedBox(height: 5),
+                AbsEvalQues(
+                    index: i,
+                    question: examData.questions[i],
+                    uploadedAnswer: uploadedAnswers!.submittedAnswer[i],
+                    evaluatedScore: uploadedAnswers!.evaluatedScore[i],
+                    onGenerated: (val) {
+                      setState(() {
+                        uploadedAnswers!.submittedAnswer[i] = val;
+                      });
+                    }),
+                const SizedBox(height: 5),
               ],
             ],
             const SizedBox(height: 32),

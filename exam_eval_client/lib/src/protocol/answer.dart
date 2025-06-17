@@ -14,24 +14,25 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class Answer implements _i1.SerializableModel {
   Answer._({
     this.id,
-    required this.questionIndex,
     required this.submittedAnswer,
     required this.evaluatedScore,
   });
 
   factory Answer({
     int? id,
-    required int questionIndex,
-    required String submittedAnswer,
-    required double evaluatedScore,
+    required List<String> submittedAnswer,
+    required List<double> evaluatedScore,
   }) = _AnswerImpl;
 
   factory Answer.fromJson(Map<String, dynamic> jsonSerialization) {
     return Answer(
       id: jsonSerialization['id'] as int?,
-      questionIndex: jsonSerialization['questionIndex'] as int,
-      submittedAnswer: jsonSerialization['submittedAnswer'] as String,
-      evaluatedScore: (jsonSerialization['evaluatedScore'] as num).toDouble(),
+      submittedAnswer: (jsonSerialization['submittedAnswer'] as List)
+          .map((e) => e as String)
+          .toList(),
+      evaluatedScore: (jsonSerialization['evaluatedScore'] as List)
+          .map((e) => (e as num).toDouble())
+          .toList(),
     );
   }
 
@@ -40,28 +41,24 @@ abstract class Answer implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
-  int questionIndex;
+  List<String> submittedAnswer;
 
-  String submittedAnswer;
-
-  double evaluatedScore;
+  List<double> evaluatedScore;
 
   /// Returns a shallow copy of this [Answer]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   Answer copyWith({
     int? id,
-    int? questionIndex,
-    String? submittedAnswer,
-    double? evaluatedScore,
+    List<String>? submittedAnswer,
+    List<double>? evaluatedScore,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'questionIndex': questionIndex,
-      'submittedAnswer': submittedAnswer,
-      'evaluatedScore': evaluatedScore,
+      'submittedAnswer': submittedAnswer.toJson(),
+      'evaluatedScore': evaluatedScore.toJson(),
     };
   }
 
@@ -76,12 +73,10 @@ class _Undefined {}
 class _AnswerImpl extends Answer {
   _AnswerImpl({
     int? id,
-    required int questionIndex,
-    required String submittedAnswer,
-    required double evaluatedScore,
+    required List<String> submittedAnswer,
+    required List<double> evaluatedScore,
   }) : super._(
           id: id,
-          questionIndex: questionIndex,
           submittedAnswer: submittedAnswer,
           evaluatedScore: evaluatedScore,
         );
@@ -92,15 +87,15 @@ class _AnswerImpl extends Answer {
   @override
   Answer copyWith({
     Object? id = _Undefined,
-    int? questionIndex,
-    String? submittedAnswer,
-    double? evaluatedScore,
+    List<String>? submittedAnswer,
+    List<double>? evaluatedScore,
   }) {
     return Answer(
       id: id is int? ? id : this.id,
-      questionIndex: questionIndex ?? this.questionIndex,
-      submittedAnswer: submittedAnswer ?? this.submittedAnswer,
-      evaluatedScore: evaluatedScore ?? this.evaluatedScore,
+      submittedAnswer:
+          submittedAnswer ?? this.submittedAnswer.map((e0) => e0).toList(),
+      evaluatedScore:
+          evaluatedScore ?? this.evaluatedScore.map((e0) => e0).toList(),
     );
   }
 }

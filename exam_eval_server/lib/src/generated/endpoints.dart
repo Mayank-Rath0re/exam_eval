@@ -16,7 +16,8 @@ import '../endpoints/exam_endpoint.dart' as _i4;
 import '../endpoints/example_endpoint.dart' as _i5;
 import 'dart:typed_data' as _i6;
 import 'package:exam_eval_server/src/generated/question.dart' as _i7;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i8;
+import 'package:exam_eval_server/src/generated/answer.dart' as _i8;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i9;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -297,6 +298,60 @@ class Endpoints extends _i1.EndpointDispatch {
             params['examId'],
           ),
         ),
+        'createResultBatch': _i1.MethodConnector(
+          name: 'createResultBatch',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'studentId': _i1.ParameterDescription(
+              name: 'studentId',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+            'studentName': _i1.ParameterDescription(
+              name: 'studentName',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+            'examId': _i1.ParameterDescription(
+              name: 'examId',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).createResultBatch(
+            session,
+            params['userId'],
+            params['studentId'],
+            params['studentName'],
+            params['examId'],
+          ),
+        ),
+        'saveAnswers': _i1.MethodConnector(
+          name: 'saveAnswers',
+          params: {
+            'answerObj': _i1.ParameterDescription(
+              name: 'answerObj',
+              type: _i1.getType<_i8.Answer>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).saveAnswers(
+            session,
+            params['answerObj'],
+          ),
+        ),
         'evaluateExam': _i1.MethodConnector(
           name: 'evaluateExam',
           params: {
@@ -310,9 +365,9 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
-            'submittedAnswers': _i1.ParameterDescription(
-              name: 'submittedAnswers',
-              type: _i1.getType<List<String>>(),
+            'answerId': _i1.ParameterDescription(
+              name: 'answerId',
+              type: _i1.getType<int>(),
               nullable: false,
             ),
           },
@@ -324,7 +379,7 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['examId'],
             params['studentId'],
-            params['submittedAnswers'],
+            params['answerId'],
           ),
         ),
         'fetchUserExams': _i1.MethodConnector(
@@ -363,6 +418,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['examId'],
           ),
         ),
+        'fetchAnswer': _i1.MethodConnector(
+          name: 'fetchAnswer',
+          params: {
+            'answerId': _i1.ParameterDescription(
+              name: 'answerId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).fetchAnswer(
+            session,
+            params['answerId'],
+          ),
+        ),
       },
     );
     connectors['example'] = _i1.EndpointConnector(
@@ -389,6 +462,6 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
-    modules['serverpod_auth'] = _i8.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i9.Endpoints()..initializeEndpoints(server);
   }
 }

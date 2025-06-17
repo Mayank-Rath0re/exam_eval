@@ -10,14 +10,15 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'answer.dart' as _i2;
 
 abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
   Result._({
     this.id,
     required this.examId,
     required this.rollNo,
+    required this.name,
     required this.finalScore,
+    required this.status,
     required this.answers,
   });
 
@@ -25,8 +26,10 @@ abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
     int? id,
     required int examId,
     required int rollNo,
+    required String name,
     required double finalScore,
-    required List<_i2.Answer> answers,
+    required String status,
+    required int answers,
   }) = _ResultImpl;
 
   factory Result.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,10 +37,10 @@ abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
       id: jsonSerialization['id'] as int?,
       examId: jsonSerialization['examId'] as int,
       rollNo: jsonSerialization['rollNo'] as int,
+      name: jsonSerialization['name'] as String,
       finalScore: (jsonSerialization['finalScore'] as num).toDouble(),
-      answers: (jsonSerialization['answers'] as List)
-          .map((e) => _i2.Answer.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      status: jsonSerialization['status'] as String,
+      answers: jsonSerialization['answers'] as int,
     );
   }
 
@@ -52,9 +55,13 @@ abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
 
   int rollNo;
 
+  String name;
+
   double finalScore;
 
-  List<_i2.Answer> answers;
+  String status;
+
+  int answers;
 
   @override
   _i1.Table get table => t;
@@ -66,8 +73,10 @@ abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
     int? id,
     int? examId,
     int? rollNo,
+    String? name,
     double? finalScore,
-    List<_i2.Answer>? answers,
+    String? status,
+    int? answers,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,8 +84,10 @@ abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
       if (id != null) 'id': id,
       'examId': examId,
       'rollNo': rollNo,
+      'name': name,
       'finalScore': finalScore,
-      'answers': answers.toJson(valueToJson: (v) => v.toJson()),
+      'status': status,
+      'answers': answers,
     };
   }
 
@@ -86,8 +97,10 @@ abstract class Result implements _i1.TableRow, _i1.ProtocolSerialization {
       if (id != null) 'id': id,
       'examId': examId,
       'rollNo': rollNo,
+      'name': name,
       'finalScore': finalScore,
-      'answers': answers.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'status': status,
+      'answers': answers,
     };
   }
 
@@ -128,13 +141,17 @@ class _ResultImpl extends Result {
     int? id,
     required int examId,
     required int rollNo,
+    required String name,
     required double finalScore,
-    required List<_i2.Answer> answers,
+    required String status,
+    required int answers,
   }) : super._(
           id: id,
           examId: examId,
           rollNo: rollNo,
+          name: name,
           finalScore: finalScore,
+          status: status,
           answers: answers,
         );
 
@@ -146,15 +163,19 @@ class _ResultImpl extends Result {
     Object? id = _Undefined,
     int? examId,
     int? rollNo,
+    String? name,
     double? finalScore,
-    List<_i2.Answer>? answers,
+    String? status,
+    int? answers,
   }) {
     return Result(
       id: id is int? ? id : this.id,
       examId: examId ?? this.examId,
       rollNo: rollNo ?? this.rollNo,
+      name: name ?? this.name,
       finalScore: finalScore ?? this.finalScore,
-      answers: answers ?? this.answers.map((e0) => e0.copyWith()).toList(),
+      status: status ?? this.status,
+      answers: answers ?? this.answers,
     );
   }
 }
@@ -169,11 +190,19 @@ class ResultTable extends _i1.Table {
       'rollNo',
       this,
     );
+    name = _i1.ColumnString(
+      'name',
+      this,
+    );
     finalScore = _i1.ColumnDouble(
       'finalScore',
       this,
     );
-    answers = _i1.ColumnSerializable(
+    status = _i1.ColumnString(
+      'status',
+      this,
+    );
+    answers = _i1.ColumnInt(
       'answers',
       this,
     );
@@ -183,16 +212,22 @@ class ResultTable extends _i1.Table {
 
   late final _i1.ColumnInt rollNo;
 
+  late final _i1.ColumnString name;
+
   late final _i1.ColumnDouble finalScore;
 
-  late final _i1.ColumnSerializable answers;
+  late final _i1.ColumnString status;
+
+  late final _i1.ColumnInt answers;
 
   @override
   List<_i1.Column> get columns => [
         id,
         examId,
         rollNo,
+        name,
         finalScore,
+        status,
         answers,
       ];
 }

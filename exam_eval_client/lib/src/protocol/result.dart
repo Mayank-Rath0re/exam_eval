@@ -10,14 +10,15 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'answer.dart' as _i2;
 
 abstract class Result implements _i1.SerializableModel {
   Result._({
     this.id,
     required this.examId,
     required this.rollNo,
+    required this.name,
     required this.finalScore,
+    required this.status,
     required this.answers,
   });
 
@@ -25,8 +26,10 @@ abstract class Result implements _i1.SerializableModel {
     int? id,
     required int examId,
     required int rollNo,
+    required String name,
     required double finalScore,
-    required List<_i2.Answer> answers,
+    required String status,
+    required int answers,
   }) = _ResultImpl;
 
   factory Result.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,10 +37,10 @@ abstract class Result implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       examId: jsonSerialization['examId'] as int,
       rollNo: jsonSerialization['rollNo'] as int,
+      name: jsonSerialization['name'] as String,
       finalScore: (jsonSerialization['finalScore'] as num).toDouble(),
-      answers: (jsonSerialization['answers'] as List)
-          .map((e) => _i2.Answer.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      status: jsonSerialization['status'] as String,
+      answers: jsonSerialization['answers'] as int,
     );
   }
 
@@ -50,9 +53,13 @@ abstract class Result implements _i1.SerializableModel {
 
   int rollNo;
 
+  String name;
+
   double finalScore;
 
-  List<_i2.Answer> answers;
+  String status;
+
+  int answers;
 
   /// Returns a shallow copy of this [Result]
   /// with some or all fields replaced by the given arguments.
@@ -61,8 +68,10 @@ abstract class Result implements _i1.SerializableModel {
     int? id,
     int? examId,
     int? rollNo,
+    String? name,
     double? finalScore,
-    List<_i2.Answer>? answers,
+    String? status,
+    int? answers,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -70,8 +79,10 @@ abstract class Result implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'examId': examId,
       'rollNo': rollNo,
+      'name': name,
       'finalScore': finalScore,
-      'answers': answers.toJson(valueToJson: (v) => v.toJson()),
+      'status': status,
+      'answers': answers,
     };
   }
 
@@ -88,13 +99,17 @@ class _ResultImpl extends Result {
     int? id,
     required int examId,
     required int rollNo,
+    required String name,
     required double finalScore,
-    required List<_i2.Answer> answers,
+    required String status,
+    required int answers,
   }) : super._(
           id: id,
           examId: examId,
           rollNo: rollNo,
+          name: name,
           finalScore: finalScore,
+          status: status,
           answers: answers,
         );
 
@@ -106,15 +121,19 @@ class _ResultImpl extends Result {
     Object? id = _Undefined,
     int? examId,
     int? rollNo,
+    String? name,
     double? finalScore,
-    List<_i2.Answer>? answers,
+    String? status,
+    int? answers,
   }) {
     return Result(
       id: id is int? ? id : this.id,
       examId: examId ?? this.examId,
       rollNo: rollNo ?? this.rollNo,
+      name: name ?? this.name,
       finalScore: finalScore ?? this.finalScore,
-      answers: answers ?? this.answers.map((e0) => e0.copyWith()).toList(),
+      status: status ?? this.status,
+      answers: answers ?? this.answers,
     );
   }
 }

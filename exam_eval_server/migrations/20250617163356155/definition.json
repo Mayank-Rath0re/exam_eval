@@ -15,22 +15,16 @@
           "dartType": "int?"
         },
         {
-          "name": "questionIndex",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
           "name": "submittedAnswer",
-          "columnType": 0,
+          "columnType": 8,
           "isNullable": false,
-          "dartType": "String"
+          "dartType": "List<String>"
         },
         {
           "name": "evaluatedScore",
-          "columnType": 3,
+          "columnType": 8,
           "isNullable": false,
-          "dartType": "double"
+          "dartType": "List<double>"
         }
       ],
       "foreignKeys": [],
@@ -275,16 +269,28 @@
           "dartType": "int"
         },
         {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
           "name": "finalScore",
           "columnType": 3,
           "isNullable": false,
           "dartType": "double"
         },
         {
-          "name": "answers",
-          "columnType": 8,
+          "name": "status",
+          "columnType": 0,
           "isNullable": false,
-          "dartType": "List<protocol:Answer>"
+          "dartType": "String"
+        },
+        {
+          "name": "answers",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
         }
       ],
       "foreignKeys": [
@@ -300,11 +306,93 @@
           ],
           "onUpdate": 3,
           "onDelete": 3
+        },
+        {
+          "constraintName": "result_fk_1",
+          "columns": [
+            "answers"
+          ],
+          "referenceTable": "answer",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "result_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "result_batch",
+      "dartName": "ResultBatch",
+      "module": "exam_eval",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "nextval('result_batch_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "uploadedBy",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "name": "uploadedAt",
+          "columnType": 4,
+          "isNullable": false,
+          "dartType": "DateTime"
+        },
+        {
+          "name": "isDraft",
+          "columnType": 1,
+          "isNullable": false,
+          "dartType": "bool"
+        },
+        {
+          "name": "contents",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:Result>"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "result_batch_fk_0",
+          "columns": [
+            "uploadedBy"
+          ],
+          "referenceTable": "user",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "result_batch_pkey",
           "elements": [
             {
               "type": 0,
@@ -2147,7 +2235,7 @@
   "installedModules": [
     {
       "module": "exam_eval",
-      "version": "20250612135509005"
+      "version": "20250617163356155"
     },
     {
       "module": "serverpod",

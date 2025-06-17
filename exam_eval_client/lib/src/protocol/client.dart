@@ -13,9 +13,11 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:exam_eval_client/src/protocol/question.dart' as _i4;
-import 'package:exam_eval_client/src/protocol/exam.dart' as _i5;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
-import 'protocol.dart' as _i7;
+import 'package:exam_eval_client/src/protocol/result.dart' as _i5;
+import 'package:exam_eval_client/src/protocol/answer.dart' as _i6;
+import 'package:exam_eval_client/src/protocol/exam.dart' as _i7;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
+import 'protocol.dart' as _i9;
 
 /// {@category Endpoint}
 class EndpointAccount extends _i1.EndpointRef {
@@ -144,10 +146,34 @@ class EndpointExam extends _i1.EndpointRef {
         {'examId': examId},
       );
 
+  _i2.Future<List<_i5.Result>> createResultBatch(
+    int userId,
+    List<int> studentId,
+    List<String> studentName,
+    List<int> examId,
+  ) =>
+      caller.callServerEndpoint<List<_i5.Result>>(
+        'exam',
+        'createResultBatch',
+        {
+          'userId': userId,
+          'studentId': studentId,
+          'studentName': studentName,
+          'examId': examId,
+        },
+      );
+
+  _i2.Future<void> saveAnswers(_i6.Answer answerObj) =>
+      caller.callServerEndpoint<void>(
+        'exam',
+        'saveAnswers',
+        {'answerObj': answerObj},
+      );
+
   _i2.Future<void> evaluateExam(
     int examId,
     int studentId,
-    List<String> submittedAnswers,
+    int answerId,
   ) =>
       caller.callServerEndpoint<void>(
         'exam',
@@ -155,22 +181,29 @@ class EndpointExam extends _i1.EndpointRef {
         {
           'examId': examId,
           'studentId': studentId,
-          'submittedAnswers': submittedAnswers,
+          'answerId': answerId,
         },
       );
 
-  _i2.Future<List<_i5.Exam>> fetchUserExams(int userId) =>
-      caller.callServerEndpoint<List<_i5.Exam>>(
+  _i2.Future<List<_i7.Exam>> fetchUserExams(int userId) =>
+      caller.callServerEndpoint<List<_i7.Exam>>(
         'exam',
         'fetchUserExams',
         {'userId': userId},
       );
 
-  _i2.Future<_i5.Exam> fetchExam(int examId) =>
-      caller.callServerEndpoint<_i5.Exam>(
+  _i2.Future<_i7.Exam> fetchExam(int examId) =>
+      caller.callServerEndpoint<_i7.Exam>(
         'exam',
         'fetchExam',
         {'examId': examId},
+      );
+
+  _i2.Future<_i6.Answer?> fetchAnswer(int answerId) =>
+      caller.callServerEndpoint<_i6.Answer?>(
+        'exam',
+        'fetchAnswer',
+        {'answerId': answerId},
       );
 }
 
@@ -190,10 +223,10 @@ class EndpointExample extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    auth = _i6.Caller(client);
+    auth = _i8.Caller(client);
   }
 
-  late final _i6.Caller auth;
+  late final _i8.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -212,7 +245,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i7.Protocol(),
+          _i9.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

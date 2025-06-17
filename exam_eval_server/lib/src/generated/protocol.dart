@@ -18,16 +18,19 @@ import 'example.dart' as _i6;
 import 'question.dart' as _i7;
 import 'registrations.dart' as _i8;
 import 'result.dart' as _i9;
-import 'user.dart' as _i10;
-import 'userview.dart' as _i11;
-import 'package:exam_eval_server/src/generated/question.dart' as _i12;
-import 'package:exam_eval_server/src/generated/exam.dart' as _i13;
+import 'result_batch.dart' as _i10;
+import 'user.dart' as _i11;
+import 'userview.dart' as _i12;
+import 'package:exam_eval_server/src/generated/question.dart' as _i13;
+import 'package:exam_eval_server/src/generated/result.dart' as _i14;
+import 'package:exam_eval_server/src/generated/exam.dart' as _i15;
 export 'answer.dart';
 export 'exam.dart';
 export 'example.dart';
 export 'question.dart';
 export 'registrations.dart';
 export 'result.dart';
+export 'result_batch.dart';
 export 'user.dart';
 export 'userview.dart';
 
@@ -53,22 +56,16 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'answer_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'questionIndex',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
           name: 'submittedAnswer',
-          columnType: _i2.ColumnType.text,
+          columnType: _i2.ColumnType.json,
           isNullable: false,
-          dartType: 'String',
+          dartType: 'List<String>',
         ),
         _i2.ColumnDefinition(
           name: 'evaluatedScore',
-          columnType: _i2.ColumnType.doublePrecision,
+          columnType: _i2.ColumnType.json,
           isNullable: false,
-          dartType: 'double',
+          dartType: 'List<double>',
         ),
       ],
       foreignKeys: [],
@@ -311,16 +308,28 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
           name: 'finalScore',
           columnType: _i2.ColumnType.doublePrecision,
           isNullable: false,
           dartType: 'double',
         ),
         _i2.ColumnDefinition(
-          name: 'answers',
-          columnType: _i2.ColumnType.json,
+          name: 'status',
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'List<protocol:Answer>',
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'answers',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
         ),
       ],
       foreignKeys: [
@@ -333,11 +342,88 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.noAction,
           matchType: null,
-        )
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'result_fk_1',
+          columns: ['answers'],
+          referenceTable: 'answer',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'result_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'result_batch',
+      dartName: 'ResultBatch',
+      schema: 'public',
+      module: 'exam_eval',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'result_batch_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'uploadedBy',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'uploadedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDraft',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'contents',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<protocol:Result>',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'result_batch_fk_0',
+          columns: ['uploadedBy'],
+          referenceTable: 'user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'result_batch_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -515,11 +601,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i9.Result) {
       return _i9.Result.fromJson(data) as T;
     }
-    if (t == _i10.User) {
-      return _i10.User.fromJson(data) as T;
+    if (t == _i10.ResultBatch) {
+      return _i10.ResultBatch.fromJson(data) as T;
     }
-    if (t == _i11.UserView) {
-      return _i11.UserView.fromJson(data) as T;
+    if (t == _i11.User) {
+      return _i11.User.fromJson(data) as T;
+    }
+    if (t == _i12.UserView) {
+      return _i12.UserView.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.Answer?>()) {
       return (data != null ? _i4.Answer.fromJson(data) : null) as T;
@@ -539,11 +628,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i9.Result?>()) {
       return (data != null ? _i9.Result.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.User?>()) {
-      return (data != null ? _i10.User.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.ResultBatch?>()) {
+      return (data != null ? _i10.ResultBatch.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.UserView?>()) {
-      return (data != null ? _i11.UserView.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.User?>()) {
+      return (data != null ? _i11.User.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.UserView?>()) {
+      return (data != null ? _i12.UserView.fromJson(data) : null) as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<double>) {
+      return (data as List).map((e) => deserialize<double>(e)).toList() as T;
     }
     if (t == List<_i7.Question>) {
       return (data as List).map((e) => deserialize<_i7.Question>(e)).toList()
@@ -552,22 +650,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<String?>) {
       return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
     }
-    if (t == List<_i4.Answer>) {
-      return (data as List).map((e) => deserialize<_i4.Answer>(e)).toList()
+    if (t == List<_i9.Result>) {
+      return (data as List).map((e) => deserialize<_i9.Result>(e)).toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
-    if (t == List<_i12.Question>) {
-      return (data as List).map((e) => deserialize<_i12.Question>(e)).toList()
+    if (t == List<_i13.Question>) {
+      return (data as List).map((e) => deserialize<_i13.Question>(e)).toList()
           as T;
     }
-    if (t == List<_i13.Exam>) {
-      return (data as List).map((e) => deserialize<_i13.Exam>(e)).toList() as T;
+    if (t == List<_i14.Result>) {
+      return (data as List).map((e) => deserialize<_i14.Result>(e)).toList()
+          as T;
+    }
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
+    }
+    if (t == List<_i15.Exam>) {
+      return (data as List).map((e) => deserialize<_i15.Exam>(e)).toList() as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -600,10 +702,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i9.Result) {
       return 'Result';
     }
-    if (data is _i10.User) {
+    if (data is _i10.ResultBatch) {
+      return 'ResultBatch';
+    }
+    if (data is _i11.User) {
       return 'User';
     }
-    if (data is _i11.UserView) {
+    if (data is _i12.UserView) {
       return 'UserView';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -641,11 +746,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Result') {
       return deserialize<_i9.Result>(data['data']);
     }
+    if (dataClassName == 'ResultBatch') {
+      return deserialize<_i10.ResultBatch>(data['data']);
+    }
     if (dataClassName == 'User') {
-      return deserialize<_i10.User>(data['data']);
+      return deserialize<_i11.User>(data['data']);
     }
     if (dataClassName == 'UserView') {
-      return deserialize<_i11.UserView>(data['data']);
+      return deserialize<_i12.UserView>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -683,10 +791,12 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i8.Registrations.t;
       case _i9.Result:
         return _i9.Result.t;
-      case _i10.User:
-        return _i10.User.t;
-      case _i11.UserView:
-        return _i11.UserView.t;
+      case _i10.ResultBatch:
+        return _i10.ResultBatch.t;
+      case _i11.User:
+        return _i11.User.t;
+      case _i12.UserView:
+        return _i12.UserView.t;
     }
     return null;
   }

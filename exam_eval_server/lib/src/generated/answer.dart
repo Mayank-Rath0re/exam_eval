@@ -14,24 +14,25 @@ import 'package:serverpod/serverpod.dart' as _i1;
 abstract class Answer implements _i1.TableRow, _i1.ProtocolSerialization {
   Answer._({
     this.id,
-    required this.questionIndex,
     required this.submittedAnswer,
     required this.evaluatedScore,
   });
 
   factory Answer({
     int? id,
-    required int questionIndex,
-    required String submittedAnswer,
-    required double evaluatedScore,
+    required List<String> submittedAnswer,
+    required List<double> evaluatedScore,
   }) = _AnswerImpl;
 
   factory Answer.fromJson(Map<String, dynamic> jsonSerialization) {
     return Answer(
       id: jsonSerialization['id'] as int?,
-      questionIndex: jsonSerialization['questionIndex'] as int,
-      submittedAnswer: jsonSerialization['submittedAnswer'] as String,
-      evaluatedScore: (jsonSerialization['evaluatedScore'] as num).toDouble(),
+      submittedAnswer: (jsonSerialization['submittedAnswer'] as List)
+          .map((e) => e as String)
+          .toList(),
+      evaluatedScore: (jsonSerialization['evaluatedScore'] as List)
+          .map((e) => (e as num).toDouble())
+          .toList(),
     );
   }
 
@@ -42,11 +43,9 @@ abstract class Answer implements _i1.TableRow, _i1.ProtocolSerialization {
   @override
   int? id;
 
-  int questionIndex;
+  List<String> submittedAnswer;
 
-  String submittedAnswer;
-
-  double evaluatedScore;
+  List<double> evaluatedScore;
 
   @override
   _i1.Table get table => t;
@@ -56,17 +55,15 @@ abstract class Answer implements _i1.TableRow, _i1.ProtocolSerialization {
   @_i1.useResult
   Answer copyWith({
     int? id,
-    int? questionIndex,
-    String? submittedAnswer,
-    double? evaluatedScore,
+    List<String>? submittedAnswer,
+    List<double>? evaluatedScore,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'questionIndex': questionIndex,
-      'submittedAnswer': submittedAnswer,
-      'evaluatedScore': evaluatedScore,
+      'submittedAnswer': submittedAnswer.toJson(),
+      'evaluatedScore': evaluatedScore.toJson(),
     };
   }
 
@@ -74,9 +71,8 @@ abstract class Answer implements _i1.TableRow, _i1.ProtocolSerialization {
   Map<String, dynamic> toJsonForProtocol() {
     return {
       if (id != null) 'id': id,
-      'questionIndex': questionIndex,
-      'submittedAnswer': submittedAnswer,
-      'evaluatedScore': evaluatedScore,
+      'submittedAnswer': submittedAnswer.toJson(),
+      'evaluatedScore': evaluatedScore.toJson(),
     };
   }
 
@@ -115,12 +111,10 @@ class _Undefined {}
 class _AnswerImpl extends Answer {
   _AnswerImpl({
     int? id,
-    required int questionIndex,
-    required String submittedAnswer,
-    required double evaluatedScore,
+    required List<String> submittedAnswer,
+    required List<double> evaluatedScore,
   }) : super._(
           id: id,
-          questionIndex: questionIndex,
           submittedAnswer: submittedAnswer,
           evaluatedScore: evaluatedScore,
         );
@@ -131,45 +125,38 @@ class _AnswerImpl extends Answer {
   @override
   Answer copyWith({
     Object? id = _Undefined,
-    int? questionIndex,
-    String? submittedAnswer,
-    double? evaluatedScore,
+    List<String>? submittedAnswer,
+    List<double>? evaluatedScore,
   }) {
     return Answer(
       id: id is int? ? id : this.id,
-      questionIndex: questionIndex ?? this.questionIndex,
-      submittedAnswer: submittedAnswer ?? this.submittedAnswer,
-      evaluatedScore: evaluatedScore ?? this.evaluatedScore,
+      submittedAnswer:
+          submittedAnswer ?? this.submittedAnswer.map((e0) => e0).toList(),
+      evaluatedScore:
+          evaluatedScore ?? this.evaluatedScore.map((e0) => e0).toList(),
     );
   }
 }
 
 class AnswerTable extends _i1.Table {
   AnswerTable({super.tableRelation}) : super(tableName: 'answer') {
-    questionIndex = _i1.ColumnInt(
-      'questionIndex',
-      this,
-    );
-    submittedAnswer = _i1.ColumnString(
+    submittedAnswer = _i1.ColumnSerializable(
       'submittedAnswer',
       this,
     );
-    evaluatedScore = _i1.ColumnDouble(
+    evaluatedScore = _i1.ColumnSerializable(
       'evaluatedScore',
       this,
     );
   }
 
-  late final _i1.ColumnInt questionIndex;
+  late final _i1.ColumnSerializable submittedAnswer;
 
-  late final _i1.ColumnString submittedAnswer;
-
-  late final _i1.ColumnDouble evaluatedScore;
+  late final _i1.ColumnSerializable evaluatedScore;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        questionIndex,
         submittedAnswer,
         evaluatedScore,
       ];

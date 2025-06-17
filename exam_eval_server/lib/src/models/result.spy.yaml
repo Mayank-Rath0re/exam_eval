@@ -5,4 +5,5 @@ fields:
     rollNo: int
     name: String
     finalScore: double
-    answers: List<Answer>
+    status: String
+    answers: int, relation(parent=answer)
