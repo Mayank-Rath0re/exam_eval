@@ -64,20 +64,24 @@ class _ResultsPageState extends State<ResultsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Results'),
-        backgroundColor: const Color(0xFF2D5A27),
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          gradient: RadialGradient(
+            center: Alignment(0.8, 0.8),
+            radius: 2.8,
             colors: [
-              Colors.green.shade50,
-              Colors.white,
+              Color.fromRGBO(247, 245, 243, 1),
+              Color.fromRGBO(227, 221, 211, 1),
+              Color.fromRGBO(212, 199, 130, 1),
+              Color.fromRGBO(54, 87, 78, 1),
             ],
+            stops: [0.0, 0.1, 0.52, 0.81],
           ),
         ),
         child: Center(
@@ -96,7 +100,7 @@ class _ResultsPageState extends State<ResultsPage>
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2D5A27),
+                          color: const Color.fromRGBO(54, 87, 78, 1),
                         ),
                       ),
                       const SizedBox(height: 30),
@@ -214,8 +218,8 @@ class _ExamResultCardState extends State<ExamResultCard>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.lightBlue.shade300,
-                  Colors.blue.shade600,
+                  Color.fromRGBO(227, 221, 211, 1),
+                  Color.fromRGBO(220, 209, 190, 1),
                 ],
               ),
             ),
@@ -234,13 +238,13 @@ class _ExamResultCardState extends State<ExamResultCard>
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.transparent,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Icon(
                             Icons.book_outlined,
                             size: 64,
-                            color: Colors.white,
+                            color: Color.fromRGBO(54, 87, 78, 1),
                           ),
                         ),
                       );
@@ -252,7 +256,6 @@ class _ExamResultCardState extends State<ExamResultCard>
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 22,
-                      color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -301,7 +304,7 @@ class _ExamResultCardState extends State<ExamResultCard>
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade700,
+                            color: Color.fromRGBO(54, 87, 78, 1),
                           ),
                         ),
                       ),

@@ -93,6 +93,10 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
           print("User canceled the picker or no bytes returned");
         }
       },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+        foregroundColor: Colors.white,
+      ),
       child: Text(
         "Upload from Image",
         style: TextStyle(
@@ -133,6 +137,10 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                         onPressed: () {
                           Navigator.pushNamed(context, '/dashboard');
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                          foregroundColor: Colors.white,
+                        ),
                         child: Text("Back to Dashboard"))
                   ],
                 )));
@@ -171,56 +179,158 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: ListView(
-        shrinkWrap: true,
-        children: isLoading
-            ? [const Center(child: CircularProgressIndicator())]
-            : [
-                if (widget.mode == 2) ...[
-                  Text("Title"),
-                  TextField(
-                    controller: titleController,
-                  ),
-                  const SizedBox(height: 10),
-                  Text("Duration"),
-                  TextField(
-                    controller: durationController,
-                  ),
-                  const SizedBox(height: 10),
-                  Text("Marks"),
-                  TextField(
-                    controller: marksController,
-                  ),
-                  const SizedBox(height: 10),
-                ],
-                Row(
-                  children: [
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          center: Alignment(0.8, 0.8),
+          radius: 2.3,
+          colors: [
+            Color.fromRGBO(247, 245, 243, 1),
+            Color.fromRGBO(227, 221, 211, 1),
+            Color.fromRGBO(212, 199, 130, 1),
+            Color.fromRGBO(54, 87, 78, 1),
+          ],
+          stops: [0.0, 0.1, 0.52, 0.81],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: ListView(
+          shrinkWrap: true,
+          children: isLoading
+              ? [const Center(child: CircularProgressIndicator())]
+              : [
+                  if (widget.mode == 2) ...[
                     Text(
-                        "Questions Weightage: $weightCalculation/${widget.marks}"),
-                    const Spacer(),
-                    ElevatedButton(
-                        onPressed: () {
-                          var questionObj =
-                              Question(query: "", images: [], weightage: 0);
-                          setState(() {
-                            editIndex = questions.length;
-                            questions.add(questionObj);
-                          });
-                        },
-                        child: Text("Create New Question")),
+                      "Title",
+                      style: TextStyle(
+                        color: Color.fromRGBO(54, 87, 78, 1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(54, 87, 78, 1),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Duration",
+                      style: TextStyle(
+                        color: Color.fromRGBO(54, 87, 78, 1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextField(
+                      controller: durationController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(54, 87, 78, 1),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Marks",
+                      style: TextStyle(
+                        color: Color.fromRGBO(54, 87, 78, 1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextField(
+                      controller: marksController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            color: Color.fromRGBO(54, 87, 78, 1),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                   ],
-                ),
-                const SizedBox(height: 20),
-                if (questions.isNotEmpty) ...[
-                  for (int i = 0; i < questions.length; i++) ...[
-                    if (i == editIndex) ...[
-                      Container(
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(227, 221, 211, 1),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 12,
+                          spreadRadius: 4,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Questions Weightage: $weightCalculation/${widget.marks}",
+                          style: const TextStyle(
+                            color: Color.fromRGBO(54, 87, 78, 1),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        ElevatedButton(
+                          onPressed: () {
+                            var questionObj =
+                                Question(query: "", images: [], weightage: 0);
+                            setState(() {
+                              editIndex = questions.length;
+                              questions.add(questionObj);
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text("Create New Question"),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (questions.isNotEmpty) ...[
+                    for (int i = 0; i < questions.length; i++) ...[
+                      if (i == editIndex) ...[
+                        Container(
                           decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 1, color: const Color(0xFF2D5A27)),
-                              borderRadius: BorderRadius.circular(6)),
+                            color: const Color.fromRGBO(227, 221, 211, 1),
+                            border: Border.all(
+                              width: 1,
+                              color: const Color.fromRGBO(54, 87, 78, 1),
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 12,
+                                spreadRadius: 4,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Column(
@@ -229,130 +339,157 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                 Row(
                                   children: [
                                     SizedBox(
-                                        width: 100,
-                                        child: TextField(
-                                            decoration: InputDecoration(
-                                                hintText: "Weight"),
-                                            controller: weightageController)),
+                                      width: 100,
+                                      child: TextField(
+                                        decoration: InputDecoration(
+                                          hintText: "Weight",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(15),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(15),
+                                            borderSide: const BorderSide(
+                                              color: Color.fromRGBO(54, 87, 78, 1),
+                                            ),
+                                          ),
+                                        ),
+                                        controller: weightageController,
+                                      ),
+                                    ),
                                     const Spacer(),
                                     ElevatedButton(
-                                        onPressed: () {
-                                          var questionObjEdited = Question(
-                                              query: questionController.text,
-                                              idealAnswer:
-                                                  idealAnswerController.text,
-                                              images: [],
-                                              weightage: double.parse(
-                                                  weightageController.text));
-                                          questions[i] = questionObjEdited;
-                                          double newWeightage =
-                                              calculateWeightage();
-                                          questionController.text = "";
-                                          idealAnswerController.text = "";
-                                          weightageController.text = "";
-                                          setState(() {
-                                            editIndex = -1;
-                                            weightCalculation = newWeightage;
-                                          });
-                                        },
-                                        child: Text(
-                                          "Save",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              decoration:
-                                                  TextDecoration.underline),
-                                        ))
+                                      onPressed: () {
+                                        var questionObjEdited = Question(
+                                          query: questionController.text,
+                                          idealAnswer: idealAnswerController.text,
+                                          images: [],
+                                          weightage: double.parse(
+                                            weightageController.text,
+                                          ),
+                                        );
+                                        questions[i] = questionObjEdited;
+                                        double newWeightage = calculateWeightage();
+                                        questionController.text = "";
+                                        idealAnswerController.text = "";
+                                        weightageController.text = "";
+                                        setState(() {
+                                          editIndex = -1;
+                                          weightCalculation = newWeightage;
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Text(
+                                        "Save",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                Text("Question: ${i + 1}"),
+                                Text(
+                                  "Question: ${i + 1}",
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 const SizedBox(height: 10),
                                 TextField(
-                                    minLines: 1,
-                                    maxLines: 5,
-                                    decoration:
-                                        InputDecoration(hintText: "Question"),
-                                    controller: questionController),
+                                  minLines: 1,
+                                  maxLines: 5,
+                                  decoration: InputDecoration(
+                                    hintText: "Question",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Color.fromRGBO(54, 87, 78, 1),
+                                      ),
+                                    ),
+                                  ),
+                                  controller: questionController,
+                                ),
                                 const SizedBox(height: 10),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     ocrImageButton(),
-                                    /*
-                              ElevatedButton(
-                                  onPressed: () async {
-                                    FilePickerResult? result =
-                                        await FilePicker.platform.pickFiles(
-                                      type: FileType.image,
-                                      withData:
-                                          true, // This is important for Web to get file bytes
-                                    );
-      
-                                    if (result != null &&
-                                        result.files.single.bytes != null) {
-                                      setState(() {
-                                        isGenerating = true;
-                                      });
-      
-                                      final platformFile = result.files.single;
-                                      final bytes = platformFile.bytes!;
-                                      final byteData =
-                                          ByteData.view(bytes.buffer);
-      
-                                      print(
-                                          "Picked file name: ${platformFile.name}");
-                                      // You can now use the list of image file paths
-                                      ocrImage(
-                                          byteData, result.files.single.name);
-                                    } else {
-                                      print("User canceled the picker");
-                                    }
-                                  },
-                                  child: Text(
-                                    "Upload from Image",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        decoration: TextDecoration.underline),
-                                  )),*/
                                     ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            isGenerating = true;
-                                          });
-                                          generateAnswer(
-                                              questionController.text);
-                                        },
-                                        child: Text(
-                                          "Write with Gemini",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              decoration:
-                                                  TextDecoration.underline),
-                                        ))
+                                      onPressed: () {
+                                        setState(() {
+                                          isGenerating = true;
+                                        });
+                                        generateAnswer(questionController.text);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Text(
+                                        "Write with Gemini",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(height: 10),
                                 if (isGenerating) ...[
                                   Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [CircularProgressIndicator()])
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [CircularProgressIndicator()],
+                                  )
                                 ] else ...[
                                   TextField(
-                                      minLines: 1,
-                                      maxLines: 15,
-                                      decoration: InputDecoration(
-                                          hintText: "Ideal Answer"),
-                                      controller: idealAnswerController)
+                                    minLines: 1,
+                                    maxLines: 15,
+                                    decoration: InputDecoration(
+                                      hintText: "Ideal Answer",
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        borderSide: const BorderSide(
+                                          color: Color.fromRGBO(54, 87, 78, 1),
+                                        ),
+                                      ),
+                                    ),
+                                    controller: idealAnswerController,
+                                  )
                                 ],
                               ],
                             ),
-                          )),
-                    ] else ...[
-                      Container(
-                          decoration:
-                              BoxDecoration(border: Border.all(width: 1)),
+                          ),
+                        ),
+                      ] else ...[
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(227, 221, 211, 1),
+                            border: Border.all(
+                              width: 1,
+                              color: const Color.fromRGBO(54, 87, 78, 1),
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 12,
+                                spreadRadius: 4,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Column(
@@ -363,67 +500,96 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                     Text(
                                       "Weightage: ",
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        color: Color.fromRGBO(54, 87, 78, 1),
+                                      ),
                                     ),
                                     const SizedBox(width: 10),
-                                    Text("${questions[i].weightage}"),
+                                    Text(
+                                      "${questions[i].weightage}",
+                                      style: const TextStyle(
+                                        color: Color.fromRGBO(54, 87, 78, 1),
+                                      ),
+                                    ),
                                     const Spacer(),
                                     TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            editIndex = i;
-                                            questionController.text =
-                                                questions[i].query;
-                                            idealAnswerController.text =
-                                                questions[i].idealAnswer!;
-                                            weightageController.text =
-                                                "${questions[i].weightage}";
-                                          });
-                                        },
-                                        child: Text(
-                                          "Edit",
-                                          style: TextStyle(
-                                              color: const Color(0xFF2D5A27),
-                                              decoration:
-                                                  TextDecoration.underline),
-                                        ))
+                                      onPressed: () {
+                                        setState(() {
+                                          editIndex = i;
+                                          questionController.text = questions[i].query;
+                                          idealAnswerController.text = questions[i].idealAnswer!;
+                                          weightageController.text = "${questions[i].weightage}";
+                                        });
+                                      },
+                                      child: Text(
+                                        "Edit",
+                                        style: TextStyle(
+                                          color: const Color.fromRGBO(54, 87, 78, 1),
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
                                   "Question: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
                                 ),
-                                Text(questions[i].query),
+                                Text(
+                                  questions[i].query,
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                ),
                                 const SizedBox(height: 10),
                                 Text(
                                   "Ideal Answer: ",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
                                 ),
                                 const SizedBox(height: 5),
-                                Text(questions[i].idealAnswer!),
+                                Text(
+                                  questions[i].idealAnswer!,
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  ),
+                                ),
                               ],
                             ),
-                          )),
-                    ],
-                    const SizedBox(height: 10),
-                  ]
-                ],
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Spacer(),
-                    ElevatedButton(
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 10),
+                    ]
+                  ],
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      ElevatedButton(
                         onPressed: submitExam,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                          foregroundColor: Colors.white,
+                        ),
                         child: Text(
                           "Submit Paper",
                           style: TextStyle(
-                              color: Colors.white,
-                              decoration: TextDecoration.underline),
-                        ))
-                  ],
-                )
-              ],
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+        ),
       ),
     );
   }

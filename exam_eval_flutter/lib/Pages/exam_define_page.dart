@@ -91,7 +91,7 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                               child: Icon(
                                 Icons.book,
                                 size: 64,
-                                color: const Color(0xFF2D5A27),
+                                color: const Color.fromRGBO(54, 87, 78, 1),
                               ),
                             ),
                           );
@@ -189,7 +189,8 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                           },
                           //onPressed: _nextPage,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2D5A27),
+                            backgroundColor:
+                                const Color.fromRGBO(54, 87, 78, 1),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -215,8 +216,40 @@ class _ExamDefinePageState extends State<ExamDefinePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: Padding(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (currentPage > 0) {
+              setState(() {
+                currentPage = 0;
+              });
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        title: const Text('Create Exam'),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0.8, 0.8),
+            radius: 2.8,
+            colors: [
+              Color.fromRGBO(247, 245, 243, 1),
+              Color.fromRGBO(227, 221, 211, 1),
+              Color.fromRGBO(212, 199, 130, 1),
+              Color.fromRGBO(54, 87, 78, 1),
+            ],
+            stops: [0.0, 0.1, 0.52, 0.81],
+          ),
+        ),
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: ListView(
             children: [
@@ -226,12 +259,15 @@ class _ExamDefinePageState extends State<ExamDefinePage>
                 Text("Structure Question Paper"),
                 const SizedBox(height: 25),
                 ExamCreateEdit(
-                    title: _titleController.text,
-                    duration: double.parse(_durationController.text),
-                    marks: int.parse(_marksController.text))
+                  title: _titleController.text,
+                  duration: double.parse(_durationController.text),
+                  marks: int.parse(_marksController.text),
+                )
               ]
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
