@@ -1,5 +1,6 @@
 import 'package:exam_eval_flutter/Components/mega_menu.dart';
 import 'package:exam_eval_flutter/Components/profile_listTile.dart';
+import 'package:exam_eval_flutter/Components/upcoming_exam_tile.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
@@ -112,7 +113,6 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   Widget _buildDashboard() {
     return Row(
       children: [
-        // Left Panel
         Padding(
           padding: const EdgeInsets.all(20.0),
           child: Container(
@@ -155,29 +155,100 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
             ),
           ),
         ),
-
-        // Right Scrollable Content Area
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Main Content Area",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                for (int i = 1; i <= 20; i++)
+          child: ListView(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      "Scrollable content line $i",
-                      style: const TextStyle(fontSize: 16),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 280,
+                      width: 350,
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(227, 221, 211, 1),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 12,
+                            spreadRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Metric to be Planned",
+                          style: TextStyle(
+                            fontFamily: 'Axiforma',
+                            color: Color.fromRGBO(54, 87, 78, 1),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-              ],
-            ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 280,
+                      width: 350,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(227, 221, 211, 1),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 12,
+                            spreadRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ListView(
+                        children: [Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Upcoming Exam",
+                              style: TextStyle(
+                                fontFamily: 'Axiforma',
+                                color: Color.fromRGBO(54, 87, 78, 1),
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            UpcomingExamTile(
+                              subject: "Software Engineering",
+                              examType: "Final",
+                              date: "12th June 2025",
+                              onTap: null,
+                            ),
+                            UpcomingExamTile(
+                              subject: "AI",
+                              examType: "Final",
+                              date: "17th June 2025",
+                              onTap: null,
+                            ),
+                            UpcomingExamTile(
+                              subject: "Machine Learning",
+                              examType: "Final",
+                              date: "20th June 2025",
+                              onTap: null,
+                            ),
+                          ],
+                        ),
+                ]),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
@@ -254,7 +325,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           Column(
             children: List.generate(3, (index) {
               return InkWell(
-                onTap: () => print("Tapped on Unit ${index + 1}"),
+                onTap: () => print("Tapped on Unit \${index + 1}"),
                 borderRadius: BorderRadius.circular(15),
                 child: Container(
                   margin:
@@ -277,7 +348,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Unit ${index + 1}",
+                          Text("Unit \${index + 1}",
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const Text("Artificial Intelligence",
