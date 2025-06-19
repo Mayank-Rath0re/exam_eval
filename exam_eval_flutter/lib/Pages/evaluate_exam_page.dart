@@ -99,7 +99,19 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          center: Alignment(0.8, 0.8),
+          radius: 2.3,
+          colors: [
+            Color.fromRGBO(247, 245, 243, 1),
+            Color.fromRGBO(227, 221, 211, 1),
+            Color.fromRGBO(212, 199, 130, 1),
+            Color.fromRGBO(54, 87, 78, 1),
+          ],
+          stops: [0.0, 0.1, 0.52, 0.81],
+        ),
+      ),
       width: double.infinity,
       height: double.infinity,
       child: Center(
@@ -112,11 +124,15 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                     const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6DD5FA), Color(0xFF2980F2)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
+                  color: const Color.fromRGBO(227, 221, 211, 1),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 12,
+                      spreadRadius: 4,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -126,8 +142,8 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(32),
                         border: Border.all(
-                          color: const Color(0xFF624B8A),
-                          width: 6,
+                          color: const Color.fromRGBO(54, 87, 78, 1),
+                          width: 3,
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(
@@ -137,31 +153,31 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 20,
-                          color: Colors.black,
+                          color: Color.fromRGBO(54, 87, 78, 1),
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
                     const Divider(
-                      color: Colors.white,
-                      thickness: 3,
+                      color: Color.fromRGBO(54, 87, 78, 1),
+                      thickness: 2,
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
                       onPressed: pickCsvFile,
                       icon: const Icon(Icons.upload_file,
-                          color: Color(0xFF624B8A)),
+                          color: Color.fromRGBO(54, 87, 78, 1)),
                       label: const Text(
                         'Upload CSV',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF624B8A),
+                          color: Color.fromRGBO(54, 87, 78, 1),
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF624B8A),
+                        foregroundColor: const Color.fromRGBO(54, 87, 78, 1),
                         elevation: 2,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 32,
@@ -177,7 +193,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                       const Text(
                         'CSV uploaded',
                         style: TextStyle(
-                          color: Color(0xFF624B8A),
+                          color: Color.fromRGBO(54, 87, 78, 1),
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
@@ -209,7 +225,8 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                             goToNextStep;
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF624B8A),
+                            backgroundColor:
+                                const Color.fromRGBO(54, 87, 78, 1),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
@@ -227,7 +244,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
               ),
             ] else if (currentStep == 1) ...[
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   setState(() {
                     currentStep--;
@@ -240,88 +257,154 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                       .any((cell) => cell.toString().trim().isNotEmpty))) ...[
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Table(
-                    border: TableBorder
-                        .all(), // Optional: adds borders around cells
-                    columnWidths: const {
-                      0: FlexColumnWidth(2),
-                      1: FlexColumnWidth(3),
-                    },
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    children: [
-                      TableRow(
-                        decoration: BoxDecoration(color: Colors.grey[300]),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Student ID',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Student Name'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Exam ID'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Final Score'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('Required Action'),
-                          ),
-                        ],
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(227, 221, 211, 1),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 12,
+                          spreadRadius: 4,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Table(
+                      border: TableBorder.all(
+                        color: const Color.fromRGBO(54, 87, 78, 1),
+                        width: 1.5,
                       ),
-                      for (int i = 0; i < resultData.length; i++) ...[
+                      columnWidths: const {
+                        0: FlexColumnWidth(2),
+                        1: FlexColumnWidth(3),
+                      },
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
                         TableRow(
+                          decoration: const BoxDecoration(
+                            color: Color.fromRGBO(212, 199, 130, 0.2),
+                          ),
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("${resultData[i].rollNo}"),
+                              child: Text('Student ID',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  )),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(resultData[i].name),
+                              child: Text('Student Name',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  )),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("${resultData[i].examId}"),
+                              child: Text('Exam ID',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  )),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: resultData[i].status != "Evaluated"
-                                  ? Text(resultData[i].status)
-                                  : Text("${resultData[i].finalScore}"),
+                              child: Text('Final Score',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  )),
                             ),
                             Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      // Route to evaluate scaffold
-                                      fetchExamData(resultData[i].examId);
-                                      initializeUploadedArray(
-                                          examData.questions.length);
-                                      setState(() {
-                                        evaluatingIndex = i;
-                                        goToNextStep();
-                                      });
-                                    },
-                                    child: Text("Upload"))),
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text('Required Action',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                  )),
+                            ),
                           ],
                         ),
+                        for (int i = 0; i < resultData.length; i++) ...[
+                          TableRow(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("${resultData[i].rollNo}",
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(resultData[i].name,
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text("${resultData[i].examId}",
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                    )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: resultData[i].status != "Evaluated"
+                                    ? Text(resultData[i].status,
+                                        style: const TextStyle(
+                                          color: Color.fromRGBO(54, 87, 78, 1),
+                                        ))
+                                    : Text("${resultData[i].finalScore}",
+                                        style: const TextStyle(
+                                          color: Color.fromRGBO(54, 87, 78, 1),
+                                        )),
+                              ),
+                              Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        // Route to evaluate scaffold
+                                        fetchExamData(resultData[i].examId);
+                                        initializeUploadedArray(
+                                            examData.questions.length);
+                                        setState(() {
+                                          evaluatingIndex = i;
+                                          goToNextStep();
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color.fromRGBO(54, 87, 78, 1),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text("Upload"))),
+                            ],
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ] else ...[
                 const Text('No CSV data to display or all cells are empty.'),
               ],
             ] else if (currentStep == 2) ...[
-              Text(resultData[evaluatingIndex].name),
-              Text("Exam ID: ${resultData[evaluatingIndex].examId}"),
+              Text(resultData[evaluatingIndex].name,
+                  style: const TextStyle(
+                    color: Color.fromRGBO(54, 87, 78, 1),
+                    fontWeight: FontWeight.bold,
+                  )),
+              Text("Exam ID: ",
+                  style: const TextStyle(
+                    color: Color.fromRGBO(54, 87, 78, 1),
+                    fontWeight: FontWeight.bold,
+                  )),
+              Text("${resultData[evaluatingIndex].examId}",
+                  style: const TextStyle(
+                    color: Color.fromRGBO(54, 87, 78, 1),
+                  )),
               Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 IconButton(
                     onPressed: () {
@@ -337,7 +420,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                           currentStep--;
                                         });
                                       },
-                                      child: Text("Discard")),
+                                      child: const Text("Discard")),
                                   ElevatedButton(
                                       onPressed: () async {
                                         // Save Draft
@@ -348,11 +431,16 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                           currentStep--;
                                         });
                                       },
-                                      child: Text("Save"))
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color.fromRGBO(54, 87, 78, 1),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text("Save"))
                                 ],
                               ));
                     },
-                    icon: Icon(Icons.arrow_back)),
+                    icon: const Icon(Icons.arrow_back)),
                 const Spacer(),
                 ElevatedButton(
                     onPressed: () async {
@@ -364,8 +452,8 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                           showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                    content:
-                                        Text("Not all answers are uploaded"),
+                                    content: const Text(
+                                        "Not all answers are uploaded"),
                                   ));
                           check = false;
                           break;
@@ -388,12 +476,16 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                           showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                    content: Text("Some error occured"),
+                                    content: const Text("Some error occured"),
                                   ));
                         }
                       }
                     },
-                    child: Text("Evaluate Exam"))
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text("Evaluate Exam"))
               ]),
               const SizedBox(height: 20),
               for (int i = 0; i < examData.questions.length; i++) ...[
