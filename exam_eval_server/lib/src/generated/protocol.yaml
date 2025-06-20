@@ -14,5 +14,6 @@ exam:
   - fetchUserExams:
   - fetchExam:
   - fetchAnswer:
+  - fetchResultBatch:
 example:
   - hello:

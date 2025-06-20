@@ -20,8 +20,8 @@ import 'result_batch.dart' as _i8;
 import 'user.dart' as _i9;
 import 'userview.dart' as _i10;
 import 'package:exam_eval_client/src/protocol/question.dart' as _i11;
-import 'package:exam_eval_client/src/protocol/result.dart' as _i12;
-import 'package:exam_eval_client/src/protocol/exam.dart' as _i13;
+import 'package:exam_eval_client/src/protocol/exam.dart' as _i12;
+import 'package:exam_eval_client/src/protocol/result_batch.dart' as _i13;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i14;
 export 'answer.dart';
 export 'exam.dart';
@@ -125,15 +125,19 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i11.Question>(e)).toList()
           as T;
     }
-    if (t == List<_i12.Result>) {
-      return (data as List).map((e) => deserialize<_i12.Result>(e)).toList()
-          as T;
+    if (t == List<dynamic>) {
+      return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i13.Exam>) {
-      return (data as List).map((e) => deserialize<_i13.Exam>(e)).toList() as T;
+    if (t == List<_i12.Exam>) {
+      return (data as List).map((e) => deserialize<_i12.Exam>(e)).toList() as T;
+    }
+    if (t == List<_i13.ResultBatch>) {
+      return (data as List)
+          .map((e) => deserialize<_i13.ResultBatch>(e))
+          .toList() as T;
     }
     try {
       return _i14.Protocol().deserialize<T>(data, t);

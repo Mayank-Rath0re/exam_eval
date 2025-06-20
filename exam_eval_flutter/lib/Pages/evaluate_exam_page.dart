@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:csv/csv.dart';
 import 'package:exam_eval_client/exam_eval_client.dart';
 import 'package:exam_eval_flutter/Components/abs_eval_ques.dart';
+import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,23 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
   bool csvUploaded = false;
   List<List<dynamic>> csvData = [];
   late List<Result> resultData;
+  late List<ResultBatch> resultBatches;
+  bool isLoading = true;
   int evaluatingIndex = -1;
   late Exam examData;
   bool isLoadingExam = true;
   Answer? uploadedAnswers;
   bool evaluatingExam = false;
   List<int> generatingIndex = [];
+
+  void getResultBatches() async {
+    var resultBatchInfo =
+        await client.exam.fetchResultBatch(sessionManager.signedInUser!.id!);
+    setState(() {
+      resultBatches = resultBatchInfo;
+      isLoading = false;
+    });
+  }
 
   Future<void> pickCsvFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -68,12 +80,31 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
     });
   }
 
-  void fetchExamData(int examId) async {
-    var examInfo = await client.exam.fetchExam(examId);
-    setState(() {
-      examData = examInfo;
-      isLoadingExam = false;
-    });
+  void prepareData(int evalIndex) async {
+    try {
+      var examInfo = await client.exam.fetchExam(resultData[evalIndex].examId);
+      var answerObj =
+          await client.exam.fetchAnswer(resultData[evalIndex].answers);
+      if (answerObj == null) {
+        initializeUploadedArray(examInfo.questions.length);
+      } else {
+        setState(() {
+          uploadedAnswers = answerObj;
+        });
+      }
+      setState(() {
+        examData = examInfo;
+        isLoadingExam = false;
+        evaluatingIndex = evalIndex;
+      });
+      goToNextStep();
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: Text(err.toString()),
+              ));
+    }
   }
 
   void initializeUploadedArray(int len) {
@@ -85,15 +116,12 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
     }
   }
 
-  void answerBuild(int answerId) async {
-    var answerObj = await client.exam.fetchAnswer(answerId);
-    if (answerObj!.submittedAnswer.isEmpty) {
-      initializeUploadedArray(examData.questions.length);
-    } else {
-      setState(() {
-        uploadedAnswers = answerObj;
-      });
-    }
+  void answerBuild(int answerId) async {}
+
+  @override
+  void initState() {
+    getResultBatches();
+    super.initState();
   }
 
   @override
@@ -182,31 +210,45 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                           fontSize: 16,
                         ),
                       ),
-                    ],
-                    if (csvUploaded) ...[
                       const SizedBox(height: 32),
                       SizedBox(
                         width: 180,
                         height: 48,
                         child: ElevatedButton(
                           onPressed: () async {
-                            var resultInfo =
-                                await client.exam.createResultBatch(
-                                    sessionManager.signedInUser!.id!,
-                                    csvData[0].map((studentId) {
-                                      return int.parse(studentId);
-                                    }).toList(),
-                                    csvData[0].map((studentName) {
-                                      return "$studentName";
-                                    }).toList(),
-                                    csvData[3].map((examId) {
-                                      return int.parse(examId);
-                                    }).toList());
-                            setState(() {
-                              resultData = resultInfo;
-                              csvData = [];
-                            });
-                            goToNextStep;
+                            try {
+                              // Extract the respective columns from rows
+                              List<int> studentIds = csvData
+                                  .map((row) => int.parse(row[0].toString()))
+                                  .toList();
+                              List<String> studentNames = csvData
+                                  .map((row) => row[1].toString())
+                                  .toList();
+                              List<int> examIds = csvData
+                                  .map((row) => int.parse(row[2].toString()))
+                                  .toList();
+
+                              var resultInfo =
+                                  await client.exam.createResultBatch(
+                                sessionManager.signedInUser!.id!,
+                                studentIds,
+                                studentNames,
+                                examIds,
+                              );
+
+                              setState(() {
+                                resultData = resultInfo;
+                                csvData = [];
+                              });
+
+                              goToNextStep();
+                            } catch (err) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        content: Text(err.toString()),
+                                      ));
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF624B8A),
@@ -222,6 +264,32 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                         ),
                       ),
                     ],
+                    const SizedBox(height: 10),
+                    Text("Your Result Drafts"),
+                    const SizedBox(height: 10),
+                    if (isLoading) ...[
+                      CircularProgressIndicator()
+                    ] else ...[
+                      for (int i = 0; i < resultBatches.length; i++) ...[
+                        Container(
+                          child: Column(
+                            children: [
+                              Text(
+                                  "${resultBatches[i].uploadedAt} - ${resultBatches[i].isDraft ? "Draft" : "Completed"}"),
+                              const SizedBox(height: 5),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      resultData = resultBatches[i].contents;
+                                    });
+                                    goToNextStep();
+                                  },
+                                  child: Text("Continue"))
+                            ],
+                          ),
+                        )
+                      ]
+                    ]
                   ],
                 ),
               ),
@@ -235,9 +303,7 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                 },
               ),
               // Display CSV as a table
-              if (csvData.isNotEmpty &&
-                  csvData.any((row) => row
-                      .any((cell) => cell.toString().trim().isNotEmpty))) ...[
+              if (resultData.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Table(
@@ -301,15 +367,9 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                 child: ElevatedButton(
                                     onPressed: () {
                                       // Route to evaluate scaffold
-                                      fetchExamData(resultData[i].examId);
-                                      initializeUploadedArray(
-                                          examData.questions.length);
-                                      setState(() {
-                                        evaluatingIndex = i;
-                                        goToNextStep();
-                                      });
+                                      prepareData(i);
                                     },
-                                    child: Text("Upload"))),
+                                    child: Text("Upload $i"))),
                           ],
                         ),
                       ],
@@ -341,8 +401,9 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                                   ElevatedButton(
                                       onPressed: () async {
                                         // Save Draft
-                                        await client.exam
-                                            .saveAnswers(uploadedAnswers!);
+                                        await client.exam.saveAnswers(
+                                            resultData[evaluatingIndex].id!,
+                                            uploadedAnswers!);
                                         Navigator.pop(context);
                                         setState(() {
                                           currentStep--;
@@ -374,7 +435,9 @@ class _EvaluateExamPageState extends State<EvaluateExamPage> {
                       if (check) {
                         // Send for evaluation
                         try {
-                          await client.exam.saveAnswers(uploadedAnswers!);
+                          await client.exam.saveAnswers(
+                              resultData[evaluatingIndex].id!,
+                              uploadedAnswers!);
                           // ignore: unused_local_variable
                           var evalReq = await client.exam.evaluateExam(
                               resultData[evaluatingIndex].examId,
@@ -464,6 +527,7 @@ class ResponsiveEvaluateExam extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EvaluateExamPage();
+    //return const EvaluateExamPage();
+    return const EvaluationPage();
   }
 }

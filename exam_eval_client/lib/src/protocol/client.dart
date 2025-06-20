@@ -13,9 +13,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:exam_eval_client/src/protocol/question.dart' as _i4;
-import 'package:exam_eval_client/src/protocol/result.dart' as _i5;
-import 'package:exam_eval_client/src/protocol/answer.dart' as _i6;
-import 'package:exam_eval_client/src/protocol/exam.dart' as _i7;
+import 'package:exam_eval_client/src/protocol/answer.dart' as _i5;
+import 'package:exam_eval_client/src/protocol/exam.dart' as _i6;
+import 'package:exam_eval_client/src/protocol/result_batch.dart' as _i7;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
 import 'protocol.dart' as _i9;
 
@@ -146,13 +146,13 @@ class EndpointExam extends _i1.EndpointRef {
         {'examId': examId},
       );
 
-  _i2.Future<List<_i5.Result>> createResultBatch(
+  _i2.Future<List<dynamic>> createResultBatch(
     int userId,
     List<int> studentId,
     List<String> studentName,
     List<int> examId,
   ) =>
-      caller.callServerEndpoint<List<_i5.Result>>(
+      caller.callServerEndpoint<List<dynamic>>(
         'exam',
         'createResultBatch',
         {
@@ -163,47 +163,52 @@ class EndpointExam extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<void> saveAnswers(_i6.Answer answerObj) =>
-      caller.callServerEndpoint<void>(
-        'exam',
-        'saveAnswers',
-        {'answerObj': answerObj},
-      );
-
-  _i2.Future<void> evaluateExam(
-    int examId,
-    int studentId,
-    int answerId,
+  _i2.Future<void> saveAnswers(
+    int resultId,
+    _i5.Answer answerObj,
   ) =>
       caller.callServerEndpoint<void>(
         'exam',
-        'evaluateExam',
+        'saveAnswers',
         {
-          'examId': examId,
-          'studentId': studentId,
-          'answerId': answerId,
+          'resultId': resultId,
+          'answerObj': answerObj,
         },
       );
 
-  _i2.Future<List<_i7.Exam>> fetchUserExams(int userId) =>
-      caller.callServerEndpoint<List<_i7.Exam>>(
+  _i2.Future<void> evaluateExam(int resultBatchId) =>
+      caller.callServerEndpoint<void>(
+        'exam',
+        'evaluateExam',
+        {'resultBatchId': resultBatchId},
+      );
+
+  _i2.Future<List<_i6.Exam>> fetchUserExams(int userId) =>
+      caller.callServerEndpoint<List<_i6.Exam>>(
         'exam',
         'fetchUserExams',
         {'userId': userId},
       );
 
-  _i2.Future<_i7.Exam> fetchExam(int examId) =>
-      caller.callServerEndpoint<_i7.Exam>(
+  _i2.Future<_i6.Exam> fetchExam(int examId) =>
+      caller.callServerEndpoint<_i6.Exam>(
         'exam',
         'fetchExam',
         {'examId': examId},
       );
 
-  _i2.Future<_i6.Answer?> fetchAnswer(int answerId) =>
-      caller.callServerEndpoint<_i6.Answer?>(
+  _i2.Future<_i5.Answer?> fetchAnswer(int answerId) =>
+      caller.callServerEndpoint<_i5.Answer?>(
         'exam',
         'fetchAnswer',
         {'answerId': answerId},
+      );
+
+  _i2.Future<List<_i7.ResultBatch>> fetchResultBatch(int userId) =>
+      caller.callServerEndpoint<List<_i7.ResultBatch>>(
+        'exam',
+        'fetchResultBatch',
+        {'userId': userId},
       );
 }
 

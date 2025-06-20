@@ -41,7 +41,7 @@ class ExamEndpoint extends Endpoint {
     // Result Objects could be linked to this, need to figure out and code accordingly
   }
 
-  Future<List<Result>> createResultBatch(Session session, int userId,
+  Future<List<dynamic>> createResultBatch(Session session, int userId,
       List<int> studentId, List<String> studentName, List<int> examId) async {
     try {
       List<Result> resultData = [];
@@ -65,57 +65,77 @@ class ExamEndpoint extends Endpoint {
           contents: resultData);
       // ignore: unused_local_variable
       var batchIns = await ResultBatch.db.insertRow(session, resultBatch);
-      return resultData;
+      return [batchIns.id!, resultData];
     } catch (err) {
       return [];
     }
   }
 
-  Future<void> saveAnswers(Session session, Answer answerObj) async {
+  Future<void> saveAnswers(
+      Session session, int resultId, Answer answerObj) async {
     if (answerObj.submittedAnswer.isNotEmpty) {
       // ignore: unused_local_variable
-      var resultUpdate = await Answer.db.updateRow(session, answerObj);
+      var answerUpdate = await Answer.db.updateRow(session, answerObj);
+      bool emptyFlag = false;
+      for (int i = 0; i < answerObj.submittedAnswer.length; i++) {
+        if (answerObj.submittedAnswer[i].isEmpty) {
+          emptyFlag = true;
+          break;
+        }
+      }
+      if (!emptyFlag) {
+        var resultObj = await Result.db.findById(session, resultId);
+        resultObj!.status = resultObj.status == "Not uploaded"
+            ? "Not graded"
+            : resultObj.status;
+      }
     }
   }
 
-  Future<void> evaluateExam(
-      Session session, int examId, int studentId, int answerId) async {
-    var answerObj = await Answer.db.findById(session, answerId);
+  Future<void> evaluateExam(Session session, int resultBatchId) async {
     final url = Uri.parse('http://locahost:4000/evaluate');
-    // Update the state to processing for evaluation
-    var examData = await Exam.db.findById(session, examId);
-    List<String> questions = [];
-    List<String> idealAnswer = [];
-    List<double> weightage = [];
-    for (int i = 0; i < examData!.questions.length; i++) {
-      questions.add(examData.questions[i].query);
-      idealAnswer.add(examData.questions[i].idealAnswer!);
-      weightage.add(examData.questions[i].weightage);
-    }
-    Map<String, dynamic> commandInput = {
-      "question": questions,
-      "ideal_answer": idealAnswer,
-      "subjective_answer": answerObj!.submittedAnswer,
-      "weightage": weightage
-    };
+    var resultBatch = await ResultBatch.db.findById(session, resultBatchId);
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(commandInput),
-      );
-      if (response.statusCode == 200) {
-        final responseBody = json.decode(response.body);
-        // For debugging only
-        print('Output: ${responseBody['output']}');
-        // Update the status to completed evaluation
-        // Notify the user
-      } else {
-        print('Response body: ${response.body}');
+    for (int i = 0; i < resultBatch!.contents.length; i++) {
+      var answerObj =
+          await Answer.db.findById(session, resultBatch.contents[i].answers);
+
+      // Update the state to processing for evaluation
+      var examData =
+          await Exam.db.findById(session, resultBatch.contents[i].examId);
+      List<String> questions = [];
+      List<String> idealAnswer = [];
+      List<double> weightage = [];
+      for (int i = 0; i < examData!.questions.length; i++) {
+        questions.add(examData.questions[i].query);
+        idealAnswer.add(examData.questions[i].idealAnswer!);
+        weightage.add(examData.questions[i].weightage);
       }
-    } catch (e) {
-      print('Failed to connect to Evaluation server: $e');
+      Map<String, dynamic> commandInput = {
+        "question": questions,
+        "ideal_answer": idealAnswer,
+        "subjective_answer": answerObj!.submittedAnswer,
+        "weightage": weightage
+      };
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(commandInput),
+        );
+        if (response.statusCode == 200) {
+          final responseBody = json.decode(response.body);
+          // For debugging only
+          print('Output: ${responseBody['output']}');
+          // Update the status to completed evaluation
+          // Notify the user
+        } else {
+          print('Response body: ${response.body}');
+        }
+      } catch (e) {
+        print('Failed to connect to Evaluation server: $e');
+      }
     }
   }
 
@@ -133,5 +153,12 @@ class ExamEndpoint extends Endpoint {
   Future<Answer?> fetchAnswer(Session session, int answerId) async {
     var answerObj = await Answer.db.findById(session, answerId);
     return answerObj;
+  }
+
+  Future<List<ResultBatch>> fetchResultBatch(
+      Session session, int userId) async {
+    var resultBatchObj = await ResultBatch.db
+        .find(session, where: (t) => t.uploadedBy.equals(userId));
+    return resultBatchObj;
   }
 }

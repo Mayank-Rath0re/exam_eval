@@ -337,11 +337,16 @@ class Endpoints extends _i1.EndpointDispatch {
         'saveAnswers': _i1.MethodConnector(
           name: 'saveAnswers',
           params: {
+            'resultId': _i1.ParameterDescription(
+              name: 'resultId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
             'answerObj': _i1.ParameterDescription(
               name: 'answerObj',
               type: _i1.getType<_i8.Answer>(),
               nullable: false,
-            )
+            ),
           },
           call: (
             _i1.Session session,
@@ -349,27 +354,18 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['exam'] as _i4.ExamEndpoint).saveAnswers(
             session,
+            params['resultId'],
             params['answerObj'],
           ),
         ),
         'evaluateExam': _i1.MethodConnector(
           name: 'evaluateExam',
           params: {
-            'examId': _i1.ParameterDescription(
-              name: 'examId',
+            'resultBatchId': _i1.ParameterDescription(
+              name: 'resultBatchId',
               type: _i1.getType<int>(),
               nullable: false,
-            ),
-            'studentId': _i1.ParameterDescription(
-              name: 'studentId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
-            'answerId': _i1.ParameterDescription(
-              name: 'answerId',
-              type: _i1.getType<int>(),
-              nullable: false,
-            ),
+            )
           },
           call: (
             _i1.Session session,
@@ -377,9 +373,7 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['exam'] as _i4.ExamEndpoint).evaluateExam(
             session,
-            params['examId'],
-            params['studentId'],
-            params['answerId'],
+            params['resultBatchId'],
           ),
         ),
         'fetchUserExams': _i1.MethodConnector(
@@ -434,6 +428,24 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['exam'] as _i4.ExamEndpoint).fetchAnswer(
             session,
             params['answerId'],
+          ),
+        ),
+        'fetchResultBatch': _i1.MethodConnector(
+          name: 'fetchResultBatch',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).fetchResultBatch(
+            session,
+            params['userId'],
           ),
         ),
       },

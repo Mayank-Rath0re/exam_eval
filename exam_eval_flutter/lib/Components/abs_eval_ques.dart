@@ -108,7 +108,7 @@ class _AbsEvalQuesState extends State<AbsEvalQues> {
                 if (isGenerating) ...[
                   const Center(child: CircularProgressIndicator())
                 ] else ...[
-                  if (widget.uploadedAnswer == null) ...[
+                  if (widget.uploadedAnswer!.isEmpty) ...[
                     ocrImageButton()
                   ] else ...[
                     Text(widget.uploadedAnswer!)
