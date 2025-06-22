@@ -41,10 +41,10 @@ class ExamEndpoint extends Endpoint {
     // Result Objects could be linked to this, need to figure out and code accordingly
   }
 
-  Future<List<dynamic>> createResultBatch(Session session, int userId,
+  Future<int> createResultBatch(Session session, int userId,
       List<int> studentId, List<String> studentName, List<int> examId) async {
     try {
-      List<Result> resultData = [];
+      List<int> resultData = [];
       for (int i = 0; i < studentId.length; i++) {
         var answerObj = Answer(submittedAnswer: [], evaluatedScore: []);
         var answerIns = await Answer.db.insertRow(session, answerObj);
@@ -56,18 +56,18 @@ class ExamEndpoint extends Endpoint {
             status: "Not uploaded",
             answers: answerIns.id!);
         var resultInsert = await Result.db.insertRow(session, resultObj);
-        resultData.add(resultInsert);
+        resultData.add(resultInsert.id!);
       }
       var resultBatch = ResultBatch(
           uploadedBy: userId,
           uploadedAt: DateTime.now(),
-          isDraft: true,
+          stage: "Draft",
           contents: resultData);
       // ignore: unused_local_variable
       var batchIns = await ResultBatch.db.insertRow(session, resultBatch);
-      return [batchIns.id!, resultData];
+      return batchIns.id!;
     } catch (err) {
-      return [];
+      return -1;
     }
   }
 
@@ -83,33 +83,40 @@ class ExamEndpoint extends Endpoint {
           break;
         }
       }
+      print(emptyFlag);
       if (!emptyFlag) {
         var resultObj = await Result.db.findById(session, resultId);
-        resultObj!.status = resultObj.status == "Not uploaded"
+        print(resultObj!.status);
+        resultObj.status = resultObj.status == "Not uploaded"
             ? "Not graded"
             : resultObj.status;
+        print(resultObj.status);
+        // ignore: unused_local_variable
+        var resultUpd = await Result.db.updateRow(session, resultObj);
       }
     }
   }
 
   Future<void> evaluateExam(Session session, int resultBatchId) async {
-    final url = Uri.parse('http://locahost:4000/evaluate');
+    final url = Uri.parse('http://localhost:4000/evaluate');
     var resultBatch = await ResultBatch.db.findById(session, resultBatchId);
-
-    for (int i = 0; i < resultBatch!.contents.length; i++) {
-      var answerObj =
-          await Answer.db.findById(session, resultBatch.contents[i].answers);
+    resultBatch!.stage = "Evaluating";
+    var resultBatchUpdate =
+        await ResultBatch.db.updateRow(session, resultBatch);
+    for (int i = 0; i < resultBatch.contents.length; i++) {
+      var resultObj =
+          await Result.db.findById(session, resultBatch.contents[i]);
+      var answerObj = await Answer.db.findById(session, resultObj!.answers);
 
       // Update the state to processing for evaluation
-      var examData =
-          await Exam.db.findById(session, resultBatch.contents[i].examId);
+      var examData = await Exam.db.findById(session, resultObj.examId);
       List<String> questions = [];
       List<String> idealAnswer = [];
       List<double> weightage = [];
-      for (int i = 0; i < examData!.questions.length; i++) {
-        questions.add(examData.questions[i].query);
-        idealAnswer.add(examData.questions[i].idealAnswer!);
-        weightage.add(examData.questions[i].weightage);
+      for (int j = 0; j < examData!.questions.length; j++) {
+        questions.add(examData.questions[j].query);
+        idealAnswer.add(examData.questions[j].idealAnswer!);
+        weightage.add(examData.questions[j].weightage);
       }
       Map<String, dynamic> commandInput = {
         "question": questions,
@@ -129,6 +136,16 @@ class ExamEndpoint extends Endpoint {
           // For debugging only
           print('Output: ${responseBody['output']}');
           // Update the status to completed evaluation
+          num totalScore = 0;
+          for (int responseIndex = 0;
+              responseIndex < responseBody.length;
+              i++) {
+            var answerScore = responseBody[responseIndex]["marks"];
+            answerObj.evaluatedScore[responseIndex] = answerScore;
+            totalScore += answerScore;
+          }
+          resultObj.finalScore = totalScore.toDouble();
+          await Answer.db.updateRow(session, answerObj);
           // Notify the user
         } else {
           print('Response body: ${response.body}');
@@ -137,6 +154,10 @@ class ExamEndpoint extends Endpoint {
         print('Failed to connect to Evaluation server: $e');
       }
     }
+    resultBatchUpdate.stage = "Completed";
+    // ignore: unused_local_variable
+    var resultBatchFinalize =
+        await ResultBatch.db.updateRow(session, resultBatchUpdate);
   }
 
   Future<List<Exam>> fetchUserExams(Session session, int userId) async {
@@ -157,8 +178,29 @@ class ExamEndpoint extends Endpoint {
 
   Future<List<ResultBatch>> fetchResultBatch(
       Session session, int userId) async {
-    var resultBatchObj = await ResultBatch.db
-        .find(session, where: (t) => t.uploadedBy.equals(userId));
+    var resultBatchObj = await ResultBatch.db.find(session,
+        where: (t) =>
+            t.uploadedBy.equals(userId) & t.stage.notEquals("Completed"));
+    return resultBatchObj;
+  }
+
+  Future<List<Result>> fetchResultBatchById(
+      Session session, int batchId) async {
+    var resultBatchObj = await ResultBatch.db.findById(session, batchId);
+    List<Result> resultData = [];
+    for (int i = 0; i < resultBatchObj!.contents.length; i++) {
+      var resultObj =
+          await Result.db.findById(session, resultBatchObj.contents[i]);
+      resultData.add(resultObj!);
+    }
+    return resultData;
+  }
+
+  Future<List<ResultBatch>> fetchCompletedResults(
+      Session session, int userId) async {
+    var resultBatchObj = await ResultBatch.db.find(session,
+        where: (t) =>
+            t.uploadedBy.equals(userId) & t.stage.equals("Completed"));
     return resultBatchObj;
   }
 }

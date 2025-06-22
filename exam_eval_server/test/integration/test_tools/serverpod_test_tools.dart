@@ -19,6 +19,7 @@ import 'package:exam_eval_server/src/generated/question.dart' as _i5;
 import 'package:exam_eval_server/src/generated/answer.dart' as _i6;
 import 'package:exam_eval_server/src/generated/exam.dart' as _i7;
 import 'package:exam_eval_server/src/generated/result_batch.dart' as _i8;
+import 'package:exam_eval_server/src/generated/result.dart' as _i9;
 import 'package:exam_eval_server/src/generated/protocol.dart';
 import 'package:exam_eval_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -419,7 +420,7 @@ class _ExamEndpoint {
     });
   }
 
-  _i3.Future<List<dynamic>> createResultBatch(
+  _i3.Future<int> createResultBatch(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
     List<int> studentId,
@@ -448,7 +449,7 @@ class _ExamEndpoint {
         var _localReturnValue = await (_localCallContext.method.call(
           _localUniqueSession,
           _localCallContext.arguments,
-        ) as _i3.Future<List<dynamic>>);
+        ) as _i3.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -620,6 +621,64 @@ class _ExamEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'exam',
           methodName: 'fetchResultBatch',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i8.ResultBatch>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i9.Result>> fetchResultBatchById(
+    _i1.TestSessionBuilder sessionBuilder,
+    int batchId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'exam',
+        method: 'fetchResultBatchById',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'exam',
+          methodName: 'fetchResultBatchById',
+          parameters: _i1.testObjectToJson({'batchId': batchId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i9.Result>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i8.ResultBatch>> fetchCompletedResults(
+    _i1.TestSessionBuilder sessionBuilder,
+    int userId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'exam',
+        method: 'fetchCompletedResults',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'exam',
+          methodName: 'fetchCompletedResults',
           parameters: _i1.testObjectToJson({'userId': userId}),
           serializationManager: _serializationManager,
         );

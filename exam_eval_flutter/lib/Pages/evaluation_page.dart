@@ -42,6 +42,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
     });
   }
 
+  void fetchResultData(int batchId) async {
+    var resultInfo = await client.exam.fetchResultBatchById(batchId);
+    setState(() {
+      resultData = resultInfo;
+    });
+  }
+
   @override
   void initState() {
     getResultBatches();
@@ -182,9 +189,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                               children: [
                                 Text("${resultBatches[index].uploadedAt}"),
                                 const SizedBox(height: 10),
-                                if (resultBatches[index].isDraft) ...[
+                                if (resultBatches[index].stage !=
+                                    "Completed") ...[
                                   Text(
-                                    "Draft",
+                                    resultBatches[index].stage,
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   )
@@ -194,9 +202,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                     onPressed: () {
                                       setState(() {
                                         currentStep = 1;
-                                        resultData =
-                                            resultBatches[index].contents;
-                                        activeResultBatchId = index;
+                                        activeResultBatchId =
+                                            resultBatches[index].id!;
+                                        fetchResultData(activeResultBatchId);
                                       });
                                     },
                                     child: Text("Continue"))
@@ -252,9 +260,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
                               studentNames,
                               examIds,
                             );
+                            fetchResultData(resultInfo);
                             setState(() {
-                              activeResultBatchId = resultInfo[0];
-                              resultData = resultInfo[1];
+                              activeResultBatchId = resultInfo;
                               csvData = [];
                               currentStep = 1;
                             });
@@ -293,7 +301,54 @@ class _EvaluationPageState extends State<EvaluationPage> {
           Row(
             children: [
               const Spacer(),
-              ElevatedButton(onPressed: () {}, child: Text("Evaluate"))
+              ElevatedButton(
+                  onPressed: () async {
+                    bool check = true;
+                    for (int i = 0; i < resultData.length; i++) {
+                      if (resultData[i].status != "Not graded") {
+                        check = false;
+                        break;
+                      }
+                    }
+                    if (check) {
+                      // Send for evaluation
+                      try {
+                        // ignore: unused_local_variable
+                        var evalReq =
+                            await client.exam.evaluateExam(activeResultBatchId);
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  content: Column(
+                                    children: [
+                                      Text(
+                                          "Added for evaluation. This may take some time."),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.pushNamed(
+                                                context, '/dashboard');
+                                          },
+                                          child: Text("Back to Dashboard"))
+                                    ],
+                                  ),
+                                ));
+                      } catch (err) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  content: Text("Some error occured"),
+                                ));
+                      }
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                content: Text("Not all answers are uploaded"),
+                              ));
+                    }
+                  },
+                  child: Text("Evaluate Exam"))
             ],
           ),
           const SizedBox(height: 10),
@@ -411,44 +466,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       ));
             },
             icon: Icon(Icons.arrow_back)),
-        const Spacer(),
-        ElevatedButton(
-            onPressed: () async {
-              bool check = true;
-              for (int i = 0; i < uploadedAnswers.submittedAnswer.length; i++) {
-                if (uploadedAnswers.submittedAnswer[i].isEmpty) {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            content: Text("Not all answers are uploaded"),
-                          ));
-                  check = false;
-                  break;
-                }
-              }
-              if (check) {
-                // Send for evaluation
-                try {
-                  await client.exam.saveAnswers(
-                      resultData[evaluatingIndex].id!, uploadedAnswers);
-                  // ignore: unused_local_variable
-                  var evalReq =
-                      await client.exam.evaluateExam(activeResultBatchId);
-                  setState(() {
-                    currentStep = 1;
-                    uploadedAnswers =
-                        Answer(submittedAnswer: [], evaluatedScore: []);
-                  });
-                } catch (err) {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            content: Text("Some error occured"),
-                          ));
-                }
-              }
-            },
-            child: Text("Evaluate Exam"))
       ]),
       const SizedBox(height: 20),
       for (int i = 0; i < examData.questions.length; i++) ...[
@@ -486,5 +503,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
       );
     }
     return const Placeholder();
+  }
+}
+
+class ResponsiveEvaluateExam extends StatelessWidget {
+  const ResponsiveEvaluateExam({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    //return const EvaluateExamPage();
+    return const EvaluationPage();
   }
 }

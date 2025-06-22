@@ -10,14 +10,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'result.dart' as _i2;
 
 abstract class ResultBatch implements _i1.SerializableModel {
   ResultBatch._({
     this.id,
     required this.uploadedBy,
     required this.uploadedAt,
-    required this.isDraft,
+    required this.stage,
     required this.contents,
   });
 
@@ -25,8 +24,8 @@ abstract class ResultBatch implements _i1.SerializableModel {
     int? id,
     required int uploadedBy,
     required DateTime uploadedAt,
-    required bool isDraft,
-    required List<_i2.Result> contents,
+    required String stage,
+    required List<int> contents,
   }) = _ResultBatchImpl;
 
   factory ResultBatch.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,10 +34,9 @@ abstract class ResultBatch implements _i1.SerializableModel {
       uploadedBy: jsonSerialization['uploadedBy'] as int,
       uploadedAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['uploadedAt']),
-      isDraft: jsonSerialization['isDraft'] as bool,
-      contents: (jsonSerialization['contents'] as List)
-          .map((e) => _i2.Result.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      stage: jsonSerialization['stage'] as String,
+      contents:
+          (jsonSerialization['contents'] as List).map((e) => e as int).toList(),
     );
   }
 
@@ -51,9 +49,9 @@ abstract class ResultBatch implements _i1.SerializableModel {
 
   DateTime uploadedAt;
 
-  bool isDraft;
+  String stage;
 
-  List<_i2.Result> contents;
+  List<int> contents;
 
   /// Returns a shallow copy of this [ResultBatch]
   /// with some or all fields replaced by the given arguments.
@@ -62,8 +60,8 @@ abstract class ResultBatch implements _i1.SerializableModel {
     int? id,
     int? uploadedBy,
     DateTime? uploadedAt,
-    bool? isDraft,
-    List<_i2.Result>? contents,
+    String? stage,
+    List<int>? contents,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,8 +69,8 @@ abstract class ResultBatch implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'uploadedBy': uploadedBy,
       'uploadedAt': uploadedAt.toJson(),
-      'isDraft': isDraft,
-      'contents': contents.toJson(valueToJson: (v) => v.toJson()),
+      'stage': stage,
+      'contents': contents.toJson(),
     };
   }
 
@@ -89,13 +87,13 @@ class _ResultBatchImpl extends ResultBatch {
     int? id,
     required int uploadedBy,
     required DateTime uploadedAt,
-    required bool isDraft,
-    required List<_i2.Result> contents,
+    required String stage,
+    required List<int> contents,
   }) : super._(
           id: id,
           uploadedBy: uploadedBy,
           uploadedAt: uploadedAt,
-          isDraft: isDraft,
+          stage: stage,
           contents: contents,
         );
 
@@ -107,15 +105,15 @@ class _ResultBatchImpl extends ResultBatch {
     Object? id = _Undefined,
     int? uploadedBy,
     DateTime? uploadedAt,
-    bool? isDraft,
-    List<_i2.Result>? contents,
+    String? stage,
+    List<int>? contents,
   }) {
     return ResultBatch(
       id: id is int? ? id : this.id,
       uploadedBy: uploadedBy ?? this.uploadedBy,
       uploadedAt: uploadedAt ?? this.uploadedAt,
-      isDraft: isDraft ?? this.isDraft,
-      contents: contents ?? this.contents.map((e0) => e0.copyWith()).toList(),
+      stage: stage ?? this.stage,
+      contents: contents ?? this.contents.map((e0) => e0).toList(),
     );
   }
 }

@@ -3,5 +3,5 @@ table: result_batch
 fields:
     uploadedBy: int, relation(parent=user)
     uploadedAt: DateTime
-    isDraft: bool
-    contents: List<Result>
+    stage: String
+    contents: List<int>

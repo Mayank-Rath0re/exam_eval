@@ -448,6 +448,42 @@ class Endpoints extends _i1.EndpointDispatch {
             params['userId'],
           ),
         ),
+        'fetchResultBatchById': _i1.MethodConnector(
+          name: 'fetchResultBatchById',
+          params: {
+            'batchId': _i1.ParameterDescription(
+              name: 'batchId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).fetchResultBatchById(
+            session,
+            params['batchId'],
+          ),
+        ),
+        'fetchCompletedResults': _i1.MethodConnector(
+          name: 'fetchCompletedResults',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['exam'] as _i4.ExamEndpoint).fetchCompletedResults(
+            session,
+            params['userId'],
+          ),
+        ),
       },
     );
     connectors['example'] = _i1.EndpointConnector(
