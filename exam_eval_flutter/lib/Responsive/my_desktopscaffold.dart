@@ -1,9 +1,10 @@
 import 'package:exam_eval_flutter/Components/mega_menu.dart';
 import 'package:exam_eval_flutter/Components/profile_listTile.dart';
 import 'package:exam_eval_flutter/Components/upcoming_exam_tile.dart';
+import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
 import 'package:flutter/material.dart';
-import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
+
 import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 import 'package:exam_eval_flutter/Pages/settings_page.dart';
@@ -209,8 +210,8 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                         ],
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: ListView(
-                        children: [Column(
+                      child: ListView(children: [
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             Text(
@@ -243,7 +244,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
                             ),
                           ],
                         ),
-                ]),
+                      ]),
                     ),
                   ),
                 ],

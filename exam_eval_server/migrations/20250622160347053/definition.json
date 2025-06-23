@@ -363,16 +363,16 @@
           "dartType": "DateTime"
         },
         {
-          "name": "isDraft",
-          "columnType": 1,
+          "name": "stage",
+          "columnType": 0,
           "isNullable": false,
-          "dartType": "bool"
+          "dartType": "String"
         },
         {
           "name": "contents",
           "columnType": 8,
           "isNullable": false,
-          "dartType": "List<protocol:Result>"
+          "dartType": "List<int>"
         }
       ],
       "foreignKeys": [
@@ -2235,7 +2235,7 @@
   "installedModules": [
     {
       "module": "exam_eval",
-      "version": "20250617163356155"
+      "version": "20250622160347053"
     },
     {
       "module": "serverpod",

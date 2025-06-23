@@ -24,6 +24,7 @@ import 'userview.dart' as _i12;
 import 'package:exam_eval_server/src/generated/question.dart' as _i13;
 import 'package:exam_eval_server/src/generated/exam.dart' as _i14;
 import 'package:exam_eval_server/src/generated/result_batch.dart' as _i15;
+import 'package:exam_eval_server/src/generated/result.dart' as _i16;
 export 'answer.dart';
 export 'exam.dart';
 export 'example.dart';
@@ -397,16 +398,16 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'DateTime',
         ),
         _i2.ColumnDefinition(
-          name: 'isDraft',
-          columnType: _i2.ColumnType.boolean,
+          name: 'stage',
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'bool',
+          dartType: 'String',
         ),
         _i2.ColumnDefinition(
           name: 'contents',
           columnType: _i2.ColumnType.json,
           isNullable: false,
-          dartType: 'List<protocol:Result>',
+          dartType: 'List<int>',
         ),
       ],
       foreignKeys: [
@@ -650,9 +651,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<String?>) {
       return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
     }
-    if (t == List<_i9.Result>) {
-      return (data as List).map((e) => deserialize<_i9.Result>(e)).toList()
-          as T;
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -660,9 +660,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<_i13.Question>) {
       return (data as List).map((e) => deserialize<_i13.Question>(e)).toList()
           as T;
-    }
-    if (t == List<dynamic>) {
-      return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
@@ -674,6 +671,10 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List)
           .map((e) => deserialize<_i15.ResultBatch>(e))
           .toList() as T;
+    }
+    if (t == List<_i16.Result>) {
+      return (data as List).map((e) => deserialize<_i16.Result>(e)).toList()
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

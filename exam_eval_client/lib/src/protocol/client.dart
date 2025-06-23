@@ -16,8 +16,9 @@ import 'package:exam_eval_client/src/protocol/question.dart' as _i4;
 import 'package:exam_eval_client/src/protocol/answer.dart' as _i5;
 import 'package:exam_eval_client/src/protocol/exam.dart' as _i6;
 import 'package:exam_eval_client/src/protocol/result_batch.dart' as _i7;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
-import 'protocol.dart' as _i9;
+import 'package:exam_eval_client/src/protocol/result.dart' as _i8;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i9;
+import 'protocol.dart' as _i10;
 
 /// {@category Endpoint}
 class EndpointAccount extends _i1.EndpointRef {
@@ -146,13 +147,13 @@ class EndpointExam extends _i1.EndpointRef {
         {'examId': examId},
       );
 
-  _i2.Future<List<dynamic>> createResultBatch(
+  _i2.Future<int> createResultBatch(
     int userId,
     List<int> studentId,
     List<String> studentName,
     List<int> examId,
   ) =>
-      caller.callServerEndpoint<List<dynamic>>(
+      caller.callServerEndpoint<int>(
         'exam',
         'createResultBatch',
         {
@@ -210,6 +211,20 @@ class EndpointExam extends _i1.EndpointRef {
         'fetchResultBatch',
         {'userId': userId},
       );
+
+  _i2.Future<List<_i8.Result>> fetchResultBatchById(int batchId) =>
+      caller.callServerEndpoint<List<_i8.Result>>(
+        'exam',
+        'fetchResultBatchById',
+        {'batchId': batchId},
+      );
+
+  _i2.Future<List<_i7.ResultBatch>> fetchCompletedResults(int userId) =>
+      caller.callServerEndpoint<List<_i7.ResultBatch>>(
+        'exam',
+        'fetchCompletedResults',
+        {'userId': userId},
+      );
 }
 
 /// {@category Endpoint}
@@ -228,10 +243,10 @@ class EndpointExample extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    auth = _i8.Caller(client);
+    auth = _i9.Caller(client);
   }
 
-  late final _i8.Caller auth;
+  late final _i9.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -250,7 +265,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i9.Protocol(),
+          _i10.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

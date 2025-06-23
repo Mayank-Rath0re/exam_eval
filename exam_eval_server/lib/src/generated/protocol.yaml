@@ -15,5 +15,7 @@ exam:
   - fetchExam:
   - fetchAnswer:
   - fetchResultBatch:
+  - fetchResultBatchById:
+  - fetchCompletedResults:
 example:
   - hello:

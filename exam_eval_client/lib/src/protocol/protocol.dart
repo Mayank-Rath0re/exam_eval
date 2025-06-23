@@ -22,7 +22,8 @@ import 'userview.dart' as _i10;
 import 'package:exam_eval_client/src/protocol/question.dart' as _i11;
 import 'package:exam_eval_client/src/protocol/exam.dart' as _i12;
 import 'package:exam_eval_client/src/protocol/result_batch.dart' as _i13;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i14;
+import 'package:exam_eval_client/src/protocol/result.dart' as _i14;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i15;
 export 'answer.dart';
 export 'exam.dart';
 export 'example.dart';
@@ -114,9 +115,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<String?>) {
       return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
     }
-    if (t == List<_i7.Result>) {
-      return (data as List).map((e) => deserialize<_i7.Result>(e)).toList()
-          as T;
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -124,9 +124,6 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<_i11.Question>) {
       return (data as List).map((e) => deserialize<_i11.Question>(e)).toList()
           as T;
-    }
-    if (t == List<dynamic>) {
-      return (data as List).map((e) => deserialize<dynamic>(e)).toList() as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
@@ -139,8 +136,12 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i13.ResultBatch>(e))
           .toList() as T;
     }
+    if (t == List<_i14.Result>) {
+      return (data as List).map((e) => deserialize<_i14.Result>(e)).toList()
+          as T;
+    }
     try {
-      return _i14.Protocol().deserialize<T>(data, t);
+      return _i15.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -176,7 +177,7 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i10.UserView) {
       return 'UserView';
     }
-    className = _i14.Protocol().getClassNameForObject(data);
+    className = _i15.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -218,7 +219,7 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i14.Protocol().deserializeByClassName(data);
+      return _i15.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
