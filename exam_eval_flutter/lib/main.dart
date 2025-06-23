@@ -1,4 +1,5 @@
 import 'package:exam_eval_client/exam_eval_client.dart';
+import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/Pages/registerpage.dart';
 import 'package:exam_eval_flutter/Responsive/my_desktopscaffold.dart';
 import 'package:exam_eval_flutter/Responsive/my_mobilscaffold.dart';
@@ -6,7 +7,7 @@ import 'package:exam_eval_flutter/Responsive/my_responsive_layout.dart';
 import 'package:exam_eval_flutter/Responsive/my_tabletscaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
-import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
+
 import 'package:exam_eval_flutter/Pages/profile_page.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
@@ -84,7 +85,7 @@ class MyApp extends StatelessWidget {
               tabletScffold: const TabletScaffold(),
               desktopScaffold: const DesktopScaffold(),
             ),
-        '/evaluate_exam': (context) => const ResponsiveEvaluateExam(),
+        '/evaluate_exam': (context) => const EvaluationPage(),
         '/results': (context) => const ResponsiveResultsPage(),
         '/profile': (context) => const ProfilePage(),
       },

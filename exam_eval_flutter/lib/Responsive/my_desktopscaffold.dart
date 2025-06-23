@@ -3,7 +3,7 @@ import 'package:exam_eval_flutter/Components/profile_listTile.dart';
 import 'package:exam_eval_flutter/Components/upcoming_exam_tile.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
 import 'package:flutter/material.dart';
-import 'package:exam_eval_flutter/Pages/evaluate_exam_page.dart';
+import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 import 'package:exam_eval_flutter/Pages/settings_page.dart';
@@ -96,7 +96,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       case 2:
         return const Center(child: Text('Report'));
       case 3:
-        return const ResponsiveEvaluateExam();
+        return const EvaluationPage();
       case 4:
         return const ResponsiveResultsPage();
       case 5:
