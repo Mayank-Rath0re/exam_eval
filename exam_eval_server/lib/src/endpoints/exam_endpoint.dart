@@ -132,29 +132,34 @@ class ExamEndpoint extends Endpoint {
           body: json.encode(commandInput),
         );
         if (response.statusCode == 200) {
-          final responseBody = json.decode(response.body);
-          // For debugging only
-          print('Output: ${responseBody['output']}');
-          // Update the status to completed evaluation
-          num totalScore = 0;
+          final decodedOnce = json.decode(response.body);
+          final responseBody = json.decode(decodedOnce);
+          double totalScore = 0;
+          answerObj.evaluatedScore = List.filled(responseBody.length, 0.0);
+
           for (int responseIndex = 0;
               responseIndex < responseBody.length;
-              i++) {
+              responseIndex++) {
             var answerScore = responseBody[responseIndex]["marks"];
-            answerObj.evaluatedScore[responseIndex] = answerScore;
+            answerObj.evaluatedScore[responseIndex] =
+                double.parse(answerScore.toString());
             totalScore += answerScore;
           }
           resultObj.finalScore = totalScore.toDouble();
           await Answer.db.updateRow(session, answerObj);
+          resultObj.status = "graded";
+          await Result.db.updateRow(session, resultObj);
           // Notify the user
         } else {
           print('Response body: ${response.body}');
         }
       } catch (e) {
+        resultBatchUpdate.stage = "Error";
         print('Failed to connect to Evaluation server: $e');
       }
     }
-    resultBatchUpdate.stage = "Completed";
+    resultBatchUpdate.stage =
+        resultBatchUpdate.stage != "Error" ? "Completed" : "Error";
     // ignore: unused_local_variable
     var resultBatchFinalize =
         await ResultBatch.db.updateRow(session, resultBatchUpdate);
@@ -178,9 +183,8 @@ class ExamEndpoint extends Endpoint {
 
   Future<List<ResultBatch>> fetchResultBatch(
       Session session, int userId) async {
-    var resultBatchObj = await ResultBatch.db.find(session,
-        where: (t) =>
-            t.uploadedBy.equals(userId) & t.stage.notEquals("Completed"));
+    var resultBatchObj = await ResultBatch.db
+        .find(session, where: (t) => t.uploadedBy.equals(userId));
     return resultBatchObj;
   }
 

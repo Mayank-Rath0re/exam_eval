@@ -405,7 +405,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: resultData[i].status != "Evaluated"
+                        child: resultData[i].status != "graded"
                             ? Text(resultData[i].status)
                             : Text("${resultData[i].finalScore}"),
                       ),
