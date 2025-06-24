@@ -100,8 +100,10 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
       child: Text(
         "Upload from Image",
         style: TextStyle(
-          color: Colors.white,
-          decoration: TextDecoration.underline,
+          fontFamily: 'Axiforma',
+          color: Color.fromRGBO(255, 255, 255, 1),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -180,18 +182,17 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          center: Alignment(0.8, 0.8),
-          radius: 2.3,
-          colors: [
-            Color.fromRGBO(247, 245, 243, 1),
-            Color.fromRGBO(227, 221, 211, 1),
-            Color.fromRGBO(212, 199, 130, 1),
-            Color.fromRGBO(54, 87, 78, 1),
-          ],
-          stops: [0.0, 0.1, 0.52, 0.81],
-        ),
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(227, 221, 211, 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 12,
+            spreadRadius: 4,
+            offset: Offset(0, 4),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -270,7 +271,7 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                   ],
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromRGBO(227, 221, 211, 1),
+                      color: const Color.fromARGB(255, 255, 255, 255),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: const [
                         BoxShadow(
@@ -302,10 +303,19 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                            backgroundColor:
+                                const Color.fromRGBO(54, 87, 78, 1),
                             foregroundColor: Colors.white,
                           ),
-                          child: Text("Create New Question"),
+                          child: Text(
+                            "Create New Question",
+                            style: TextStyle(
+                              fontFamily: 'Axiforma',
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -316,7 +326,7 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                       if (i == editIndex) ...[
                         Container(
                           decoration: BoxDecoration(
-                            color: const Color.fromRGBO(227, 221, 211, 1),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             border: Border.all(
                               width: 1,
                               color: const Color.fromRGBO(54, 87, 78, 1),
@@ -344,12 +354,15 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                         decoration: InputDecoration(
                                           hintText: "Weight",
                                           border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                             borderSide: const BorderSide(
-                                              color: Color.fromRGBO(54, 87, 78, 1),
+                                              color:
+                                                  Color.fromRGBO(54, 87, 78, 1),
                                             ),
                                           ),
                                         ),
@@ -361,14 +374,16 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                       onPressed: () {
                                         var questionObjEdited = Question(
                                           query: questionController.text,
-                                          idealAnswer: idealAnswerController.text,
+                                          idealAnswer:
+                                              idealAnswerController.text,
                                           images: [],
                                           weightage: double.parse(
                                             weightageController.text,
                                           ),
                                         );
                                         questions[i] = questionObjEdited;
-                                        double newWeightage = calculateWeightage();
+                                        double newWeightage =
+                                            calculateWeightage();
                                         questionController.text = "";
                                         idealAnswerController.text = "";
                                         weightageController.text = "";
@@ -378,14 +393,18 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                         });
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                                        backgroundColor:
+                                            const Color.fromRGBO(54, 87, 78, 1),
                                         foregroundColor: Colors.white,
                                       ),
                                       child: Text(
                                         "Save",
                                         style: TextStyle(
-                                          color: Colors.white,
-                                          decoration: TextDecoration.underline,
+                                          fontFamily: 'Axiforma',
+                                          color:
+                                              Color.fromRGBO(255, 255, 255, 1),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     )
@@ -419,7 +438,8 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     ocrImageButton(),
                                     ElevatedButton(
@@ -430,14 +450,18 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                         generateAnswer(questionController.text);
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromRGBO(54, 87, 78, 1),
+                                        backgroundColor:
+                                            const Color.fromRGBO(54, 87, 78, 1),
                                         foregroundColor: Colors.white,
                                       ),
                                       child: Text(
                                         "Write with Gemini",
                                         style: TextStyle(
-                                          color: Colors.white,
-                                          decoration: TextDecoration.underline,
+                                          fontFamily: 'Axiforma',
+                                          color:
+                                              Color.fromRGBO(255, 255, 255, 1),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     )
@@ -516,15 +540,19 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                                       onPressed: () {
                                         setState(() {
                                           editIndex = i;
-                                          questionController.text = questions[i].query;
-                                          idealAnswerController.text = questions[i].idealAnswer!;
-                                          weightageController.text = "${questions[i].weightage}";
+                                          questionController.text =
+                                              questions[i].query;
+                                          idealAnswerController.text =
+                                              questions[i].idealAnswer!;
+                                          weightageController.text =
+                                              "${questions[i].weightage}";
                                         });
                                       },
                                       child: Text(
                                         "Edit",
                                         style: TextStyle(
-                                          color: const Color.fromRGBO(54, 87, 78, 1),
+                                          color: const Color.fromRGBO(
+                                              54, 87, 78, 1),
                                           decoration: TextDecoration.underline,
                                         ),
                                       ),
@@ -581,8 +609,10 @@ class _ExamCreateEditState extends State<ExamCreateEdit> {
                         child: Text(
                           "Submit Paper",
                           style: TextStyle(
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
+                            fontFamily: 'Axiforma',
+                            color: Color.fromRGBO(255, 255, 255, 1),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       )

@@ -3,11 +3,13 @@ import 'package:exam_eval_flutter/Components/profile_listTile.dart';
 import 'package:exam_eval_flutter/Components/upcoming_exam_tile.dart';
 import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 import 'package:exam_eval_flutter/Pages/settings_page.dart';
+
 
 class DesktopScaffold extends StatefulWidget {
   const DesktopScaffold({Key? key}) : super(key: key);
@@ -160,101 +162,189 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
           child: ListView(
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 280,
-                      width: 350,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(227, 221, 211, 1),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 12,
-                            spreadRadius: 4,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Metric to be Planned",
-                          style: TextStyle(
-                            fontFamily: 'Axiforma',
-                            color: Color.fromRGBO(54, 87, 78, 1),
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 280,
-                      width: 350,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(227, 221, 211, 1),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 12,
-                            spreadRadius: 4,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: ListView(children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Upcoming Exam",
-                              style: TextStyle(
-                                fontFamily: 'Axiforma',
-                                color: Color.fromRGBO(54, 87, 78, 1),
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
+                  Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              height: 280,
+                              width: 350,
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(227, 221, 211, 1),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 12,
+                                    spreadRadius: 4,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Metric to be Planned",
+                                  style: TextStyle(
+                                    fontFamily: 'Axiforma',
+                                    color: Color.fromRGBO(54, 87, 78, 1),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
                             ),
-                            SizedBox(height: 16),
-                            UpcomingExamTile(
-                              subject: "Computer Networks",
-                              examType: "Final",
-                              date: "12th June 2025",
-                              onTap: null,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              height: 280,
+                              width: 350,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(227, 221, 211, 1),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 12,
+                                    spreadRadius: 4,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: ListView(children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      "Upcoming Exam",
+                                      style: TextStyle(
+                                        fontFamily: 'Axiforma',
+                                        color: Color.fromRGBO(54, 87, 78, 1),
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    UpcomingExamTile(
+                                      subject: "Computer Networks",
+                                      examType: "Final",
+                                      date: "12th June 2025",
+                                      onTap: null,
+                                    ),
+                                    UpcomingExamTile(
+                                      subject: "Discrete Mathc",
+                                      examType: "Final",
+                                      date: "17th June 2025",
+                                      onTap: null,
+                                    ),
+                                    UpcomingExamTile(
+                                      subject: "DBMS",
+                                      examType: "Final",
+                                      date: "20th June 2025",
+                                      onTap: null,
+                                    ),
+                                    UpcomingExamTile(
+                                      subject: "AADS",
+                                      examType: "Final",
+                                      date: "23th June 2025",
+                                      onTap: null,
+                                    ),
+                                  ],
+                                ),
+                              ]),
                             ),
-                            UpcomingExamTile(
-                              subject: "Discrete Mathc",
-                              examType: "Final",
-                              date: "17th June 2025",
-                              onTap: null,
+                          ),
+                        ],
+                      ),
+                      Container(
+                        height: 400,
+                        width: 700,
+                        decoration: BoxDecoration(
+                          color: const Color.fromRGBO(227, 221, 211, 1),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 12,
+                              spreadRadius: 4,
+                              offset: Offset(0, 4),
                             ),
-                            UpcomingExamTile(
-                              subject: "DBMS",
-                              examType: "Final",
-                              date: "20th June 2025",
-                              onTap: null,
+                          ],
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Half yearly sales analysis',
+                              style: TextStyle(
+                                fontFamily: 'Axiforma',
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromRGBO(54, 87, 78, 1),
+                              ),
                             ),
-                            UpcomingExamTile(
-                              subject: "AADS",
-                              examType: "Final",
-                              date: "23th June 2025",
-                              onTap: null,
+                            const SizedBox(height: 20),
+                            Expanded(
+                              child: LineChart(
+                                LineChartData(
+                                  gridData: FlGridData(show: true),
+                                  titlesData: FlTitlesData(
+                                    leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(showTitles: true),
+                                    ),
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        getTitlesWidget: (value, meta) {
+                                          const months = [
+                                            'Jan',
+                                            'Feb',
+                                            'Mar',
+                                            'Apr',
+                                            'May'
+                                          ];
+                                          return Text(months[value.toInt()],
+                                              style: const TextStyle(
+                                                  fontSize: 12));
+                                        },
+                                        interval: 1,
+                                      ),
+                                    ),
+                                  ),
+                                  borderData: FlBorderData(show: true),
+                                  lineBarsData: [
+                                    LineChartBarData(
+                                      spots: [
+                                        FlSpot(0, 35),
+                                        FlSpot(1, 28),
+                                        FlSpot(2, 34),
+                                        FlSpot(3, 32),
+                                        FlSpot(4, 40),
+                                      ],
+                                      isCurved: true,
+                                      barWidth: 4,
+                                      belowBarData: BarAreaData(show: true),
+                                      dotData: FlDotData(show: true),
+                                      color:
+                                          const Color.fromRGBO(54, 87, 78, 1),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                      ]),
-                    ),
-                  ),
+                      ),
+                    ],
+                  )
                 ],
-              ),
+              )
             ],
           ),
         ),
@@ -375,4 +465,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       ),
     );
   }
+}
+
+class SalesData {
+  SalesData(this.year, this.sales);
+  final String year;
+  final double sales;
 }

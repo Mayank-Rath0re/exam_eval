@@ -36,6 +36,8 @@ dependencies:
   serverpod_auth_email_flutter: 2.4.0
   file_picker: ^9.2.3
   csv: ^6.0.0
+  
+  fl_chart: ^0.65.0
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <6.0.0'

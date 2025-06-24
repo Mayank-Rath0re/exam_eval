@@ -171,7 +171,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
         flex: 3,
         child: Column(
           children: [
-            Text("Your Results"),
+            Text(
+              "Your Results",
+              style: TextStyle(
+                fontFamily: 'Axiforma',
+                color: Color.fromRGBO(255, 255, 255, 1),
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 10),
             Wrap(
               spacing: 10,
@@ -179,11 +187,30 @@ class _EvaluationPageState extends State<EvaluationPage> {
               children: isLoading
                   ? [CircularProgressIndicator()]
                   : resultBatches.isEmpty
-                      ? [Text("No Result Batches Created")]
+                      ? [
+                          Text(
+                            "No Result Batches Created",
+                            style: TextStyle(
+                              fontFamily: 'Axiforma',
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        ]
                       : List.generate(resultBatches.length, (index) {
                           return Container(
                             decoration: BoxDecoration(
-                                border: Border.all(width: 1),
+                                color: const Color.fromRGBO(227, 221, 211, 1),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 12,
+                                    spreadRadius: 4,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                                
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(
                               children: [
@@ -193,8 +220,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                     "Completed") ...[
                                   Text(
                                     resultBatches[index].stage,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontFamily: 'Axiforma',
+                                      color: Color.fromRGBO(54, 87, 78, 1),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   )
                                 ],
                                 const SizedBox(height: 10),
@@ -207,7 +238,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                         fetchResultData(activeResultBatchId);
                                       });
                                     },
-                                    child: Text("Continue"))
+                                    child: Text(
+                                      "Continue",
+                                      style: TextStyle(
+                                        fontFamily: 'Axiforma',
+                                        color: Color.fromRGBO(255, 255, 255, 1),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ))
                               ],
                             ),
                           );
@@ -219,21 +258,54 @@ class _EvaluationPageState extends State<EvaluationPage> {
       Expanded(
         child: Container(
           decoration: BoxDecoration(
-              border: Border.all(width: 1),
-              borderRadius: BorderRadius.circular(12)),
+              color: const Color.fromRGBO(227, 221, 211, 1),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 12,
+                  spreadRadius: 4,
+                  offset: Offset(0, 4),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(15)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Create New Evaluation"),
+              Text(
+                "Create New Evaluation",
+                style: TextStyle(
+                  fontFamily: 'Axiforma',
+                  color: Color.fromRGBO(54, 87, 78, 1),
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                   onPressed: () {
                     // Need to be built
                   },
-                  child: Text("Choose Exam")),
+                  child: Text(
+                    "Choose Exam",
+                    style: TextStyle(
+                      fontFamily: 'Axiforma',
+                      color: Color.fromRGBO(255, 255, 255, 1),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )),
               const SizedBox(height: 10),
               ElevatedButton(
-                  onPressed: pickCsvFile, child: Text("Upload from CSV")),
+                  onPressed: pickCsvFile,
+                  child: Text(
+                    "Upload from CSV",
+                    style: TextStyle(
+                      fontFamily: 'Axiforma',
+                      color: Color.fromRGBO(255, 255, 255, 1),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )),
               const SizedBox(height: 10),
               if (csvUploaded) ...[
                 Row(
