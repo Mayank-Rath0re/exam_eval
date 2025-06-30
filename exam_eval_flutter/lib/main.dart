@@ -1,5 +1,6 @@
 import 'package:exam_eval_client/exam_eval_client.dart';
 import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
+import 'package:exam_eval_flutter/Pages/page_build.dart';
 import 'package:exam_eval_flutter/Pages/registerpage.dart';
 import 'package:exam_eval_flutter/Responsive/my_desktopscaffold.dart';
 import 'package:exam_eval_flutter/Responsive/my_mobilscaffold.dart';
@@ -83,7 +84,8 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => ResponsiveLayout(
               mobileScaffold: const MobileScaffold(),
               tabletScffold: const TabletScaffold(),
-              desktopScaffold: const DesktopScaffold(),
+              desktopScaffold: const PageBuild(index: 0),
+              //desktopScaffold: const DesktopScaffold(),
             ),
         '/evaluate_exam': (context) => const EvaluationPage(),
         '/results': (context) => const ResponsiveResultsPage(),
