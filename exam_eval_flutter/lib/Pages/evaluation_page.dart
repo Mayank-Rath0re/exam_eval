@@ -210,7 +210,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                                     offset: Offset(0, 4),
                                   ),
                                 ],
-                                
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(
                               children: [
@@ -308,7 +307,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   )),
               const SizedBox(height: 10),
               if (csvUploaded) ...[
-                Row(
+                Column(
                   children: [
                     Text("CSV Uploaded Successfully"),
                     ElevatedButton(
@@ -435,7 +434,17 @@ class _EvaluationPageState extends State<EvaluationPage> {
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 TableRow(
-                  decoration: BoxDecoration(color: Colors.grey[300]),
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(227, 221, 211, 1),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 12,
+                        spreadRadius: 4,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -444,24 +453,35 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Student Name'),
+                      child: Text('Student Name', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Exam ID'),
+                      child: Text('Exam ID', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Final Score'),
+                      child: Text('Final Score', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Required Action'),
+                      child: Text('Required Action', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
                 for (int i = 0; i < resultData.length; i++) ...[
                   TableRow(
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(227, 221, 211, 1),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 12,
+                          spreadRadius: 4,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -469,17 +489,22 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(resultData[i].name),
+                        child: Text(resultData[i].name, style: TextStyle(
+                      fontFamily: 'Axiforma',
+                      color: Color.fromRGBO(0, 0, 0, 1),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("${resultData[i].examId}"),
+                        child: Text("${resultData[i].examId}", style: TextStyle(fontWeight: FontWeight.bold),),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: resultData[i].status != "graded"
-                            ? Text(resultData[i].status)
-                            : Text("${resultData[i].finalScore}"),
+                            ? Text(resultData[i].status, )
+                            : Text("${resultData[i].finalScore}", ),
                       ),
                       Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -504,10 +529,27 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   Widget thirdPageBuild() {
     return ListView(children: [
-      Text(resultData[evaluatingIndex].name),
-      Text("Exam ID: ${resultData[evaluatingIndex].examId}"),
+      Text(
+        resultData[evaluatingIndex].name,
+        style: TextStyle(
+          fontFamily: 'Axiforma',
+          color: Color.fromRGBO(255, 255, 255, 1),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      Text(
+        "Exam ID: ${resultData[evaluatingIndex].examId}",
+        style: TextStyle(
+          fontFamily: 'Axiforma',
+          color: Color.fromRGBO(255, 255, 255, 1),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       Row(mainAxisAlignment: MainAxisAlignment.start, children: [
         IconButton(
+          color: Colors.white,
             onPressed: () {
               showDialog(
                   context: context,

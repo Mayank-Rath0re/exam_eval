@@ -85,8 +85,16 @@ class _AbsEvalQuesState extends State<AbsEvalQues> {
       padding: const EdgeInsets.all(8.0),
       child: Container(
           decoration: BoxDecoration(
-              border: Border.all(width: 1),
-              borderRadius: BorderRadius.circular(12)),
+              color: const Color.fromRGBO(227, 221, 211, 1),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 12,
+                  spreadRadius: 4,
+                  offset: Offset(0, 4),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -94,16 +102,22 @@ class _AbsEvalQuesState extends State<AbsEvalQues> {
               children: [
                 Row(
                   children: [
-                    Text("Question: ${widget.index + 1}"),
+                    Text("Question: ${widget.index + 1}", style: TextStyle(
+                      fontWeight: FontWeight.w700
+                    ),),
                     const Spacer(),
                     Text(
                         "Final Score: ${widget.evaluatedScore == -1 ? "Not evaluated" : widget.evaluatedScore}")
                   ],
                 ),
                 const SizedBox(height: 10),
-                Text("Question: ${widget.question.query}"),
+                Text("Question: ${widget.question.query}",style: TextStyle(
+                      fontWeight: FontWeight.w700
+                    )),
                 const SizedBox(height: 10),
-                Text("Ideal Answer: ${widget.question.idealAnswer}"),
+                Text("Ideal Answer: ${widget.question.idealAnswer}",style: TextStyle(
+                      fontWeight: FontWeight.w500
+                    )),
                 const SizedBox(height: 10),
                 if (isGenerating) ...[
                   const Center(child: CircularProgressIndicator())
