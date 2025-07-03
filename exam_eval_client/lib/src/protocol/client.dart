@@ -148,6 +148,7 @@ class EndpointExam extends _i1.EndpointRef {
       );
 
   _i2.Future<int> createResultBatch(
+    String batchTitle,
     int userId,
     List<int> studentId,
     List<String> studentName,
@@ -157,6 +158,7 @@ class EndpointExam extends _i1.EndpointRef {
         'exam',
         'createResultBatch',
         {
+          'batchTitle': batchTitle,
           'userId': userId,
           'studentId': studentId,
           'studentName': studentName,

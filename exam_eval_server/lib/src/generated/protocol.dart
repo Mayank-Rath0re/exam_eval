@@ -386,6 +386,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'nextval(\'result_batch_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
           name: 'uploadedBy',
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
@@ -402,6 +408,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'completedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
         ),
         _i2.ColumnDefinition(
           name: 'contents',

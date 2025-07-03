@@ -1,12 +1,14 @@
+import 'package:exam_eval_flutter/Components/abs_minimal_box.dart';
+import 'package:exam_eval_flutter/Components/abs_text.dart';
 import 'package:exam_eval_flutter/Components/mega_menu.dart';
 import 'package:exam_eval_flutter/Components/profile_listTile.dart';
 import 'package:exam_eval_flutter/Components/upcoming_exam_tile.dart';
 import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
+import 'package:exam_eval_flutter/Pages/result_page.dart';
+import 'package:exam_eval_flutter/main.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
-import 'package:exam_eval_flutter/Pages/results_page.dart';
 import 'package:exam_eval_flutter/Pages/exam_define_page.dart';
 import 'package:exam_eval_flutter/Pages/settings_page.dart';
 
@@ -31,29 +33,10 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(title: _buildAppBar()),
-      body: Stack(
+      body: Column(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.8, 0.8),
-                radius: 2.3,
-                colors: [
-                  Color.fromRGBO(247, 245, 243, 1),
-                  Color.fromRGBO(227, 221, 211, 1),
-                  Color.fromRGBO(212, 199, 130, 1),
-                  Color.fromRGBO(54, 87, 78, 1),
-                ],
-                stops: [0.0, 0.1, 0.52, 0.81],
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              //_buildAppBar(),
-              Expanded(child: _buildBody()),
-            ],
-          ),
+          //_buildAppBar(),
+          Expanded(child: _buildBody()),
         ],
       ),
     );
@@ -62,7 +45,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   Widget _buildAppBar() {
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       elevation: 0,
       titleSpacing: 0,
       title: Row(
@@ -72,7 +55,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
             child: Text(
               'EXAM EVAL',
               style: TextStyle(
-                color: Colors.white,
+                color: Color(0xFF2D5A27),
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
                 letterSpacing: 1.2,
@@ -101,7 +84,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       case 3:
         return const EvaluationPage();
       case 4:
-        return const ResponsiveResultsPage();
+        return ResultPage(userId: sessionManager.signedInUser!.id!);
       case 5:
         return const SettingsPage();
       case 6:
@@ -113,6 +96,90 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     }
   }
 
+  Widget _buildDashboard() {
+    return SingleChildScrollView(
+        child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AbsText(displayString: "Dashboard", fontSize: 26, bold: true),
+          const SizedBox(height: 30),
+          Row(
+            children: [
+              Expanded(
+                  child: AbsMinimalBox(
+                      layer: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AbsText(displayString: "Average Score", fontSize: 16),
+                          const SizedBox(height: 8),
+                          AbsText(
+                              displayString: "78%", fontSize: 18, bold: true)
+                        ],
+                      ))),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: AbsMinimalBox(
+                      layer: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AbsText(
+                              displayString: "Exams Evaluated", fontSize: 16),
+                          const SizedBox(height: 8),
+                          AbsText(
+                              displayString: "150", fontSize: 18, bold: true)
+                        ],
+                      ))),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: AbsMinimalBox(
+                      layer: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AbsText(
+                              displayString: "Students Assessed", fontSize: 16),
+                          const SizedBox(height: 8),
+                          AbsText(
+                              displayString: "120", fontSize: 18, bold: true)
+                        ],
+                      ))),
+            ],
+          ),
+          const SizedBox(height: 15),
+          AbsText(
+              displayString: "Performance Overview", fontSize: 18, bold: true),
+          const SizedBox(height: 20),
+          AbsMinimalBox(
+              layer: 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AbsText(displayString: "Overall Performance", fontSize: 16),
+                  const SizedBox(height: 5),
+                  AbsText(displayString: "75%", fontSize: 20, bold: true),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    height: 320,
+                    child: AbsMinimalBox(
+                        layer: 1,
+                        child: Center(
+                            child: AbsText(
+                                displayString: "Graph Metric Area",
+                                fontSize: 18,
+                                bold: true))),
+                  )
+                ],
+              ))
+        ],
+      ),
+    ));
+  }
+
+  /*
   Widget _buildDashboard() {
     return Row(
       children: [
@@ -351,6 +418,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       ],
     );
   }
+  */
 
   Widget buildProfileMenu() {
     return Column(

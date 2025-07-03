@@ -1,3 +1,4 @@
+import 'package:exam_eval_flutter/Components/abs_text.dart';
 import 'package:flutter/material.dart';
 
 class MegaMenu extends StatelessWidget {
@@ -82,17 +83,18 @@ class MegaMenu extends StatelessWidget {
             children: [
               Icon(icon, color: Color.fromRGBO(54, 87, 78, 1), size: 20),
               const SizedBox(width: 8),
+              AbsText(displayString: title, fontSize: 14, bold: true)
+              /*
               Text(
                 title,
                 style: const TextStyle(
-                  fontFamily:
-                      'Blanka', // 👈 Use the font family name declared in pubspec.yaml
+                  fontFamily: 'Blanka', // 👈 Use the font family name declared in pubspec.yaml
                   color: Color.fromRGBO(54, 87, 78, 1),
                   fontSize: 14,
                   fontWeight:
                       FontWeight.w500, // Note: Some .otf fonts ignore this
                 ),
-              ),
+              ),*/
             ],
           ),
         ),

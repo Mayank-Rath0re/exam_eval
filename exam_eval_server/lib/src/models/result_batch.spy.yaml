@@ -1,7 +1,9 @@
 class: ResultBatch
 table: result_batch
 fields:
+    title: String
     uploadedBy: int, relation(parent=user)
     uploadedAt: DateTime
     stage: String
+    completedAt: DateTime?
     contents: List<int>

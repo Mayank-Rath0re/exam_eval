@@ -367,6 +367,12 @@
             "dartType": "int?"
           },
           {
+            "name": "title",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
             "name": "uploadedBy",
             "columnType": 6,
             "isNullable": false,
@@ -383,6 +389,12 @@
             "columnType": 0,
             "isNullable": false,
             "dartType": "String"
+          },
+          {
+            "name": "completedAt",
+            "columnType": 4,
+            "isNullable": true,
+            "dartType": "DateTime?"
           },
           {
             "name": "contents",

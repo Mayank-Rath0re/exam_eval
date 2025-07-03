@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:csv/csv.dart';
 import 'package:exam_eval_client/exam_eval_client.dart';
+import 'package:exam_eval_flutter/Components/abs_button_primary.dart';
 import 'package:exam_eval_flutter/Components/abs_eval_ques.dart';
+import 'package:exam_eval_flutter/Components/abs_minimal_box.dart';
+import 'package:exam_eval_flutter/Components/abs_text.dart';
 import 'package:exam_eval_flutter/Pages/file_reader.dart';
 import 'package:exam_eval_flutter/main.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,14 +19,18 @@ class EvaluationPage extends StatefulWidget {
   State<EvaluationPage> createState() => _EvaluationPageState();
 }
 
-class _EvaluationPageState extends State<EvaluationPage> {
+class _EvaluationPageState extends State<EvaluationPage>
+    with SingleTickerProviderStateMixin {
+  late TabController tabController;
   // Stepper Variable
   int currentStep = 0;
   // First Page Variables
   bool csvUploaded = false;
+  String fileName = "";
   List<List<dynamic>> csvData = [];
   bool isLoading = true; // For loading the resultbatch data
-  late List<ResultBatch> resultBatches;
+  late List<ResultBatch> resultBatchesDraft;
+  late List<ResultBatch> resultBatchesOngoing;
   late int activeResultBatchId;
   // Second page variables
   late List<Result> resultData;
@@ -37,7 +44,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
     var resultBatchInfo =
         await client.exam.fetchResultBatch(sessionManager.signedInUser!.id!);
     setState(() {
-      resultBatches = resultBatchInfo;
+      resultBatchesDraft =
+          resultBatchInfo.where((t) => t.stage == "Draft").toList();
+      resultBatchesOngoing =
+          resultBatchInfo.where((t) => t.stage == "Evaluating").toList();
       isLoading = false;
     });
   }
@@ -51,6 +61,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   void initState() {
+    tabController = TabController(length: 2, vsync: this);
     getResultBatches();
     super.initState();
   }
@@ -140,6 +151,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
     );
     if (result != null) {
       String content = '';
+      setState(() {
+        fileName = result.files.first.name;
+      });
       if (kIsWeb) {
         // On web, use bytes
         final bytes = result.files.single.bytes;
@@ -166,455 +180,418 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   Widget firstPageBuild() {
-    return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-      Expanded(
-        flex: 3,
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Your Results",
-              style: TextStyle(
-                fontFamily: 'Axiforma',
-                color: Color.fromRGBO(255, 255, 255, 1),
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: isLoading
-                  ? [CircularProgressIndicator()]
-                  : resultBatches.isEmpty
-                      ? [
-                          Text(
-                            "No Result Batches Created",
-                            style: TextStyle(
-                              fontFamily: 'Axiforma',
-                              color: Color.fromRGBO(255, 255, 255, 1),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          )
-                        ]
-                      : List.generate(resultBatches.length, (index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                color: const Color.fromRGBO(227, 221, 211, 1),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 12,
-                                    spreadRadius: 4,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(
-                              children: [
-                                Text("${resultBatches[index].uploadedAt}"),
-                                const SizedBox(height: 10),
-                                if (resultBatches[index].stage !=
-                                    "Completed") ...[
-                                  Text(
-                                    resultBatches[index].stage,
-                                    style: TextStyle(
-                                      fontFamily: 'Axiforma',
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  )
-                                ],
-                                const SizedBox(height: 10),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        currentStep = 1;
-                                        activeResultBatchId =
-                                            resultBatches[index].id!;
-                                        fetchResultData(activeResultBatchId);
-                                      });
-                                    },
-                                    child: Text(
-                                      "Continue",
-                                      style: TextStyle(
-                                        fontFamily: 'Axiforma',
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ))
-                              ],
-                            ),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                AbsText(displayString: "Evaluations", fontSize: 24, bold: true),
+                const Spacer(),
+                if (!csvUploaded) ...[
+                  AbsButtonPrimary(
+                      onPressed: () {},
+                      child:
+                          AbsText(displayString: "Choose Exam", fontSize: 14)),
+                  const SizedBox(width: 10),
+                  AbsButtonPrimary(
+                      onPressed: pickCsvFile,
+                      child: AbsText(
+                          displayString: "Upload from CSV", fontSize: 14))
+                ] else ...[
+                  AbsText(displayString: "CSV Uploaded", fontSize: 16),
+                  const SizedBox(width: 10),
+                  AbsButtonPrimary(
+                      onPressed: () async {
+                        try {
+                          // Extract the respective columns from rows
+                          List<int> studentIds = csvData
+                              .map((row) => int.parse(row[0].toString()))
+                              .toList();
+                          List<String> studentNames =
+                              csvData.map((row) => row[1].toString()).toList();
+                          List<int> examIds = csvData
+                              .map((row) => int.parse(row[2].toString()))
+                              .toList();
+
+                          var resultInfo = await client.exam.createResultBatch(
+                            fileName,
+                            sessionManager.signedInUser!.id!,
+                            studentIds,
+                            studentNames,
+                            examIds,
                           );
-                        }),
+                          fetchResultData(resultInfo);
+                          setState(() {
+                            activeResultBatchId = resultInfo;
+                            csvData = [];
+                            currentStep = 1;
+                            fileName = "";
+                          });
+                        } catch (err) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    content: Text(err.toString()),
+                                  ));
+                        }
+                      },
+                      child: AbsText(displayString: "Continue", fontSize: 14))
+                ]
+              ],
+            ),
+            const SizedBox(height: 20),
+            TabBar(
+                controller: tabController,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                tabs: const [
+                  AbsText(displayString: "Draft", fontSize: 16),
+                  AbsText(displayString: "Ongoing", fontSize: 16)
+                ]),
+            const SizedBox(height: 10),
+            Expanded(
+              child: TabBarView(
+                  controller: tabController,
+                  children: isLoading
+                      ? [
+                          Center(
+                              child: AbsText(
+                                  displayString: "No Data",
+                                  fontSize: 18,
+                                  bold: true)),
+                          Center(
+                              child: AbsText(
+                                  displayString: "No Data",
+                                  fontSize: 18,
+                                  bold: true)),
+                        ]
+                      : [
+                          if (resultBatchesDraft.isEmpty) ...[
+                            Center(
+                              child: AbsText(
+                                  displayString: "No Drafts!",
+                                  fontSize: 14,
+                                  bold: true),
+                            )
+                          ] else ...[
+                            Wrap(
+                              spacing: 10.0,
+                              runSpacing: 10.0,
+                              alignment: WrapAlignment.start,
+                              children: [
+                                for (int i = 0;
+                                    i < resultBatchesDraft.length;
+                                    i++) ...[
+                                  GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          currentStep = 1;
+                                          activeResultBatchId =
+                                              resultBatchesDraft[i].id!;
+                                          fetchResultData(activeResultBatchId);
+                                        });
+                                      },
+                                      child: AbsMinimalBox(
+                                          layer: 1,
+                                          child: Column(
+                                            children: [
+                                              AbsText(
+                                                  displayString:
+                                                      resultBatchesDraft[i]
+                                                          .title,
+                                                  fontSize: 14,
+                                                  bold: true)
+                                            ],
+                                          )))
+                                ]
+                              ],
+                            )
+                          ],
+                          if (resultBatchesOngoing.isEmpty) ...[
+                            Center(
+                              child: AbsText(
+                                  displayString: "No Ongoing Evaluations!",
+                                  fontSize: 14,
+                                  bold: true),
+                            )
+                          ] else ...[
+                            Wrap(
+                              spacing: 10.0,
+                              runSpacing: 10.0,
+                              alignment: WrapAlignment.start,
+                              children: resultBatchesOngoing.map((ongoing) {
+                                return AbsMinimalBox(
+                                    layer: 1,
+                                    child: Column(
+                                      children: [
+                                        AbsText(
+                                            displayString: ongoing.title,
+                                            fontSize: 14,
+                                            bold: true)
+                                      ],
+                                    ));
+                              }).toList(),
+                            )
+                          ]
+                        ]),
             )
           ],
-        ),
-      ),
-      Expanded(
-        child: Container(
-          decoration: BoxDecoration(
-              color: const Color.fromRGBO(227, 221, 211, 1),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 12,
-                  spreadRadius: 4,
-                  offset: Offset(0, 4),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(15)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Create New Evaluation",
-                style: TextStyle(
-                  fontFamily: 'Axiforma',
-                  color: Color.fromRGBO(54, 87, 78, 1),
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                  onPressed: () {
-                    // Need to be built
-                  },
-                  child: Text(
-                    "Choose Exam",
-                    style: TextStyle(
-                      fontFamily: 'Axiforma',
-                      color: Color.fromRGBO(255, 255, 255, 1),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                  onPressed: pickCsvFile,
-                  child: Text(
-                    "Upload from CSV",
-                    style: TextStyle(
-                      fontFamily: 'Axiforma',
-                      color: Color.fromRGBO(255, 255, 255, 1),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )),
-              const SizedBox(height: 10),
-              if (csvUploaded) ...[
-                Column(
-                  children: [
-                    Text("CSV Uploaded Successfully"),
-                    ElevatedButton(
-                        onPressed: () async {
-                          try {
-                            // Extract the respective columns from rows
-                            List<int> studentIds = csvData
-                                .map((row) => int.parse(row[0].toString()))
-                                .toList();
-                            List<String> studentNames = csvData
-                                .map((row) => row[1].toString())
-                                .toList();
-                            List<int> examIds = csvData
-                                .map((row) => int.parse(row[2].toString()))
-                                .toList();
-
-                            var resultInfo =
-                                await client.exam.createResultBatch(
-                              sessionManager.signedInUser!.id!,
-                              studentIds,
-                              studentNames,
-                              examIds,
-                            );
-                            fetchResultData(resultInfo);
-                            setState(() {
-                              activeResultBatchId = resultInfo;
-                              csvData = [];
-                              currentStep = 1;
-                            });
-                          } catch (err) {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      content: Text(err.toString()),
-                                    ));
-                          }
-                        },
-                        child: Text("Continue"))
-                  ],
-                )
-              ],
-            ],
-          ),
-        ),
-      )
-    ]);
+        ));
   }
 
   Widget secondPageBuild() {
-    return ListView(
-      children: [
-        IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            setState(() {
-              currentStep = 0;
-            });
-          },
-        ),
-        if (resultData.isNotEmpty) ...[
-          const SizedBox(height: 5),
-          Row(
-            children: [
-              const Spacer(),
-              ElevatedButton(
-                  onPressed: () async {
-                    bool check = true;
-                    for (int i = 0; i < resultData.length; i++) {
-                      if (resultData[i].status != "Not graded") {
-                        check = false;
-                        break;
-                      }
-                    }
-                    if (check) {
-                      // Send for evaluation
-                      try {
-                        // ignore: unused_local_variable
-                        var evalReq =
-                            await client.exam.evaluateExam(activeResultBatchId);
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  content: Column(
-                                    children: [
-                                      Text(
-                                          "Added for evaluation. This may take some time."),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            Navigator.pushNamed(
-                                                context, '/dashboard');
-                                          },
-                                          child: Text("Back to Dashboard"))
-                                    ],
-                                  ),
-                                ));
-                      } catch (err) {
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  content: Text("Some error occured"),
-                                ));
-                      }
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                content: Text("Not all answers are uploaded"),
-                              ));
-                    }
-                  },
-                  child: Text("Evaluate Exam"))
-            ],
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Table(
-              border: TableBorder.all(), // Optional: adds borders around cells
-              columnWidths: const {
-                0: FlexColumnWidth(2),
-                1: FlexColumnWidth(3),
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+        child: ListView(
+          children: [
+            const SizedBox(height: 10),
+            Row(
               children: [
-                TableRow(
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(227, 221, 211, 1),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 12,
-                        spreadRadius: 4,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Student ID',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Student Name', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Exam ID', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Final Score', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Required Action', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                for (int i = 0; i < resultData.length; i++) ...[
-                  TableRow(
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(227, 221, 211, 1),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 12,
-                          spreadRadius: 4,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("${resultData[i].rollNo}"),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(resultData[i].name, style: TextStyle(
-                      fontFamily: 'Axiforma',
-                      color: Color.fromRGBO(0, 0, 0, 1),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("${resultData[i].examId}", style: TextStyle(fontWeight: FontWeight.bold),),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: resultData[i].status != "graded"
-                            ? Text(resultData[i].status, )
-                            : Text("${resultData[i].finalScore}", ),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                // Route to evaluate scaffold
-                                prepareData(i);
-                              },
-                              child: Text("Upload"))),
-                    ],
-                  ),
-                ],
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        currentStep = 0;
+                      });
+                    },
+                    icon: Icon(Icons.arrow_back)),
+                const Spacer(),
+                AbsButtonPrimary(
+                    onPressed: () async {
+                      bool check = true;
+                      for (int i = 0; i < resultData.length; i++) {
+                        if (resultData[i].status != "Not graded") {
+                          check = false;
+                          break;
+                        }
+                      }
+                      if (check) {
+                        // Send for evaluation
+                        try {
+                          // ignore: unused_local_variable
+                          var evalReq = await client.exam
+                              .evaluateExam(activeResultBatchId);
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    content: Column(
+                                      children: [
+                                        Text(
+                                            "Added for evaluation. This may take some time."),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              Navigator.pushNamed(
+                                                  context, '/dashboard');
+                                            },
+                                            child: Text("Back to Dashboard"))
+                                      ],
+                                    ),
+                                  ));
+                        } catch (err) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    content: Text("Some error occured"),
+                                  ));
+                        }
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  content: Text("Not all answers are uploaded"),
+                                ));
+                      }
+                    },
+                    child:
+                        AbsText(displayString: "Evaluate Exam", fontSize: 16))
               ],
             ),
-          ),
-        ] else ...[
-          const Text('No CSV data to display or all cells are empty.'),
-        ],
-      ],
-    );
+            const SizedBox(height: 10),
+            if (resultData.isNotEmpty) ...[
+              Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: AbsMinimalBox(
+                          layer: 1,
+                          child: AbsText(
+                              displayString: "Student ID", fontSize: 14))),
+                  const SizedBox(width: 5),
+                  Expanded(
+                      flex: 2,
+                      child: AbsMinimalBox(
+                          layer: 1,
+                          child: AbsText(
+                              displayString: "Student Name", fontSize: 14))),
+                  const SizedBox(width: 5),
+                  Expanded(
+                      flex: 1,
+                      child: AbsMinimalBox(
+                          layer: 1,
+                          child:
+                              AbsText(displayString: "Exam ID", fontSize: 14))),
+                  const SizedBox(width: 5),
+                  Expanded(
+                      flex: 1,
+                      child: AbsMinimalBox(
+                          layer: 1,
+                          child: AbsText(
+                              displayString: "Final Score", fontSize: 14))),
+                  const SizedBox(width: 5),
+                  Expanded(
+                      flex: 1,
+                      child: AbsMinimalBox(
+                          layer: 1,
+                          child: AbsText(
+                              displayString: "Required Action", fontSize: 14))),
+                ],
+              ),
+              const SizedBox(height: 5),
+              for (int i = 0; i < resultData.length; i++) ...[
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 1,
+                        child: AbsMinimalBox(
+                            layer: 1,
+                            child: AbsText(
+                                displayString: "${resultData[i].rollNo}",
+                                fontSize: 14))),
+                    const SizedBox(width: 5),
+                    Expanded(
+                        flex: 2,
+                        child: AbsMinimalBox(
+                            layer: 1,
+                            child: AbsText(
+                                displayString: resultData[i].name,
+                                fontSize: 14))),
+                    const SizedBox(width: 5),
+                    Expanded(
+                        flex: 1,
+                        child: AbsMinimalBox(
+                            layer: 1,
+                            child: AbsText(
+                                displayString: "${resultData[i].examId}",
+                                fontSize: 14))),
+                    const SizedBox(width: 5),
+                    Expanded(
+                        flex: 1,
+                        child: AbsMinimalBox(
+                            layer: 1,
+                            child: AbsText(
+                                displayString: resultData[i].status != "graded"
+                                    ? resultData[i].status
+                                    : "${resultData[i].finalScore}",
+                                fontSize: 14))),
+                    const SizedBox(width: 5),
+                    Expanded(
+                        flex: 1,
+                        child: AbsButtonPrimary(
+                            onPressed: () {
+                              // Route to evaluate scaffold
+                              prepareData(i);
+                            },
+                            child: AbsText(
+                                displayString: "Upload", fontSize: 13))),
+                  ],
+                ),
+                const SizedBox(height: 5),
+              ],
+            ] else ...[
+              const AbsText(
+                  displayString:
+                      "No CSV data to display or all cells are empty.",
+                  fontSize: 18)
+            ]
+          ],
+        ));
   }
 
   Widget thirdPageBuild() {
-    return ListView(children: [
-      Text(
-        resultData[evaluatingIndex].name,
-        style: TextStyle(
-          fontFamily: 'Axiforma',
-          color: Color.fromRGBO(255, 255, 255, 1),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      Text(
-        "Exam ID: ${resultData[evaluatingIndex].examId}",
-        style: TextStyle(
-          fontFamily: 'Axiforma',
-          color: Color.fromRGBO(255, 255, 255, 1),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        IconButton(
-          color: Colors.white,
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        content: Center(child: Text("Save Changes?")),
-                        actions: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                setState(() {
-                                  currentStep = 1;
-                                });
-                              },
-                              child: Text("Discard")),
-                          ElevatedButton(
-                              onPressed: () async {
-                                // Save Draft
-                                await client.exam.saveAnswers(
-                                    resultData[evaluatingIndex].id!,
-                                    uploadedAnswers);
-                                Navigator.pop(context);
-                                setState(() {
-                                  currentStep = 1;
-                                });
-                              },
-                              child: Text("Save"))
-                        ],
-                      ));
-            },
-            icon: Icon(Icons.arrow_back)),
-      ]),
-      const SizedBox(height: 20),
-      for (int i = 0; i < examData.questions.length; i++) ...[
-        AbsEvalQues(
-            index: i,
-            question: examData.questions[i],
-            uploadedAnswer: uploadedAnswers.submittedAnswer[i],
-            evaluatedScore: uploadedAnswers.evaluatedScore[i],
-            onGenerated: (val) {
-              setState(() {
-                uploadedAnswers.submittedAnswer[i] = val;
-              });
-            }),
-        const SizedBox(height: 5),
-      ],
-    ]);
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                content: Center(child: Text("Save Changes?")),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          currentStep = 1;
+                                        });
+                                      },
+                                      child: Text("Discard")),
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        // Save Draft
+                                        await client.exam.saveAnswers(
+                                            resultData[evaluatingIndex].id!,
+                                            uploadedAnswers);
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          currentStep = 1;
+                                        });
+                                      },
+                                      child: Text("Save"))
+                                ],
+                              ));
+                    },
+                    icon: Icon(Icons.arrow_back)),
+                const SizedBox(height: 5),
+                AbsText(
+                    displayString: "Upload Answer", fontSize: 24, bold: true),
+                const SizedBox(height: 10),
+                AbsText(
+                    displayString: "Name: ${resultData[evaluatingIndex].name}",
+                    fontSize: 16,
+                    bold: true),
+                const SizedBox(height: 5),
+                AbsText(
+                    displayString:
+                        "Exam ID: ${resultData[evaluatingIndex].examId}",
+                    fontSize: 16,
+                    bold: true),
+                const SizedBox(height: 20),
+                for (int i = 0; i < examData.questions.length; i++) ...[
+                  AbsEvalQues(
+                      index: i,
+                      question: examData.questions[i],
+                      uploadedAnswer: uploadedAnswers.submittedAnswer[i],
+                      evaluatedScore: uploadedAnswers.evaluatedScore[i],
+                      onGenerated: (val) {
+                        setState(() {
+                          uploadedAnswers.submittedAnswer[i] = val;
+                        });
+                      }),
+                  const SizedBox(height: 5),
+                ],
+              ],
+            )
+          ],
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     if (currentStep == 0) {
-      return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: firstPageBuild(),
-      );
+      return firstPageBuild();
     } else if (currentStep == 1) {
-      return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: secondPageBuild(),
-      );
+      return secondPageBuild();
     } else if (currentStep == 2) {
-      return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: thirdPageBuild(),
-      );
+      return thirdPageBuild();
     }
     return const Placeholder();
   }

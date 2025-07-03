@@ -301,6 +301,11 @@ class Endpoints extends _i1.EndpointDispatch {
         'createResultBatch': _i1.MethodConnector(
           name: 'createResultBatch',
           params: {
+            'batchTitle': _i1.ParameterDescription(
+              name: 'batchTitle',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
             'userId': _i1.ParameterDescription(
               name: 'userId',
               type: _i1.getType<int>(),
@@ -328,6 +333,7 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['exam'] as _i4.ExamEndpoint).createResultBatch(
             session,
+            params['batchTitle'],
             params['userId'],
             params['studentId'],
             params['studentName'],

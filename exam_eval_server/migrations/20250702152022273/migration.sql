@@ -61,9 +61,11 @@ CREATE TABLE "result" (
 --
 CREATE TABLE "result_batch" (
     "id" bigserial PRIMARY KEY,
+    "title" text NOT NULL,
     "uploadedBy" bigint NOT NULL,
     "uploadedAt" timestamp without time zone NOT NULL,
     "stage" text NOT NULL,
+    "completedAt" timestamp without time zone,
     "contents" json NOT NULL
 );
 
@@ -500,9 +502,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR exam_eval
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('exam_eval', '20250623074858344', now())
+    VALUES ('exam_eval', '20250702152022273', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250623074858344', "timestamp" = now();
+    DO UPDATE SET "version" = '20250702152022273', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

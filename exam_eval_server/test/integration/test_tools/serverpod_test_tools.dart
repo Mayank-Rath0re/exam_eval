@@ -422,6 +422,7 @@ class _ExamEndpoint {
 
   _i3.Future<int> createResultBatch(
     _i1.TestSessionBuilder sessionBuilder,
+    String batchTitle,
     int userId,
     List<int> studentId,
     List<String> studentName,
@@ -439,6 +440,7 @@ class _ExamEndpoint {
           endpointPath: 'exam',
           methodName: 'createResultBatch',
           parameters: _i1.testObjectToJson({
+            'batchTitle': batchTitle,
             'userId': userId,
             'studentId': studentId,
             'studentName': studentName,

@@ -41,7 +41,7 @@ class ExamEndpoint extends Endpoint {
     // Result Objects could be linked to this, need to figure out and code accordingly
   }
 
-  Future<int> createResultBatch(Session session, int userId,
+  Future<int> createResultBatch(Session session, String batchTitle, int userId,
       List<int> studentId, List<String> studentName, List<int> examId) async {
     try {
       List<int> resultData = [];
@@ -59,6 +59,7 @@ class ExamEndpoint extends Endpoint {
         resultData.add(resultInsert.id!);
       }
       var resultBatch = ResultBatch(
+          title: batchTitle,
           uploadedBy: userId,
           uploadedAt: DateTime.now(),
           stage: "Draft",
@@ -67,6 +68,7 @@ class ExamEndpoint extends Endpoint {
       var batchIns = await ResultBatch.db.insertRow(session, resultBatch);
       return batchIns.id!;
     } catch (err) {
+      print(err);
       return -1;
     }
   }
@@ -160,6 +162,9 @@ class ExamEndpoint extends Endpoint {
     }
     resultBatchUpdate.stage =
         resultBatchUpdate.stage != "Error" ? "Completed" : "Error";
+    if (resultBatchUpdate.stage == "Completed") {
+      resultBatchUpdate.completedAt = DateTime.now();
+    }
     // ignore: unused_local_variable
     var resultBatchFinalize =
         await ResultBatch.db.updateRow(session, resultBatchUpdate);
