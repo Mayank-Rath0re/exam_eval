@@ -524,7 +524,18 @@ class _EvaluationPageState extends State<EvaluationPage>
                       showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                                content: Center(child: Text("Save Changes?")),
+
+                                content:  SizedBox(
+                                  width: 200,
+                                  height: 100,
+                                  child: Column(
+                                    children: [
+                                      Center(
+                                        child: Text("Save Changes?"),
+                                      )
+                                    ],
+                                  ),
+                                ),
                                 actions: [
                                   TextButton(
                                       onPressed: () {
@@ -541,6 +552,10 @@ class _EvaluationPageState extends State<EvaluationPage>
                                             resultData[evaluatingIndex].id!,
                                             uploadedAnswers);
                                         Navigator.pop(context);
+
+                                        // Re-fetch updated resultData before navigating back
+                                        fetchResultData(activeResultBatchId);
+
                                         setState(() {
                                           currentStep = 1;
                                         });
@@ -577,7 +592,51 @@ class _EvaluationPageState extends State<EvaluationPage>
                         });
                       }),
                   const SizedBox(height: 5),
+
                 ],
+                ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+
+                            content:  SizedBox(
+                              width: 200,
+                              height: 100,
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Text("Confirm Submission?"),
+                                  )
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Cancel")),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    // Save Draft
+                                    await client.exam.saveAnswers(
+                                        resultData[evaluatingIndex].id!,
+                                        uploadedAnswers);
+                                    Navigator.pop(context);
+
+                                    // Re-fetch updated resultData before navigating back
+                                    fetchResultData(activeResultBatchId);
+
+                                    setState(() {
+                                      currentStep = 1;
+                                    });
+                                  },
+                                  child: Text("Save"))
+                            ],
+                          ));
+                    },
+                    child: Text("Save"))
               ],
             )
           ],
