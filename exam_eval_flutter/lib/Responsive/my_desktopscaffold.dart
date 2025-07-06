@@ -5,6 +5,7 @@ import 'package:exam_eval_flutter/Components/profile_listTile.dart';
 import 'package:exam_eval_flutter/Components/upcoming_exam_tile.dart';
 import 'package:exam_eval_flutter/Pages/evaluation_page.dart';
 import 'package:exam_eval_flutter/Pages/my_exams_page.dart';
+import 'package:exam_eval_flutter/Pages/profile_page.dart';
 import 'package:exam_eval_flutter/Pages/result_page.dart';
 import 'package:exam_eval_flutter/main.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -32,7 +33,55 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: _buildAppBar()),
+      appBar: AppBar(automaticallyImplyLeading: false,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      titleSpacing: 0,
+      title: Row(
+        children: [
+          SizedBox(width: 10,),
+          if (_selectedIndex != 0)
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+              },
+            ),
+          if (_selectedIndex == 0)
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ProfilePage()),
+              );
+            },
+            child: const CircleAvatar(
+              foregroundImage: AssetImage("assets/images/mayank_pfp.jpeg"),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Text(
+              'EXAM EVAL',
+              style: TextStyle(
+                color: Color(0xFF2D5A27),
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          const Spacer(),
+          MegaMenu(
+            onTabChange: _onTabChange,
+            isMobile: false,
+          ),
+        ],
+      ),
+      toolbarHeight: 70,),
       body: Column(
         children: [
           //_buildAppBar(),
@@ -42,14 +91,35 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
     );
   }
 
-  Widget _buildAppBar() {
-    return AppBar(
+ Widget _buildAppBar() {
+  return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
       elevation: 0,
       titleSpacing: 0,
       title: Row(
         children: [
+          if (_selectedIndex != 0)
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+              },
+            ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ProfilePage()),
+              );
+            },
+            child: const CircleAvatar(
+              foregroundImage: AssetImage("assets/images/mayank_pfp.jpeg"),
+            ),
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0),
             child: Text(
@@ -71,7 +141,7 @@ class _DesktopScaffoldState extends State<DesktopScaffold> {
       ),
       toolbarHeight: 70,
     );
-  }
+}
 
   Widget _buildBody() {
     switch (_selectedIndex) {

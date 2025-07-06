@@ -51,7 +51,7 @@ class MegaMenu extends StatelessWidget {
           _buildMenuButton('Create Exam', Icons.task, 7),
           _buildMenuButton('Evaluate', Icons.assessment, 3),
           _buildMenuButton('Results', Icons.bar_chart, 4),
-          _buildMenuButton('Settings', Icons.settings, 5),
+          
           _buildMenuButton('Support', Icons.help, 6),
         ],
       ),

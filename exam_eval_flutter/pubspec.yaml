@@ -59,6 +59,7 @@ flutter:
   assets:
     - assets/images/mountains.jpeg
     - assets/fonts/Blanka-Regular.otf
+    - assets/images/mayank_pfp.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

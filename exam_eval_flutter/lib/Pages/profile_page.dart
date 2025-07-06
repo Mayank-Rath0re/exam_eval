@@ -47,323 +47,122 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.8, 0.8),
-                radius: 2.3,
-                colors: [
-                  Color.fromRGBO(247, 245, 243, 1),
-                  Color.fromRGBO(227, 221, 211, 1),
-                  Color.fromRGBO(212, 199, 130, 1),
-                  Color.fromRGBO(54, 87, 78, 1),
+          IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          const SizedBox(height: 30),
+          Center(
+            child: Column(
+              children: [
+                ClipOval(
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(227, 221, 211, 1),
+                      shape: BoxShape.circle,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 12,
+                          spreadRadius: 4,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset("assets/images/mayank_pfp.jpeg", fit: BoxFit.cover,)
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Name TextField
+                _buildTextField(controller: nameController, label: 'Name'),
+
+                // Email TextField
+                _buildTextField(controller: emailController, label: 'Email'),
+
+                // Password TextField
+                _buildTextField(controller: passwordController, label: 'Password', obscure: true),
+
+                // Date of Birth
+                _buildTextField(controller: dobController, label: 'Date of Birth'),
+
+                // Gender
+                _buildTextField(controller: genderController, label: 'Gender'),
+
+                // Education
+                _buildTextField(controller: educationController, label: 'Education'),
+
+                // Institution
+                _buildTextField(controller: institutionController, label: 'Institution'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Profile Action Section
+          Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(227, 221, 211, 1),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 12,
+                    spreadRadius: 4,
+                    offset: Offset(0, 4),
+                  ),
                 ],
-                stops: [0.0, 0.1, 0.52, 0.81],
+              ),
+              child: Column(
+                children: [
+                  _buildProfileItem(
+                    icon: Icons.person_outline,
+                    title: "Personal Information",
+                    onTap: () {
+                      // TODO: Handle personal info
+                    },
+                  ),
+                  const Divider(height: 1),
+                  _buildProfileItem(
+                    icon: Icons.lock_outline,
+                    title: "Change Password",
+                    onTap: () {
+                      // TODO: Handle password change
+                    },
+                  ),
+                  const Divider(height: 1),
+                  _buildProfileItem(
+                    icon: Icons.notifications_outlined,
+                    title: "Notification Settings",
+                    onTap: () {
+                      // TODO: Handle notifications
+                    },
+                  ),
+                ],
               ),
             ),
           ),
-          Column(
-            children: [
-              AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                titleSpacing: 0,
-                title: Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Text(
-                        'EXAM EVAL',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    MegaMenu(
-                      onTabChange: _onTabChange,
-                      isMobile: false,
-                    ),
-                  ],
-                ),
-                toolbarHeight: 70,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Your Profile",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromRGBO(54, 87, 78, 1),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      Center(
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                color: const Color.fromRGBO(227, 221, 211, 1),
-                                shape: BoxShape.circle,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 12,
-                                    spreadRadius: 4,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.person,
-                                size: 80,
-                                color: Color.fromRGBO(54, 87, 78, 1),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            // Editable Name TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: nameController,
-                                decoration: InputDecoration(
-                                  labelText: 'Name',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Editable Email TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: emailController,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Editable Password TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Editable Date of Birth TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: dobController,
-                                decoration: InputDecoration(
-                                  labelText: 'Date of Birth',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Editable Gender TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: genderController,
-                                decoration: InputDecoration(
-                                  labelText: 'Gender',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Editable Education TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: educationController,
-                                decoration: InputDecoration(
-                                  labelText: 'Education',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Editable Institution TextField
-                            SizedBox(
-                              width: 300,
-                              child: TextField(
-                                controller: institutionController,
-                                decoration: InputDecoration(
-                                  labelText: 'Institution',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromRGBO(54, 87, 78, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(54, 87, 78, 1),
-                                    ),
-                                  ),
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      Center(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 500),
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(227, 221, 211, 1),
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 12,
-                                spreadRadius: 4,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              _buildProfileItem(
-                                icon: Icons.person_outline,
-                                title: "Personal Information",
-                                onTap: () {
-                                  // TODO: Implement personal information edit
-                                },
-                              ),
-                              const Divider(height: 1),
-                              _buildProfileItem(
-                                icon: Icons.lock_outline,
-                                title: "Change Password",
-                                onTap: () {
-                                  // TODO: Implement password change
-                                },
-                              ),
-                              const Divider(height: 1),
-                              _buildProfileItem(
-                                icon: Icons.notifications_outlined,
-                                title: "Notification Settings",
-                                onTap: () {
-                                  // TODO: Implement notification settings
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildProfileItem({
     required IconData icon,
@@ -391,3 +190,37 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
+Widget _buildTextField({
+  required TextEditingController controller,
+  required String label,
+  bool obscure = false,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: SizedBox(
+      width: 300,
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(
+            color: Color.fromRGBO(54, 87, 78, 1),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(
+              color: Color.fromRGBO(54, 87, 78, 1),
+            ),
+          ),
+          isDense: true,
+        ),
+      ),
+    ),
+  );
+}
+

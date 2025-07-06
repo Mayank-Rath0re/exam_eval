@@ -15,7 +15,7 @@ class _AbsMinimalBoxState extends State<AbsMinimalBox> {
     return Container(
         decoration: BoxDecoration(
             color: widget.layer == 0 ? Colors.white : Colors.grey.shade200,
-            //border: Border.all(width: 1, color: Colors.black),
+            // border: widget.layer == 0 ? Border.all(width: 1, color: Colors.black) : null,
             borderRadius: BorderRadius.circular(6),
             boxShadow: widget.layer == 0
                 ? [

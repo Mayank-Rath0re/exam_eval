@@ -502,9 +502,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR exam_eval
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('exam_eval', '20250705074547868', now())
+    VALUES ('exam_eval', '20250706085301004', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250705074547868', "timestamp" = now();
+    DO UPDATE SET "version" = '20250706085301004', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
